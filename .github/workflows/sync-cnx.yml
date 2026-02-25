@@ -73,6 +73,8 @@ jobs:
             bun.lock \
             public/favicon.ico \
             public/favicon.svg \
+            VERSION \
+            CHANGELOG.md \
             2>/dev/null || true
 
           # Verifica se houve mudanças reais
@@ -85,6 +87,13 @@ jobs:
             git diff --staged --name-only || echo "(nenhuma mudança staged)"
           fi
 
+      - name: 📋 Obter nova versão
+        if: steps.changes.outputs.has_changes == 'true'
+        id: version
+        run: |
+          NEW_VERSION=$(cat VERSION 2>/dev/null || echo "nova versão")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
       - name: 🚀 Criar Pull Request com as atualizações
         if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
@@ -94,13 +103,15 @@ jobs:
           branch: cnx-atualizacao
           base: main
           delete-branch: false
-          title: '🔄 Atualização disponível do Template CNX'
+          title: '🔄 Atualização CNX v${{ steps.version.outputs.new_version }} disponível'
           body: |
-            ## 🔄 Atualização do Template CNX
+            ## 🔄 Atualização do Template CNX — v${{ steps.version.outputs.new_version }}
 
             Há melhorias e correções disponíveis no template.
 
             > ✅ **Seu conteúdo (posts, páginas, imagens) não será alterado.**
+
+            📋 [Ver o que mudou nesta versão](https://github.com/8linksapp-maker/cnx/blob/main/CHANGELOG.md)
 
             ---
 
@@ -114,7 +125,7 @@ jobs:
 
             > Dúvidas? Entre em contato com o suporte do curso.
           labels: 'atualização'
-          commit-message: 'chore: sync com template cnx'
+          commit-message: 'chore: sync com template cnx v${{ steps.version.outputs.new_version }}'
           author: 'CNX Updates <noreply@cnx.app>'
 
       - name: ✅ Resumo
