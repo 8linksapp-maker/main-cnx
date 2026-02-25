@@ -126,6 +126,35 @@ Configure em: **Vercel → Settings → Environment Variables**
 
 ---
 
+## 🔄 Como receber atualizações do template
+
+O seu repositório possui uma **Action automática** que verifica se há melhorias disponíveis no template CNX e abre um Pull Request para você aplicar.
+
+### Verificação automática
+
+A Action roda **toda segunda-feira às 9h** automaticamente. Se houver novidades, você receberá um e-mail do GitHub com o assunto:
+
+> *"🔄 Atualização disponível do Template CNX"*
+
+### Como aplicar a atualização (2 cliques)
+
+1. Abra o e-mail e clique no link, ou acesse a aba **"Pull requests"** no seu repositório
+2. Clique no botão verde **"Merge pull request"**
+3. Clique em **"Confirm merge"**
+4. Aguarde ~2 minutos — seu site é reconstruído automaticamente ✅
+
+> **Seu conteúdo (posts, páginas, imagens) nunca é alterado.** Apenas os arquivos de código são atualizados.
+
+### Verificar agora manualmente
+
+1. Acesse seu repositório no GitHub
+2. Clique na aba **"Actions"**
+3. Clique em **"🔄 Atualizar Template CNX"**
+4. Clique em **"Run workflow"** → **"Run workflow"**
+5. Aguarde alguns segundos — se houver novidades, um PR será aberto automaticamente
+
+---
+
 ## 🔑 Esqueci a senha do admin
 
 Edite o arquivo `src/content/authors/[slug].yaml` no seu repositório GitHub e **remova a linha `adminPasswordHash`**.  
