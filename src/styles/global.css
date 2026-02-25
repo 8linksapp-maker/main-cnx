@@ -10,7 +10,9 @@
   }
 
   body {
-    @apply bg-dark text-slate-300;
+    @apply font-sans antialiased min-h-screen flex flex-col;
+    background-color: var(--blog-bg);
+    color: var(--blog-text);
   }
 }
 
@@ -18,4 +20,79 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ── Blog Theme Variables ─────────────────────────────────────────────────── */
+
+html, html.dark {
+    --blog-bg:            #0f172a;
+    --blog-section-alt:   #0a0a0a;
+    --blog-section-dark:  #000000;
+    --blog-surface:       rgba(255, 255, 255, 0.05);
+    --blog-surface-hover: rgba(255, 255, 255, 0.08);
+    --blog-border:        rgba(255, 255, 255, 0.10);
+    --blog-text:          #ffffff;
+    --blog-text-muted:    #94a3b8;
+    --blog-text-subtle:   #64748b;
+    --blog-hero-grad:     linear-gradient(to bottom, #000000, #000000, #0a0a0a);
+    --blog-nav-bg:        rgba(255, 255, 255, 0.05);
+    --blog-nav-border:    rgba(255, 255, 255, 0.05);
+    --blog-mob-bg:        #0a0a0a;
+    --blog-mob-border:    rgba(255, 255, 255, 0.05);
+    --blog-grid:          rgba(168, 85, 247, 0.10);
+    --blog-fade-bottom:   linear-gradient(to top, #000 0%, rgba(0,0,0,0.8) 50%, transparent 100%);
+}
+
+html.light {
+    --blog-bg:            #f8fafc;
+    --blog-section-alt:   #ffffff;
+    --blog-section-dark:  #f1f5f9;
+    --blog-surface:       rgba(0, 0, 0, 0.04);
+    --blog-surface-hover: rgba(0, 0, 0, 0.06);
+    --blog-border:        rgba(0, 0, 0, 0.09);
+    --blog-text:          #0f172a;
+    --blog-text-muted:    #475569;
+    --blog-text-subtle:   #94a3b8;
+    --blog-hero-grad:     linear-gradient(to bottom, #f1f5f9, #f8fafc, #ffffff);
+    --blog-nav-bg:        rgba(248, 250, 252, 0.92);
+    --blog-nav-border:    rgba(0, 0, 0, 0.07);
+    --blog-mob-bg:        #f8fafc;
+    --blog-mob-border:    rgba(0, 0, 0, 0.06);
+    --blog-grid:          rgba(168, 85, 247, 0.06);
+    --blog-fade-bottom:   linear-gradient(to top, #f8fafc 0%, rgba(248,250,252,0.8) 50%, transparent 100%);
+}
+
+/* ── Blog reusable components ─────────────────────────────────────────────── */
+
+/* Card reutilizável para posts e serviços */
+.blog-card {
+    background:    var(--blog-surface);
+    border:        1px solid var(--blog-border);
+    border-radius: 1rem;
+    transition:    background 0.2s, border-color 0.2s, transform 0.3s;
+}
+.blog-card:hover {
+    background:    var(--blog-surface-hover);
+    border-color:  rgb(var(--primary-rgb) / 0.5);
+    transform:     translateY(-8px);
+}
+
+/* Prose (conteúdo de posts) em modo claro */
+html.light .prose-invert {
+    --tw-prose-body:        #374151;
+    --tw-prose-headings:    #111827;
+    --tw-prose-lead:        #4b5563;
+    --tw-prose-links:       rgb(var(--primary-rgb));
+    --tw-prose-bold:        #111827;
+    --tw-prose-counters:    #6b7280;
+    --tw-prose-bullets:     #6b7280;
+    --tw-prose-hr:          #e5e7eb;
+    --tw-prose-quotes:      #111827;
+    --tw-prose-quote-borders: rgb(var(--primary-rgb));
+    --tw-prose-captions:    #6b7280;
+    --tw-prose-code:        #111827;
+    --tw-prose-pre-code:    #e5e7eb;
+    --tw-prose-pre-bg:      #1f2937;
+    --tw-prose-th-borders:  #d1d5db;
+    --tw-prose-td-borders:  #e5e7eb;
 }

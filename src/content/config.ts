@@ -108,6 +108,7 @@ const siteSettings = defineCollection({
     schema: z.object({
         activeTheme: z.string().optional(),
         siteName: z.string(),
+        colorScheme: z.enum(['dark', 'light']).default('dark'),
     }),
 });
 

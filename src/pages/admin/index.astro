@@ -87,6 +87,40 @@ const isAdmin        = sessionUser.adminRole === 'admin';
         </div>
     </div>
 
+    <!-- Card de Aparência do Site -->
+    <div class="mt-6 admin-card p-5">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-lg" id="appearance-icon">🎨</span>
+                <div>
+                    <div class="text-sm font-semibold text-[#e5e5e5]">Aparência do Site</div>
+                    <div class="text-xs text-[#737373]">Define o tema visual para todos os visitantes</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 p-1 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                <button
+                    id="theme-dark-btn"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all"
+                    data-scheme="dark"
+                    title="Tema Escuro"
+                >
+                    🌙 Escuro
+                </button>
+                <button
+                    id="theme-light-btn"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all"
+                    data-scheme="light"
+                    title="Tema Claro"
+                >
+                    ☀️ Claro
+                </button>
+            </div>
+
+            <span id="appearance-status" class="text-xs text-[#525252] hidden">Salvando...</span>
+        </div>
+    </div>
+
     <!-- Card de Versão do Template -->
     <div class="mt-4 admin-card p-5" id="version-card">
         <div class="flex items-center justify-between flex-wrap gap-3">
@@ -110,6 +144,66 @@ const isAdmin        = sessionUser.adminRole === 'admin';
 </AdminLayout>
 
 <script is:inline>
+/* ── Aparência do Site ─────────────────────────────────────────── */
+(function () {
+    var darkBtn   = document.getElementById('theme-dark-btn');
+    var lightBtn  = document.getElementById('theme-light-btn');
+    var statusEl  = document.getElementById('appearance-status');
+    var current   = 'dark';
+
+    function applyActiveStyle(scheme) {
+        var active   = scheme === 'dark' ? darkBtn  : lightBtn;
+        var inactive = scheme === 'dark' ? lightBtn : darkBtn;
+        if (!active || !inactive) return;
+        active.style.background  = 'rgba(168,85,247,0.25)';
+        active.style.color       = '#c084fc';
+        active.style.border      = '1px solid rgba(168,85,247,0.4)';
+        inactive.style.background = 'transparent';
+        inactive.style.color      = '#a3a3a3';
+        inactive.style.border     = '1px solid transparent';
+    }
+
+    function setScheme(scheme) {
+        if (scheme === current) return;
+        current = scheme;
+        applyActiveStyle(scheme);
+        if (statusEl) { statusEl.textContent = 'Salvando...'; statusEl.classList.remove('hidden'); }
+
+        fetch('/api/admin/site-settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ colorScheme: scheme }),
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (statusEl) {
+                statusEl.textContent = data.success ? '✅ Salvo! O site será reconstruído em instantes.' : '❌ Erro ao salvar';
+                statusEl.classList.remove('hidden');
+                setTimeout(function () { statusEl.classList.add('hidden'); }, 4000);
+            }
+        })
+        .catch(function () {
+            if (statusEl) { statusEl.textContent = '❌ Erro de rede'; statusEl.classList.remove('hidden'); }
+        });
+    }
+
+    /* Carregar estado atual */
+    fetch('/api/admin/site-settings')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var scheme = (data.data && data.data.colorScheme) || 'dark';
+            current = scheme;
+            applyActiveStyle(scheme);
+        })
+        .catch(function () { applyActiveStyle('dark'); });
+
+    if (darkBtn)  darkBtn.addEventListener('click',  function () { setScheme('dark'); });
+    if (lightBtn) lightBtn.addEventListener('click', function () { setScheme('light'); });
+})();
+</script>
+
+<script is:inline>
+/* ── Versão do Template ────────────────────────────────────────── */
 (function () {
     fetch('/api/admin/version')
         .then(function (r) { return r.json(); })
