@@ -1,10 +1,12 @@
 /**
  * MenuEditor.tsx
- * 
- * Componente React para edição do Menu de navegação.
+ *
+ * Componente React para edição do Menu de navegação e do Logo do site.
+ * Suporta logo como texto personalizado ou imagem enviada via upload.
+ * Os dados são salvos no singleton menu.yaml do tema ativo.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast, ToastList } from './Toast';
 
 interface MenuItem {
@@ -15,6 +17,9 @@ interface MenuItem {
 }
 
 interface MenuData {
+    logoType?:  'text' | 'image';
+    logoText?:  string;
+    logoImage?: string;
     items?: MenuItem[];
 }
 
@@ -24,9 +29,11 @@ interface Props {
 
 export default function MenuEditor({ initialData }: Props) {
     const { toasts, showToast, removeToast } = useToast();
-    const [data, setData] = useState<MenuData>(initialData || {});
-    const [isSaving, setIsSaving] = useState(false);
+    const [data, setData]           = useState<MenuData>(initialData || {});
+    const [isSaving, setIsSaving]   = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -44,6 +51,37 @@ export default function MenuEditor({ initialData }: Props) {
             </div>
         );
     }
+
+    const updateField = <K extends keyof MenuData>(field: K, value: MenuData[K]) => {
+        setData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'general');
+
+        try {
+            const res    = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+            const result = await res.json();
+            if (result.success) {
+                updateField('logoImage', result.url);
+                showToast('success', 'Logo enviado!', 'Clique em Salvar para aplicar.');
+            } else {
+                showToast('error', 'Erro no upload', 'Não foi possível enviar o logo');
+            }
+        } catch (err) {
+            console.error('❌ Erro no upload do logo:', err);
+            showToast('error', 'Erro no upload');
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -130,9 +168,148 @@ export default function MenuEditor({ initialData }: Props) {
             </div>
 
             <div className="max-w-4xl space-y-6">
+
+                {/* ── Logo do Site ─────────────────────────────────────────── */}
+                <div className="admin-card p-6">
+                    <h3 className="text-lg font-heading font-bold text-[#e5e5e5] mb-1">
+                        🖼️ Logo do Site
+                    </h3>
+                    <p className="text-xs text-[#737373] mb-5">
+                        Escolha entre exibir um texto ou uma imagem como logo no cabeçalho
+                    </p>
+
+                    {/* Toggle tipo */}
+                    <div className="flex gap-2 mb-5">
+                        <button
+                            onClick={() => updateField('logoType', 'text')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${
+                                (data.logoType || 'text') === 'text'
+                                    ? 'bg-violet-500/20 text-violet-300 border-violet-500/40'
+                                    : 'bg-transparent text-[#a3a3a3] border-white/10 hover:border-white/20'
+                            }`}
+                        >
+                            ✏️ Texto
+                        </button>
+                        <button
+                            onClick={() => updateField('logoType', 'image')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${
+                                data.logoType === 'image'
+                                    ? 'bg-violet-500/20 text-violet-300 border-violet-500/40'
+                                    : 'bg-transparent text-[#a3a3a3] border-white/10 hover:border-white/20'
+                            }`}
+                        >
+                            🖼️ Imagem
+                        </button>
+                    </div>
+
+                    {/* Logo Texto */}
+                    {(data.logoType || 'text') === 'text' && (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-[#a3a3a3] mb-1">
+                                    Texto do Logo
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.logoText || ''}
+                                    onChange={e => updateField('logoText', e.target.value)}
+                                    className="admin-input"
+                                    placeholder="Ex: MinhaEmpresa"
+                                    maxLength={40}
+                                />
+                            </div>
+                            {/* Preview */}
+                            <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#525252] mb-2">Preview</p>
+                                <span className="text-2xl font-black tracking-tighter text-white font-heading">
+                                    {data.logoText || 'CNX.AGENCY'}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Logo Imagem */}
+                    {data.logoType === 'image' && (
+                        <div className="space-y-4">
+                            {data.logoImage && (
+                                <div className="flex items-center gap-4 p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                    <img
+                                        src={data.logoImage}
+                                        alt="Logo atual"
+                                        className="h-12 w-auto object-contain rounded"
+                                        style={{ maxWidth: '200px' }}
+                                    />
+                                    <div className="flex-1">
+                                        <p className="text-xs text-[#737373] truncate">{data.logoImage}</p>
+                                        <button
+                                            onClick={() => updateField('logoImage', '')}
+                                            className="text-xs text-red-400 hover:text-red-300 mt-1"
+                                        >
+                                            Remover imagem
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-xs font-semibold text-[#a3a3a3] mb-2">
+                                    {data.logoImage ? 'Substituir imagem' : 'Enviar logo'}
+                                </label>
+                                <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold cursor-pointer transition-all border ${
+                                    isUploading
+                                        ? 'opacity-60 cursor-not-allowed border-white/10 text-[#a3a3a3]'
+                                        : 'border-violet-500/40 text-violet-300 bg-violet-500/10 hover:bg-violet-500/20'
+                                }`}>
+                                    {isUploading ? '⏳ Enviando...' : '📤 Escolher arquivo'}
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        disabled={isUploading}
+                                        onChange={handleLogoUpload}
+                                    />
+                                </label>
+                                <p className="text-[11px] text-[#525252] mt-2">
+                                    PNG, SVG, WebP ou JPG — Recomendado: fundo transparente, altura ≥ 80px
+                                </p>
+                            </div>
+
+                            {/* URL manual como fallback */}
+                            <div>
+                                <label className="block text-xs font-semibold text-[#a3a3a3] mb-1">
+                                    Ou cole a URL da imagem
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.logoImage || ''}
+                                    onChange={e => updateField('logoImage', e.target.value)}
+                                    className="admin-input text-sm"
+                                    placeholder="https://..."
+                                />
+                            </div>
+
+                            {/* Texto alternativo para acessibilidade */}
+                            <div>
+                                <label className="block text-xs font-semibold text-[#a3a3a3] mb-1">
+                                    Texto alternativo (acessibilidade)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.logoText || ''}
+                                    onChange={e => updateField('logoText', e.target.value)}
+                                    className="admin-input text-sm"
+                                    placeholder="Ex: Logo da Minha Empresa"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* ── Itens do Menu ────────────────────────────────────────── */}
                 <div className="admin-card p-6">
                     <h3 className="text-lg font-heading font-bold text-[#e5e5e5] mb-4">
-                        Itens do Menu
+                        ☰ Itens do Menu
                     </h3>
                     <div>
                         {(data.items || []).map((item, index) => (

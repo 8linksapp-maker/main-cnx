@@ -1,3 +1,6 @@
+logoType: text
+logoText: "CNX.AGENCY"
+logoImage: ""
 items:
   - label: Home
     href: /
