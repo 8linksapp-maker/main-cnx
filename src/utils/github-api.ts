@@ -107,12 +107,22 @@ export async function githubDeleteFile(
     message: string,
 ): Promise<boolean> {
     const sha = await githubGetSha(path);
-    if (!sha) return true; // já não existe
+
+    if (!sha) {
+        console.warn(`⚠️ githubDeleteFile: arquivo não encontrado no GitHub — ${path} (branch: ${BRANCH}). Nada a excluir.`);
+        return false;
+    }
 
     const res = await fetch(apiUrl(path), {
         method: 'DELETE',
         headers: headers(),
         body: JSON.stringify({ message, sha, branch: BRANCH }),
     });
+
+    if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        console.error(`❌ githubDeleteFile: falha ao excluir ${path} — HTTP ${res.status}: ${body}`);
+    }
+
     return res.ok;
 }

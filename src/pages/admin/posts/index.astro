@@ -234,10 +234,10 @@ function getCategoryName(categorySlug: string | undefined) {
     <!-- Toast de feedback -->
     <div id="admin-toast" class="admin-toast admin-toast--error" style="display: none;">
         <div class="admin-toast-icon">
-            <span>❌</span>
+            <span id="admin-toast-icon">❌</span>
         </div>
         <div class="admin-toast-content">
-            <strong>Erro ao excluir post</strong>
+            <strong id="admin-toast-title">Erro ao excluir post</strong>
             <span id="admin-toast-message">Ocorreu um erro inesperado.</span>
         </div>
         <button 
@@ -258,6 +258,8 @@ function getCategoryName(categorySlug: string | undefined) {
         const messageEl = document.getElementById('delete-modal-message');
         const toastEl = document.getElementById('admin-toast');
         const toastMessageEl = document.getElementById('admin-toast-message');
+        const toastTitleEl = document.getElementById('admin-toast-title');
+        const toastIconEl = document.getElementById('admin-toast-icon');
         const toastClose = toastEl ? toastEl.querySelector('.admin-toast-close') : null;
 
         let currentSlug = null;
@@ -282,19 +284,28 @@ function getCategoryName(categorySlug: string | undefined) {
             }
         }
 
-        function showToast(message) {
+        function showToast(message, type) {
             if (!toastEl || !toastMessageEl) return;
+            var isSuccess = type === 'success';
+            toastEl.className = 'admin-toast ' + (isSuccess ? 'admin-toast--success' : 'admin-toast--error');
+            if (toastIconEl) toastIconEl.textContent = isSuccess ? '✅' : '❌';
+            if (toastTitleEl) toastTitleEl.textContent = isSuccess ? 'Post excluído!' : 'Erro ao excluir post';
             toastMessageEl.textContent = message;
             toastEl.style.display = 'flex';
             setTimeout(() => {
                 toastEl.style.display = 'none';
-            }, 5000);
+            }, isSuccess ? 8000 : 5000);
         }
 
         async function handleDeletePost() {
             if (!currentSlug || !currentTitle) {
-                showToast('Dados do post não encontrados. Tente recarregar a página.');
+                showToast('Dados do post não encontrados. Tente recarregar a página.', 'error');
                 return;
+            }
+
+            if (confirmBtn) {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Excluindo...';
             }
 
             try {
@@ -305,18 +316,27 @@ function getCategoryName(categorySlug: string | undefined) {
                 const result = await response.json();
 
                 if (result.success) {
-                    // Remover linha da tabela sem recarregar tudo
                     const row = document.querySelector(`button[data-slug=\"${currentSlug}\"]`)?.closest('tr');
-                    if (row && row.parentElement) {
-                        row.parentElement.removeChild(row);
+                    if (row) {
+                        row.style.opacity = '0.4';
+                        row.style.transition = 'opacity 0.3s';
+                        setTimeout(() => {
+                            if (row.parentElement) row.parentElement.removeChild(row);
+                        }, 300);
                     }
                     closeModal();
+                    showToast('O arquivo foi removido do GitHub. A Vercel está reconstruindo o site — o post desaparecerá do blog em 1 a 2 minutos.', 'success');
                 } else {
-                    showToast(result.error || 'Erro desconhecido ao deletar post.');
+                    showToast(result.error || 'Erro desconhecido ao deletar post.', 'error');
                 }
             } catch (error) {
                 console.error('❌ Erro ao deletar post:', error);
-                showToast('Erro ao deletar post. Verifique o console para mais detalhes.');
+                showToast('Erro ao deletar post. Verifique o console para mais detalhes.', 'error');
+            } finally {
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Excluir definitivamente';
+                }
             }
         }
 
