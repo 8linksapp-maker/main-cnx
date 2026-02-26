@@ -1,0 +1,50 @@
+---
+/**
+ * admin/criar-tema/index.astro
+ *
+ * Página do Wizard de Criação de Temas CNX.
+ * Permite ao usuário preencher um formulário guiado em 6 etapas
+ * e gerar um prompt único para o Cursor Agent criar o tema completo,
+ * incluindo setup do repositório, geração dos arquivos e deploy na Vercel.
+ *
+ * Etapas:
+ *   1. Repositório GitHub
+ *   2. Identidade da Marca
+ *   3. NAP & Contato (SEO local)
+ *   4. SEO & Open Graph
+ *   5. Conteúdo Inicial das Páginas
+ *   6. Design & Estrutura do Site
+ */
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ThemeWizard from '../../../components/admin/ThemeWizard.tsx';
+import { verifySession, SESSION_COOKIE } from '../../../utils/auth-utils';
+
+const token       = Astro.cookies.get(SESSION_COOKIE)?.value;
+const sessionUser = token ? verifySession(token) : null;
+if (!sessionUser) return Astro.redirect('/admin/login');
+---
+
+<AdminLayout title="Criar Tema — CNX Agency Admin">
+    <div style="padding: 2rem 1.5rem 0; max-width: 900px;">
+        <!-- Cabeçalho -->
+        <div style="margin-bottom: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.375rem;">
+                <span style="font-size: 1.5rem;">🎨</span>
+                <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--admin-text); margin: 0;">
+                    Criar Tema com IA
+                </h1>
+            </div>
+            <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin: 0;">
+                Preencha o formulário e gere um prompt pronto para colar no Cursor Agent —
+                ele cria, configura e faz deploy do seu tema automaticamente.
+            </p>
+        </div>
+
+        <!-- Divider -->
+        <div style="height: 1px; background: var(--admin-border); margin: 1.25rem 0;"></div>
+    </div>
+
+    <!-- Wizard (React, client-only) -->
+    <ThemeWizard client:only="react" />
+</AdminLayout>
