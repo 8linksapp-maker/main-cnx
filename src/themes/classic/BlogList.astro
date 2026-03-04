@@ -11,13 +11,17 @@ import MainLayout from '../../layouts/MainLayout.astro';
 import LocalLayout from '../../layouts/LocalLayout.astro';
 import { readSingleton } from '../../utils/singleton-utils';
 
+import { getPostUrl, type BlogPermalinkStructure, type BlogUrlPrefix } from '../../utils/blog-permalink';
+
 interface Props {
     posts: any[];
     themeId: string;
     layoutType?: 'main' | 'local';
+    blogPermalinkStructure?: BlogPermalinkStructure;
+    blogUrlPrefix?: BlogUrlPrefix;
 }
 
-const { posts, themeId, layoutType = 'main' } = Astro.props;
+const { posts, themeId, layoutType = 'main', blogPermalinkStructure = 'postname', blogUrlPrefix = 'blog' } = Astro.props;
 const Layout = layoutType === 'local' ? LocalLayout : MainLayout;
 const blogThemeId = layoutType === 'local' ? 'local' : themeId;
 
@@ -74,9 +78,14 @@ const emptySubMessage  = blogData?.emptySubMessage  || 'Volte em breve para ver 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                     {posts.map((post) => {
                         const thumbnail = post.data.thumbnail || post.data.metaImage;
+                        const postUrl = getPostUrl(
+                            { ...post, data: { ...post.data, slug: post.data.slug || post.id } },
+                            blogPermalinkStructure,
+                            blogUrlPrefix
+                        );
                         return (
                         <a 
-                            href={`/blog/${post.id}`} 
+                            href={postUrl} 
                             class="blog-card group block p-6"
                         >
                             {thumbnail ? (

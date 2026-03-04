@@ -122,6 +122,9 @@ const siteSettings = defineCollection({
         generateSitemap: z.boolean().default(true),
         generateRobots: z.boolean().default(true),
         robotsDisallow: z.array(z.string()).optional(),
+        // Estrutura de permalink dos posts
+        blogPermalinkStructure: z.enum(['postname', 'year_month', 'year_month_day']).default('postname'),
+        blogUrlPrefix: z.enum(['blog', 'root']).default('blog'), // 'root' = sem /blog na URL
         // Contato centralizado — usado em Header, Footer, páginas locais, schema JSON-LD
         companyPhone: z.string().optional(),
         companyWhatsapp: z.string().optional(),

@@ -1,20 +1,30 @@
 ---
 /**
- * blog/[slug].astro
+ * [...slug].astro
  *
- * Página individual de post.
- * Usa layout conforme siteMode: local → LocalLayout (header/footer do modo local), blog → MainLayout.
- * SSR para que o layout siga o siteMode em cada request.
+ * Rota para posts na raiz do site (quando blogUrlPrefix = 'root').
+ * URLs: /slug-do-post | /2025/03/slug | /2025/03/04/slug
+ * Só gera paths quando blogUrlPrefix está em 'root'.
  */
 
 import { getCollection, getEntry, render } from 'astro:content';
-import BlogPost from '../../themes/classic/BlogPost.astro';
-import { readPost } from '../../utils/post-utils';
+import BlogPost from '../themes/classic/BlogPost.astro';
+import { readPost } from '../utils/post-utils';
+import { buildPostPath, type BlogPermalinkStructure } from '../utils/blog-permalink';
+
+export const prerender = true;
 
 export async function getStaticPaths() {
+  const settings = await getEntry('siteSettings', 'settings').catch(() => null);
+  const prefix = (settings?.data?.blogUrlPrefix as string) || 'blog';
+
+  if (prefix !== 'root') return [];
+
   const posts = await getCollection('posts');
+  const structure = (settings?.data?.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+
   return posts.map(post => ({
-    params: { slug: post.id },
+    params: { slug: buildPostPath({ ...post, data: { ...post.data, slug: post.data.slug || post.id } }, structure) },
     props: { post },
   }));
 }
@@ -27,7 +37,6 @@ if (!post) return Astro.redirect('/404');
 const { Content } = await render(post);
 const author = post.data.author ? await getEntry('authors', post.data.author) : null;
 
-// Tempo de leitura: ~200 palavras/min em português
 const postFile = await readPost(post.data.slug);
 const wordCount = postFile?.content ? postFile.content.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length : 0;
 const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));

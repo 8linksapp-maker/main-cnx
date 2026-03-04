@@ -4,6 +4,17 @@ Todas as mudanças relevantes do template são documentadas aqui.
 
 ---
 
+## [1.0.2] — 05/03/2026
+
+### Melhorias
+
+- **Estrutura de URLs dos posts** configurável em Configurações → SEO:
+  - Prefixo: com /blog ou na raiz (sem /blog)
+  - Estrutura: nome do post, ano+mês ou data completa
+- Exemplo: `/slug-do-post` ou `/blog/2025/03/slug-do-post`
+
+---
+
 ## [1.0.1] — 05/03/2026
 
 ### Melhorias

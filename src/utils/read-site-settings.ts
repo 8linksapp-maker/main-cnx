@@ -22,6 +22,8 @@ const DEFAULTS: Record<string, unknown> = {
     generateSitemap: true,
     generateRobots: true,
     robotsDisallow: ['/admin', '/api'],
+    blogPermalinkStructure: 'postname',
+    blogUrlPrefix: 'blog',
 };
 
 /** Normaliza canonicalUrl: se não tiver protocolo, adiciona https:// */

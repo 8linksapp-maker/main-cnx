@@ -9,8 +9,12 @@
 
 import { getCollection, getEntry } from 'astro:content';
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getPostUrl, type BlogPermalinkStructure } from '../../../utils/blog-permalink';
 
 const posts = await getCollection('posts');
+const settings = await getEntry('siteSettings', 'settings').catch(() => null);
+const blogPermalinkStructure = (settings?.data?.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+const blogUrlPrefix = (settings?.data?.blogUrlPrefix as import('../../../utils/blog-permalink').BlogUrlPrefix) || 'blog';
 const authors = await getCollection('authors');
 const categories = await getCollection('categories');
 
@@ -203,7 +207,7 @@ function getCategoryName(categorySlug: string | undefined) {
                                                 📋 Duplicar
                                             </button>
                                             <a 
-                                                href={`/blog/${post.id}`}
+                                                href={getPostUrl({ ...post, data: { ...post.data, slug: post.data.slug || post.id } }, blogPermalinkStructure, blogUrlPrefix)}
                                                 target="_blank"
                                                 class="admin-btn admin-btn-secondary text-sm"
                                             >

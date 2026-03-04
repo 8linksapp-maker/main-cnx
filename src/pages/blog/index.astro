@@ -8,10 +8,13 @@
 
 import { getCollection, getEntry } from 'astro:content';
 import BlogList from '../../themes/classic/BlogList.astro';
+import type { BlogPermalinkStructure, BlogUrlPrefix } from '../../utils/blog-permalink';
 
 const settings = await getEntry('siteSettings', 'settings').catch(() => null);
 const siteMode = settings?.data?.siteMode || 'blog';
 const layoutType = siteMode === 'local' ? 'local' : 'main';
+const blogPermalinkStructure = (settings?.data?.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+const blogUrlPrefix = (settings?.data?.blogUrlPrefix as BlogUrlPrefix) || 'blog';
 
 const allPosts = await getCollection('posts');
 const publishedPosts = allPosts
@@ -23,4 +26,6 @@ const publishedPosts = allPosts
     posts={publishedPosts}
     themeId="classic"
     layoutType={layoutType}
+    blogPermalinkStructure={blogPermalinkStructure}
+    blogUrlPrefix={blogUrlPrefix}
 />

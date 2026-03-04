@@ -13,11 +13,16 @@
 
 import { useState, useEffect } from 'react';
 
+type BlogPermalinkStructure = 'postname' | 'year_month' | 'year_month_day';
+type BlogUrlPrefix = 'blog' | 'root';
+
 export default function SettingsSEO() {
     const [canonicalUrl, setCanonicalUrl] = useState('');
     const [generateSitemap, setGenerateSitemap] = useState(true);
     const [generateRobots, setGenerateRobots] = useState(true);
     const [robotsDisallow, setRobotsDisallow] = useState('');
+    const [blogPermalinkStructure, setBlogPermalinkStructure] = useState<BlogPermalinkStructure>('postname');
+    const [blogUrlPrefix, setBlogUrlPrefix] = useState<BlogUrlPrefix>('blog');
     const [saving, setSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [loaded, setLoaded] = useState(false);
@@ -46,6 +51,10 @@ export default function SettingsSEO() {
                     setGenerateSitemap(d.generateSitemap !== false);
                     setGenerateRobots(d.generateRobots !== false);
                     setRobotsDisallow(Array.isArray(d.robotsDisallow) ? d.robotsDisallow.join('\n') : '/admin\n/api');
+                    const perm = d.blogPermalinkStructure as BlogPermalinkStructure;
+                    setBlogPermalinkStructure(perm && ['postname','year_month','year_month_day'].includes(perm) ? perm : 'postname');
+                    const pref = d.blogUrlPrefix as BlogUrlPrefix;
+                    setBlogUrlPrefix(pref && ['blog','root'].includes(pref) ? pref : 'blog');
                 }
                 setLoaded(true);
             })
@@ -69,6 +78,8 @@ export default function SettingsSEO() {
                     generateSitemap,
                     generateRobots,
                     robotsDisallow: disallow,
+                    blogPermalinkStructure,
+                    blogUrlPrefix,
                 }),
             });
             const data = await res.json();
@@ -130,6 +141,56 @@ export default function SettingsSEO() {
                 />
                 <p style={{ fontSize: '0.7rem', color: '#52525b', marginTop: '0.35rem' }}>
                     Digite apenas o domínio (ex: meusite.com.br ou www.meusite.com.br). O https:// é adicionado automaticamente.
+                </p>
+            </div>
+
+            <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#a3a3a3', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Estrutura de URLs dos posts
+                </label>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', color: '#e5e5e5' }}>
+                        <input
+                            type="radio"
+                            name="blogUrlPrefix"
+                            checked={blogUrlPrefix === 'blog'}
+                            onChange={() => setBlogUrlPrefix('blog')}
+                            style={{ accentColor: 'var(--primary, #6366f1)' }}
+                        />
+                        Com /blog — /blog/slug-do-post
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', color: '#e5e5e5' }}>
+                        <input
+                            type="radio"
+                            name="blogUrlPrefix"
+                            checked={blogUrlPrefix === 'root'}
+                            onChange={() => setBlogUrlPrefix('root')}
+                            style={{ accentColor: 'var(--primary, #6366f1)' }}
+                        />
+                        Sem /blog — /slug-do-post
+                    </label>
+                </div>
+                <select
+                    value={blogPermalinkStructure}
+                    onChange={e => setBlogPermalinkStructure(e.target.value as BlogPermalinkStructure)}
+                    style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'rgba(255,255,255,0.04)',
+                        color: '#e5e5e5',
+                        fontSize: '0.9rem',
+                        boxSizing: 'border-box',
+                        marginBottom: '1rem',
+                    }}
+                >
+                    <option value="postname">Nome do post</option>
+                    <option value="year_month">Ano e mês — {blogUrlPrefix === 'root' ? '/2025/03/slug' : '/blog/2025/03/slug'}</option>
+                    <option value="year_month_day">Data completa — {blogUrlPrefix === 'root' ? '/2025/03/04/slug' : '/blog/2025/03/04/slug'}</option>
+                </select>
+                <p style={{ fontSize: '0.7rem', color: '#52525b', marginBottom: '1.25rem' }}>
+                    Define como as URLs dos artigos aparecem. Use data completa para organizar conteúdo por época.
                 </p>
             </div>
 

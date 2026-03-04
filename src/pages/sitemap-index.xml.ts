@@ -12,6 +12,7 @@ import { getCollection } from 'astro:content';
 import { readSiteSettings } from '../utils/read-site-settings';
 import { listLocations } from '../utils/location-utils';
 import { listServices } from '../utils/service-utils';
+import { getPostUrl, type BlogPermalinkStructure, type BlogUrlPrefix } from '../utils/blog-permalink';
 
 function esc(str: string): string {
     return str
@@ -74,8 +75,11 @@ ${stylesheet}
     // Posts
     try {
         const posts = await getCollection('posts');
+        const permalinkStructure = (settings.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+        const urlPrefix = (settings.blogUrlPrefix as BlogUrlPrefix) || 'blog';
         for (const post of posts) {
-            urls.push(urlNode(base, `/blog/${post.id}`, post.data.publishedDate as string || today));
+            const postPath = getPostUrl({ ...post, data: { ...post.data, slug: post.data.slug || post.id } }, permalinkStructure, urlPrefix);
+            urls.push(urlNode(base, postPath, post.data.publishedDate as string || today));
         }
     } catch (e) {
         console.error('\x1b[31m✗ Erro ao coletar posts para sitemap:\x1b[0m', e);
