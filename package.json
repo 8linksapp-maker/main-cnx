@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "ulimit -n 65536 2>/dev/null || true; bun run astro dev",
+    "prebuild": "bun run scripts/ensure-workflow.ts",
     "build": "bun run astro build",
     "preview": "bun run astro preview",
     "astro": "astro",
