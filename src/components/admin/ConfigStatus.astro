@@ -187,21 +187,31 @@ const vercelEnvUrl = 'https://vercel.com/dashboard';
 
 {isFullyConfigured && (
 <div class="mt-6 admin-card" style="border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.03);">
-    <div style="padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;">
+    <div style="padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
         <span style="font-size: 1.1rem;">✅</span>
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width: 0;">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--admin-text);">Sistema configurado corretamente</div>
             <div style="font-size: 0.75rem; color: var(--admin-text-muted);">Todas as variáveis estão configuradas. Edição em produção ativa.</div>
         </div>
         {isGitHubConfigured && (
-            <a
-                href={actionsSettingsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style="font-size: 0.72rem; color: var(--admin-text-subtle); text-decoration: none; flex-shrink: 0;"
-            >
-                Configurações GitHub →
-            </a>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+                <a
+                    href="/api/admin/test-github"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style="font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.65rem; border-radius: 0.375rem; background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); text-decoration: none;"
+                >
+                    🔧 Testar GitHub
+                </a>
+                <a
+                    href={actionsSettingsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style="font-size: 0.72rem; color: var(--admin-text-subtle); text-decoration: none;"
+                >
+                    Configurações →
+                </a>
+            </div>
         )}
     </div>
 </div>
