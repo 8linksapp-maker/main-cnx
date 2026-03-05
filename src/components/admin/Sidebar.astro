@@ -17,6 +17,7 @@ interface Props {
 
 const { user } = Astro.props;
 const p       = Astro.url.pathname;
+const tab     = Astro.url.searchParams.get('tab') || '';
 const isAdmin = user?.adminRole === 'admin';
 
 const settings  = await getEntry('siteSettings', 'settings').catch(() => null);
@@ -102,10 +103,17 @@ const mainItems = [
             <div class="ml-4 mt-1 space-y-1 border-l-2 pl-3" style={{ borderColor: 'var(--admin-border)' }}>
                 <a
                     href="/admin/configuracoes"
-                    class={`admin-sidebar-item block py-1.5 ${active('/admin/configuracoes') && !active('/admin/configuracoes/changelog') ? 'active' : ''}`}
+                    class={`admin-sidebar-item block py-1.5 ${active('/admin/configuracoes') && !active('/admin/configuracoes/changelog') && tab !== 'atualizacoes' ? 'active' : ''}`}
                 >
                     <span class="text-sm">🤖</span>
                     <span class="font-medium text-sm flex-1">IA & SEO</span>
+                </a>
+                <a
+                    href="/admin/configuracoes?tab=atualizacoes"
+                    class={`admin-sidebar-item block py-1.5 ${active('/admin/configuracoes') && tab === 'atualizacoes' ? 'active' : ''}`}
+                >
+                    <span class="text-sm">🔄</span>
+                    <span class="font-medium text-sm flex-1">Atualizações</span>
                 </a>
                 <a
                     href="/admin/configuracoes/changelog"
