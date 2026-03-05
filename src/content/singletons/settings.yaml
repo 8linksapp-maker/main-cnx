@@ -17,3 +17,5 @@ robotsDisallow:
 # postname | year_month | year_month_day
 blogPermalinkStructure: postname
 blogUrlPrefix: blog
+# Atualizações automáticas do template (workflow .github criado ao ativar)
+autoUpdateEnabled: false

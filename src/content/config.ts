@@ -128,6 +128,8 @@ const siteSettings = defineCollection({
         // Contato centralizado — usado em Header, Footer, páginas locais, schema JSON-LD
         companyPhone: z.string().optional(),
         companyWhatsapp: z.string().optional(),
+        // Atualizações automáticas do template (workflow .github)
+        autoUpdateEnabled: z.boolean().optional(),
     }),
 });
 
