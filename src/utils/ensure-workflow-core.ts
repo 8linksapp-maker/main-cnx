@@ -28,17 +28,18 @@ export async function ensureWorkflow(): Promise<EnsureWorkflowResult> {
     };
   }
 
+  const workflowPath = '.github/workflows/sync-cnx.yml';
+  const encodedPath = workflowPath.split('/').map((p) => encodeURIComponent(p)).join('/');
+  const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents`;
+
   try {
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/sync-cnx.yml`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      }
-    );
+    const checkRes = await fetch(`${apiBase}/${encodedPath}?ref=${branch}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
 
     if (checkRes.ok) {
       return { ok: true, status: 'already_exists' };
@@ -64,23 +65,21 @@ export async function ensureWorkflow(): Promise<EnsureWorkflowResult> {
     const content = await contentRes.text();
 
     const encoded = Buffer.from(content, 'utf-8').toString('base64');
-    const createRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/.github/workflows/sync-cnx.yml`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: 'chore: adicionar workflow de atualização CNX',
-          content: encoded,
-          branch,
-        }),
-      }
-    );
+    const createRes = await fetch(`${apiBase}/${encodedPath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'chore: adicionar workflow de atualização CNX',
+        content: encoded,
+        branch,
+        committer: { name: 'CNX CMS', email: 'noreply@cnx.app' },
+      }),
+    });
 
     if (createRes.ok || createRes.status === 201) {
       return { ok: true, status: 'created' };

@@ -48,26 +48,40 @@ export default function SettingsAtualizacoes() {
 
     try {
       const res = await fetch('/api/admin/ensure-workflow', { method: 'POST' });
-      const data = await res.json();
+      let data: { success?: boolean; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        setSaveStatus('error');
+        setErrorMessage('Resposta inválida. Tente novamente.');
+        setAutoUpdateEnabled(false);
+        setLoading(false);
+        return;
+      }
 
       if (data.success) {
         setSaveStatus('success');
         await saveSettings(true);
       } else {
         setSaveStatus('error');
-        setErrorMessage(data.error || 'Erro desconhecido');
+        const err = data.error || 'Não foi possível ativar.';
+        setErrorMessage(
+          err.includes('GITHUB') || err.includes('variáveis')
+            ? 'Configure a conexão com o GitHub. Vá em Ajuda → Primeiros passos.'
+            : err
+        );
         setAutoUpdateEnabled(false);
       }
     } catch (e) {
       setSaveStatus('error');
-      setErrorMessage('Erro de rede. Tente novamente.');
+      setErrorMessage('Erro de conexão. Verifique a internet e tente novamente.');
       setAutoUpdateEnabled(false);
     } finally {
       setLoading(false);
       setTimeout(() => {
         setSaveStatus('idle');
         setErrorMessage('');
-      }, 5000);
+      }, 8000);
     }
   }
 
@@ -197,6 +211,19 @@ export default function SettingsAtualizacoes() {
           }}
         >
           ❌ {errorMessage}
+          {errorMessage.includes('Ajuda') && (
+            <a
+              href="/admin/ajuda"
+              style={{
+                display: 'block',
+                marginTop: '0.5rem',
+                color: '#fbbf24',
+                textDecoration: 'underline',
+              }}
+            >
+              Abrir Ajuda →
+            </a>
+          )}
         </div>
       )}
     </div>
