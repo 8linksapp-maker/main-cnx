@@ -11,7 +11,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import SettingsAI from '../../../components/admin/SettingsAI';
 import SettingsSEO from '../../../components/admin/SettingsSEO';
 import SettingsContato from '../../../components/admin/SettingsContato';
-import SettingsAtualizacoes from '../../../components/admin/SettingsAtualizacoes';
 ---
 
 <AdminLayout title="Configurações — CNX Agency Admin">
@@ -47,14 +46,6 @@ import SettingsAtualizacoes from '../../../components/admin/SettingsAtualizacoes
                 style="padding: 0.6rem 1.25rem; font-size: 0.875rem; font-weight: 600; border: none; background: none; cursor: pointer; color: #71717a; border-bottom: 2px solid transparent; margin-bottom: -1px;"
             >
                 📞 Contato
-            </button>
-            <button
-                data-tab="atualizacoes"
-                type="button"
-                class="config-tab"
-                style="padding: 0.6rem 1.25rem; font-size: 0.875rem; font-weight: 600; border: none; background: none; cursor: pointer; color: #71717a; border-bottom: 2px solid transparent; margin-bottom: -1px;"
-            >
-                🔄 Atualizações
             </button>
         </div>
 
@@ -109,19 +100,6 @@ import SettingsAtualizacoes from '../../../components/admin/SettingsAtualizacoes
                     </p>
                 </div>
                 <SettingsContato client:load />
-            </div>
-        </div>
-
-        <!-- Painel Atualizações -->
-        <div id="panel-atualizacoes" style="display: none;">
-            <div class="admin-card p-6">
-                <div style="margin-bottom: 1.5rem;">
-                    <h2 class="text-xl font-bold text-[#e5e5e5] mb-1">Atualizações</h2>
-                    <p class="text-sm text-[#a3a3a3]">
-                        Ative para receber as melhorias do template automaticamente.
-                    </p>
-                </div>
-                <SettingsAtualizacoes client:load />
             </div>
         </div>
 

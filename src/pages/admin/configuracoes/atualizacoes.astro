@@ -1,0 +1,29 @@
+---
+/**
+ * admin/configuracoes/atualizacoes.astro
+ *
+ * Página dedicada às Atualizações do template CNX.
+ * Permite ativar atualizações automáticas, configurar permissões GitHub
+ * e criar manualmente o workflow quando necessário.
+ * Separada de IA/SEO/Contato — apenas em Configurações.
+ */
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import SettingsAtualizacoes from '../../../components/admin/SettingsAtualizacoes';
+---
+
+<AdminLayout title="Atualizações — CNX Agency Admin">
+    <div class="max-w-3xl">
+        <div class="mb-6">
+            <a href="/admin/configuracoes" class="text-sm text-[#737373] hover:text-indigo-400 transition-colors inline-flex items-center gap-1 mb-4">
+                ← Voltar para Configurações
+            </a>
+            <h1 class="text-3xl font-heading font-bold text-[#e5e5e5] mb-2">Atualizações</h1>
+            <p class="text-[#a3a3a3] text-sm">Ative para receber as melhorias do template automaticamente.</p>
+        </div>
+
+        <div class="admin-card p-6">
+            <SettingsAtualizacoes client:load />
+        </div>
+    </div>
+</AdminLayout>

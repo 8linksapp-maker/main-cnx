@@ -4,6 +4,14 @@ Todas as mudanças relevantes do template são documentadas aqui.
 
 ---
 
+## [1.0.10] — 05/03/2026
+
+### Melhorias
+
+- **Atualizações** agora é uma página separada em Configurações (não mais aba junto com IA e SEO) — Configurações → Atualizações
+
+---
+
 ## [1.0.9] — 05/03/2026
 
 ### Melhorias
