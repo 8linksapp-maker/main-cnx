@@ -4,6 +4,15 @@ Todas as mudanças relevantes do template são documentadas aqui.
 
 ---
 
+## [1.0.14] — 06/03/2026
+
+### Melhorias
+
+- **Leads**: filtros (busca por nome/e-mail/telefone/mensagem, filtro por origem) e exclusão de leads com modal de confirmação
+- **Formulários de contato**: correção do erro "Unexpected identifier 'as'" (remoção de TypeScript dos scripts do navegador); feedback visual aprimorado (ícones ✅/❌, mensagens claras)
+
+---
+
 ## [1.0.13] — 06/03/2026
 
 ### Correções

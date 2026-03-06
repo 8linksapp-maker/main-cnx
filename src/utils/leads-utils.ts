@@ -98,3 +98,14 @@ export async function createLead(data: Omit<Lead, 'id' | 'createdAt'>): Promise<
 export async function listLeads(): Promise<Lead[]> {
     return readLeadsFile();
 }
+
+/**
+ * Remove um lead pelo id. Retorna true se removido com sucesso.
+ */
+export async function deleteLead(id: string): Promise<boolean> {
+    const leads = await readLeadsFile();
+    const idx = leads.findIndex((l) => l.id === id);
+    if (idx < 0) return false;
+    leads.splice(idx, 1);
+    return writeLeadsFile(leads);
+}

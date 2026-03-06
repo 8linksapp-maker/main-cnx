@@ -642,16 +642,16 @@ const accentRgb = hexToRgb(nicheColor.startsWith('#') ? nicheColor : '#2563eb');
     locationName: location?.name || '',
 }}>
     async function submitSidebarForm() {
-        const name  = (document.getElementById('sf-name')  as HTMLInputElement)?.value?.trim() || '';
-        const phone = (document.getElementById('sf-phone') as HTMLInputElement)?.value?.trim() || '';
-        const msg   = (document.getElementById('sf-msg')   as HTMLTextAreaElement)?.value?.trim() || '';
+        const name  = (document.getElementById('sf-name')?.value ?? '').toString().trim();
+        const phone = (document.getElementById('sf-phone')?.value ?? '').toString().trim();
+        const msg   = (document.getElementById('sf-msg')?.value ?? '').toString().trim();
 
-        const parts: string[] = [];
-        if (name)  parts.push(`Nome: ${name}`);
-        if (phone) parts.push(`Telefone: ${phone}`);
-        if (msg)   parts.push(`Mensagem: ${msg}`);
+        const parts = [];
+        if (name)  parts.push('Nome: ' + name);
+        if (phone) parts.push('Telefone: ' + phone);
+        if (msg)   parts.push('Mensagem: ' + msg);
 
-        const baseText = (document.getElementById('sf-btn-wa') as HTMLElement)?.closest('#sidebar-form')
+        const baseText = document.getElementById('sf-btn-wa')?.closest('#sidebar-form')
             ?.querySelector('textarea')?.placeholder || 'Gostaria de um orçamento';
 
         const text = parts.length > 0

@@ -264,14 +264,18 @@ const siteName = isLocal ? ((await readSingleton('home', 'local'))?.companyName 
             e.preventDefault();
             if (!form || !formMessage) return;
 
-            const name = (form.querySelector('[name="name"]') as HTMLInputElement)?.value?.trim() || '';
-            const email = (form.querySelector('[name="email"]') as HTMLInputElement)?.value?.trim() || '';
-            const subject = (form.querySelector('[name="subject"]') as HTMLInputElement)?.value?.trim() || '';
-            const message = (form.querySelector('[name="message"]') as HTMLTextAreaElement)?.value?.trim() || '';
+            const nameEl = form.querySelector('[name="name"]');
+            const emailEl = form.querySelector('[name="email"]');
+            const subjectEl = form.querySelector('[name="subject"]');
+            const messageEl = form.querySelector('[name="message"]');
+            const name = (nameEl?.value ?? '').toString().trim();
+            const email = (emailEl?.value ?? '').toString().trim();
+            const subject = (subjectEl?.value ?? '').toString().trim();
+            const message = (messageEl?.value ?? '').toString().trim();
 
             formMessage.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/40', 'bg-green-500/20', 'border-green-500/40', 'text-green-400');
             formMessage.style.display = 'block';
-            formMessage.textContent = 'Enviando...';
+            formMessage.innerHTML = '<span class="inline-flex items-center gap-2">⏳ Enviando sua mensagem...</span>';
             submitBtn?.setAttribute('disabled', 'true');
 
             try {
@@ -283,19 +287,19 @@ const siteName = isLocal ? ((await readSingleton('home', 'local'))?.companyName 
                 const data = await res.json();
 
                 if (data.success) {
-                    formMessage.textContent = successMessage || 'Mensagem enviada com sucesso!';
+                    formMessage.innerHTML = '<span class="inline-flex items-center gap-2">✅ ' + (successMessage || 'Mensagem enviada com sucesso! Recebemos seu contato e retornaremos em breve.') + '</span>';
                     formMessage.classList.add('bg-green-500/20', 'border', 'border-green-500/40', 'text-green-400');
                     form.reset();
                 } else {
-                    formMessage.textContent = data.error || 'Erro ao enviar. Tente novamente.';
+                    formMessage.innerHTML = '<span class="inline-flex items-center gap-2">❌ ' + (data.error || 'Erro ao enviar. Tente novamente.') + '</span>';
                     formMessage.classList.add('bg-red-500/20', 'border', 'border-red-500/40', 'text-red-400');
                 }
             } catch (err) {
-                formMessage.textContent = 'Erro de conexão. Tente novamente.';
+                formMessage.innerHTML = '<span class="inline-flex items-center gap-2">❌ Erro de conexão. Verifique sua internet e tente novamente.</span>';
                 formMessage.classList.add('bg-red-500/20', 'border', 'border-red-500/40', 'text-red-400');
             }
             submitBtn?.removeAttribute('disabled');
-            setTimeout(() => formMessage.classList.add('hidden'), 5000);
+            setTimeout(function() { formMessage.classList.add('hidden'); }, 6000);
         });
     </script>
 </MainLayout>

@@ -211,36 +211,39 @@ const waUrl    = whatsapp ? `https://wa.me/55${whatsapp}?text=${waMsg}` : '#';
         if (form && msgEl) {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const name = (form.querySelector('[name="name"]') as HTMLInputElement)?.value?.trim() || '';
-                const email = (form.querySelector('[name="email"]') as HTMLInputElement)?.value?.trim() || '';
-                const message = (form.querySelector('[name="message"]') as HTMLTextAreaElement)?.value?.trim() || '';
+                var nameEl = form.querySelector('[name="name"]');
+                var emailEl = form.querySelector('[name="email"]');
+                var messageEl = form.querySelector('[name="message"]');
+                var name = (nameEl && nameEl.value ? nameEl.value : '').toString().trim();
+                var email = (emailEl && emailEl.value ? emailEl.value : '').toString().trim();
+                var message = (messageEl && messageEl.value ? messageEl.value : '').toString().trim();
 
-                msgEl.textContent = 'Enviando...';
+                msgEl.innerHTML = '⏳ Enviando sua mensagem...';
                 msgEl.style.cssText = 'display:block; margin-top:1rem; padding:1rem; border-radius:10px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;';
                 submitBtn?.setAttribute('disabled', 'true');
 
                 try {
-                    const res = await fetch('/api/leads', {
+                    var res = await fetch('/api/leads', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email, message, source: 'local-contato' }),
+                        body: JSON.stringify({ name: name, email: email, message: message, source: 'local-contato' }),
                     });
-                    const data = await res.json();
+                    var data = await res.json();
 
                     if (data.success) {
-                        msgEl.textContent = formSuccessMessage;
+                        msgEl.innerHTML = '✅ ' + (formSuccessMessage || 'Mensagem enviada com sucesso! Recebemos seu contato e retornaremos em breve.');
                         msgEl.style.cssText = 'display:block; margin-top:1rem; padding:1rem; border-radius:10px; background:#dcfce7; color:#166534; border:1px solid #86efac;';
                         form.reset();
                     } else {
-                        msgEl.textContent = data.error || 'Erro ao enviar. Tente novamente.';
+                        msgEl.innerHTML = '❌ ' + (data.error || 'Erro ao enviar. Tente novamente.');
                         msgEl.style.cssText = 'display:block; margin-top:1rem; padding:1rem; border-radius:10px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;';
                     }
                 } catch (err) {
-                    msgEl.textContent = 'Erro de conexão. Tente novamente.';
+                    msgEl.innerHTML = '❌ Erro de conexão. Verifique sua internet e tente novamente.';
                     msgEl.style.cssText = 'display:block; margin-top:1rem; padding:1rem; border-radius:10px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;';
                 }
                 submitBtn?.removeAttribute('disabled');
-                setTimeout(() => { msgEl.style.display = 'none'; }, 5000);
+                setTimeout(function() { msgEl.style.display = 'none'; }, 6000);
             });
         }
     </script>
