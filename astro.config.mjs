@@ -20,6 +20,9 @@ export default defineConfig({
     redirects: {
         '/admin': '/',
         '/admin/[...all]': '/'
+    },
+    security: {
+        checkOrigin: false
     }
     // Reset Trigger: 2026-02-07 11:40
 });
