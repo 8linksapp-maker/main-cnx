@@ -253,5 +253,43 @@ const secondaryRGB = hexToRgb(secondaryColor);
             }
         })();
         </script>
+        <!-- Global Modal UI -->
+        <div id="cnx-confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
+            <div id="cnx-confirm-box" class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-all duration-300 border border-slate-100">
+                <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Atenção!</h3>
+                <p id="cnx-confirm-msg" class="text-slate-500 text-sm mb-6 leading-relaxed">Tem certeza que deseja continuar?</p>
+                <div class="flex items-center gap-3 w-full">
+                    <button id="cnx-confirm-cancel" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">Cancelar</button>
+                    <button id="cnx-confirm-accept" class="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-red-500/25">Confirmar</button>
+                </div>
+            </div>
+        </div>
+        <script is:inline>
+            window.cnxConfirm = function(message, onConfirm) {
+                var modal = document.getElementById('cnx-confirm-modal');
+                var box = document.getElementById('cnx-confirm-box');
+                var msgEl = document.getElementById('cnx-confirm-msg');
+                var cancelBtn = document.getElementById('cnx-confirm-cancel');
+                var acceptBtn = document.getElementById('cnx-confirm-accept');
+                if (!modal || !box || !msgEl || !cancelBtn || !acceptBtn) return;
+                msgEl.textContent = message;
+                modal.classList.remove('opacity-0', 'invisible');
+                box.classList.remove('scale-95');
+                var closeAndClean = function() {
+                    modal.classList.add('opacity-0', 'invisible');
+                    box.classList.add('scale-95');
+                    acceptBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                };
+                cancelBtn.onclick = closeAndClean;
+                acceptBtn.onclick = function() {
+                    closeAndClean();
+                    if (onConfirm) onConfirm();
+                };
+            };
+        </script>
     </body>
 </html>

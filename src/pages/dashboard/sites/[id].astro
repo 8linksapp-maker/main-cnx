@@ -279,7 +279,7 @@ const adminUrl = `https://${mainDomain}/admin`;
                             <h3 class="font-bold text-lg text-slate-800">Histórico de Deploys</h3>
                             <p class="text-sm text-slate-500">Últimas 10 atualizações e publicações que ocorreram no site.</p>
                         </div>
-                        <form method="POST" action={`/api/vercel/redeploy`} onSubmit="return confirm('Deseja agendar um novo deploy agora mesmo? O site ficará indisponível por alguns segundos enquanto reconstrói.');">
+                        <form method="POST" action={`/api/vercel/redeploy`} onsubmit="event.preventDefault(); window.cnxConfirm('Deseja agendar um novo deploy agora mesmo? O site ficará indisponível por alguns segundos enquanto reconstrói.', () => this.submit());">
                             <input type="hidden" name="integration_id" value={integrationId} />
                             <input type="hidden" name="project_id" value={id} />
                             <input type="hidden" name="deployment_id" value={deployments[0]?.uid || ''} />
@@ -538,7 +538,7 @@ const adminUrl = `https://${mainDomain}/admin`;
                                                 </div>
                                             </div>
                                             
-                                            <form method="POST" action={`/api/vercel/domains/remove`} onSubmit={`return confirm("CUIDADO: Remover '${dom.name}' tirará o site do ar imediatamente. Confirma?");`}>
+                                            <form method="POST" action={`/api/vercel/domains/remove`} onsubmit={`event.preventDefault(); window.cnxConfirm("CUIDADO: Remover '${dom.name}' tirará o site do ar imediatamente. Confirma?", () => this.submit());`}>
                                                 <input type="hidden" name="integration_id" value={integrationId} />
                                                 <input type="hidden" name="project_id" value={id} />
                                                 <input type="hidden" name="domain_name" value={dom.name} />
@@ -868,11 +868,6 @@ const adminUrl = `https://${mainDomain}/admin`;
                         // Se aceitar, envia o formulário real
                         (form as HTMLFormElement).submit();
                     });
-                } else {
-                    // Fallback se algo no JS quebrar
-                    if (confirm(message)) {
-                        (form as HTMLFormElement).submit();
-                    }
                 }
             });
         });

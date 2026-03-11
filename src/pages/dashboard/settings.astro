@@ -254,7 +254,7 @@ if (Astro.request.method === "POST") {
                                             <p class="text-xs text-slate-500 tracking-wider">Token: {integration.token.slice(0, 5)}••••••••</p>
                                         </div>
                                     </div>
-                                    <form method="POST" onsubmit="return confirm('Tem certeza que deseja remover esta conexão? A Visão Geral perderá acesso a estes sites.');">
+                                    <form method="POST" onsubmit="event.preventDefault(); window.cnxConfirm('Tem certeza que deseja remover esta conexão? A Visão Geral perderá acesso a estes sites.', () => this.submit());">
                                         <input type="hidden" name="action" value="delete_vercel" />
                                         <input type="hidden" name="integration_id" value={integration.id} />
                                         <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remover Conexão">

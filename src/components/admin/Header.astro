@@ -259,7 +259,11 @@ const isAdmin = user?.adminRole === 'admin';
             if (dialog) {
                 dialog.showModal();
             } else {
-                if (window.confirm(msg)) doSwitchMode(mode);
+                if (window.cnxConfirm) {
+                    window.cnxConfirm(msg, function() { doSwitchMode(mode); });
+                } else {
+                    doSwitchMode(mode);
+                }
             }
         }
 

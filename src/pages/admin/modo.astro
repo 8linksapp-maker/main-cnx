@@ -202,7 +202,11 @@ const currentMode = getAdminSiteMode(Astro.cookies, settings);
             if (dialog) {
                 dialog.showModal();
             } else {
-                if (window.confirm(msg)) doSave();
+                if (window.cnxConfirm) {
+                    window.cnxConfirm(msg, function() { doSave(); });
+                } else {
+                    doSave();
+                }
             }
         });
 

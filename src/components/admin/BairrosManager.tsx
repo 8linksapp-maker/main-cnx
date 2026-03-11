@@ -31,7 +31,7 @@ function slugify(text: string): string {
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-const UF_LIST = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+const UF_LIST = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
 const NEW_CITY_VALUE = '__nova_cidade__';
 
@@ -40,28 +40,28 @@ interface Props {
 }
 
 export default function BairrosManager({ onLocationsUpdated }: Props) {
-    const [locations, setLocations]   = useState<LocationData[]>([]);
-    const [loading, setLoading]       = useState(true);
-    const [msg, setMsg]               = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
+    const [locations, setLocations] = useState<LocationData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [msg, setMsg] = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
 
     // Painel unificado: 'add' | 'bulk'
-    const [panel, setPanel]           = useState<'add' | 'bulk'>('add');
+    const [panel, setPanel] = useState<'add' | 'bulk'>('add');
 
     // Cidade selecionada (ou NEW_CITY_VALUE para nova)
     const [selectedCity, setSelectedCity] = useState('');
-    const [bairroNames, setBairroNames]   = useState('');
+    const [bairroNames, setBairroNames] = useState('');
     const [addingBairros, setAddingBairros] = useState(false);
 
     // Nova cidade (inline no seletor)
-    const [newCityName, setNewCityName]   = useState('');
+    const [newCityName, setNewCityName] = useState('');
     const [newCityState, setNewCityState] = useState('SP');
-    const [addingCity, setAddingCity]     = useState(false);
+    const [addingCity, setAddingCity] = useState(false);
 
     // Bulk
-    const [bulkCity, setBulkCity]     = useState('');
-    const [bulkText, setBulkText]     = useState('');
-    const [bulkState, setBulkState]   = useState('SP');
-    const [importing, setImporting]   = useState(false);
+    const [bulkCity, setBulkCity] = useState('');
+    const [bulkText, setBulkText] = useState('');
+    const [bulkState, setBulkState] = useState('SP');
+    const [importing, setImporting] = useState(false);
 
     const [expandedCity, setExpandedCity] = useState<string | null>(null);
     const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
@@ -71,7 +71,7 @@ export default function BairrosManager({ onLocationsUpdated }: Props) {
     const fetchLocations = useCallback(async () => {
         setLoading(true);
         try {
-            const res  = await fetch('/api/admin/locations');
+            const res = await fetch('/api/admin/locations');
             const data = await res.json();
             if (data.success) {
                 const locs = data.locations || [];
@@ -159,7 +159,7 @@ export default function BairrosManager({ onLocationsUpdated }: Props) {
 
             const cityData = locations.find(l => (l.city || l.name) === city) || locations.find(l => l.name === city);
             const citySlug = cityData?.citySlug || slugify(city);
-            const state   = cityData?.state || newCityState || 'SP';
+            const state = cityData?.state || newCityState || 'SP';
 
             const parsed = lines.map(name => ({
                 name, slug: slugify(name), state, city, citySlug, type: 'bairro' as const,
@@ -216,7 +216,7 @@ export default function BairrosManager({ onLocationsUpdated }: Props) {
 
             const cityData = locations.find(l => (l.city || l.name) === city) || locations.find(l => l.name === city);
             const citySlug = cityData?.citySlug || slugify(city);
-            const state   = bulkState.toUpperCase();
+            const state = bulkState.toUpperCase();
 
             const parsed = lines.map(line => {
                 const parts = line.split(',').map(p => p.trim());
@@ -258,14 +258,21 @@ export default function BairrosManager({ onLocationsUpdated }: Props) {
         await fetchLocations();
     }
 
-    async function handleDelete(slug: string, name: string) {
-        if (!confirm(`Remover "${name}"?`)) return;
-        setDeletingSlug(slug);
-        try {
-            await fetch(`/api/admin/locations/${slug}`, { method: 'DELETE' });
-            await fetchLocations();
-        } finally {
-            setDeletingSlug(null);
+    function handleDelete(slug: string, name: string) {
+        const doDelete = async () => {
+            setDeletingSlug(slug);
+            try {
+                await fetch(`/api/admin/locations/${slug}`, { method: 'DELETE' });
+                await fetchLocations();
+            } finally {
+                setDeletingSlug(null);
+            }
+        };
+
+        if (typeof window !== 'undefined' && (window as any).cnxConfirm) {
+            (window as any).cnxConfirm(`Remover "${name}"?`, doDelete);
+        } else {
+            doDelete();
         }
     }
 
