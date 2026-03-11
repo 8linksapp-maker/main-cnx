@@ -1,187 +1,249 @@
-# Página de Vendas do Curso - Conteúdo Editável
+# Landing Page de Vendas - Plataforma CNX
+# Conteúdo Editável - Foco em DOR (WordPress vs JAMstack)
+
+# Nome do curso (usado no título da página, oferta, etc.)
+courseName: "Meu Site com IA"
 
 # 1. HERO SECTION
-heroBadge: "🚀 A NOVA ERA DA CRIAÇÃO DE SITES"
-heroTitleLine1: "CANSADO DE PAGAR HOSPEDAGEM CARA E TER SITE LENTO?"
-heroTitleHighlight: "APRENDA A CRIAR SaaITES COM IA"
-heroTitleLine2: "Sem código, sem custos, em minutos"
-heroSubtitle: "Aprenda a usar nosso CMS moderno para criar sites profissionais com IA, sem conhecimento técnico. Hospedagem 100% gratuita, site 10x mais rápido que WordPress."
-heroCtaText: "QUERO CRIAR MEU SITE AGORA"
+heroBadge: "IA · 5 MINUTOS · ZERO HOSPEDAGEM"
+heroTitleLine1: "Como criar **site ou blog** com **IA** em **5 minutos** — sem wordpress, sem hospedagem, sem código. **A IA faz todo o trabalho duro.**"
+heroTitleHighlight: ""
+heroTitleLine2: ""
+heroSubtitle: "Crie, publique e ranqueie."
+heroCtaText: "CRIAR SITE OTIMIZADO COM IA"
 heroCtaUrl: "#oferta"
-heroFeatures: "✅ Sem código | ✅ Hospedagem gratuita | ✅ Site no ar em minutos"
+heroFeatures: "Rápido · Grátis · No topo"
 
 # 2. O VELHO CAMINHO VS O NOVO CAMINHO
 oldVsNewTitle: "O Velho Caminho vs. O Novo Caminho"
-oldVsNewSubtitle: "Veja a diferença entre contratar desenvolvedor e pagar hospedagem vs criar seu próprio site com nosso curso"
-oldPathTitle: "O Velho Caminho (Tradicional)"
+oldVsNewSubtitle: "Por que seguir pagando caro e sofrendo com lentidão se existe uma alternativa mais rápida e **de graça**?"
+oldPathTitle: "O Velho Caminho (WordPress)"
 oldPathItems:
-  - "Contratar desenvolvedor (R$ 2.000-10.000)"
-  - "Pagar hospedagem (R$ 240-2.400/ano)"
-  - "Site lento que não ranqueia"
-  - "Precisa saber programar"
-  - "Manutenção constante"
-newPathTitle: "O Novo Caminho (Curso + CMS)"
+  - "Site lento. Google penaliza."
+  - "Você paga hospedagem todo mês."
+  - "Plugins quebram e o site cai."
+  - "Horas em atualizações e medo de hack."
+  - "Quanto mais tráfego, mais caro fica."
+  - "Seu conteúdo merece mais do que isso."
+newPathTitle: "O Novo Caminho (JAMstack)"
 newPathItems:
-  - "Criar site sozinho com o curso"
-  - "Hospedagem 100% gratuita (Cloudflare)"
-  - "Site 10x mais rápido que WordPress"
-  - "Sem código, interface visual"
-  - "Deploy automático, zero manutenção"
+  - "Mais visibilidade no Google — site rápido sobe de posição e traz mais visitantes."
+  - "Dinheiro que sobra — sem hospedagem cara; você decide onde investir."
+  - "Site no ar, sem sustos — nada de plugin quebrando ou site caindo no pior momento."
+  - "Site que trabalha por você — não fica refém de manutenção nem de susto."
+  - "Investimento que faz sentido — dinheiro em o que traz retorno, não em servidor."
+  - "Conteúdo que converte — a página entrega o que você queria desde o início."
 
 # 3. A PONTE DA EPIFANIA
-epiphanyTitle: "O Erro de Anos que me levou a criar este curso"
-epiphanyContent: "Eu também já sofri com WordPress. Sites lentos, hospedagem cara, plugins quebrando, atualizações que davam problema. Foi quando descobri o JAMStack e criei este CMS que resolve tudo isso.\n\nAgora você pode aprender a usar essa mesma ferramenta para criar seus próprios sites, sem precisar de conhecimento técnico."
-epiphanyQuote: "Se eu consegui criar um CMS que resolve isso, você consegue usar ele para criar seu site"
-epiphanyStats:
-  - number: "50+"
-    label: "Sites Criados"
-    icon: "🚀"
-  - number: "R$ 50k+"
-    label: "Economizados"
-    icon: "💰"
+epiphanyTitle: "A tendência que já domina a gringa — e que eu trouxe há 2 anos. Agora não dá mais para ficar no WordPress."
+epiphanyContent: |-
+  Em 2019 me mudei para a Tailândia — capital mundial do SEO. Participo de todos os grandes eventos do setor no mundo e sou administrador da maior comunidade de SEO do planeta, a de Chiang Mai.
 
-# 4. MECANISMO ÚNICO (Módulos do Curso)
-mechanismTitle: "O Que Você Vai Aprender no Curso"
+  É nesse ambiente que eu vivo, aprendo e aplico primeiro.
+
+  **Há 2 anos** eu vi onde o jogo ia: WordPress não era mais opção para quem quer site rápido, barato e que ranqueia. Comecei a migrar **minha estrutura, a dos meus clientes e a dos meus mentorados.**
+
+  Hoje eu já uso e domino o que a gringa faz: site ou blog em minutos, com IA, sem código e sem custo de hospedagem.
+
+  Agora chegou no limite. **Não tem como manter WordPress de forma nenhuma.** Quem ainda fica preso paga caro, sofre com lentidão e fica pra trás no Google.
+
+  A tendência que já rola lá fora — e que eu trago e ensino — é esta:
+
+  - Site ou blog no ar em minutos, com IA
+  - Zero WordPress, zero mensalidade, zero código
+  - SEO que o Google premia
+  - Você cria, publica e ranqueia sem depender de desenvolvedor
+
+  Eu sou quem está na frente: na capital do SEO, nos eventos globais, na maior comunidade do mundo. **É essa autoridade que traz pra você o que já uso e domino há 2 anos.**
+epiphanyQuote: "Não tem como manter WordPress de forma nenhuma. A tendência que já domina a gringa eu trago e ensino — porque já uso e domino."
+epiphanyStats:
+  - number: "2 anos"
+    label: "Migrando sites, clientes e mentorados"
+    icon: "⏱️"
+  - number: "2019"
+    label: "Tailândia — capital mundial do SEO"
+    icon: "🌏"
+  - number: "1"
+    label: "Maior comunidade de SEO do mundo (Chiang Mai)"
+    icon: "👥"
+  - number: "100%"
+    label: "Grandes eventos globais de SEO"
+    icon: "🎯"
+epiphanyImage: "/images/bruno-epiphany.png"
+
+# 4. MECANISMO ÚNICO
+mechanismTitle: "O sistema em 3 pilares: rápido, de graça e com IA"
 mechanismItems:
   - number: "01"
-    icon: "⚙️"
-    title: "Setup e Configuração"
-    description: "Como configurar o CMS em 10 minutos. Tudo passo a passo, sem complicação."
+    icon: "⚡"
+    title: "Site que o Google posiciona"
+    description: "Site que carrega na hora. O Google prioriza página rápida — e o sistema entrega isso por padrão, sem você precisar configurar nada."
   - number: "02"
-    icon: "✍️"
-    title: "Criar Conteúdo"
-    description: "Editor visual para criar posts e páginas. Sem código, igual WordPress, mas melhor."
+    icon: "☁️"
+    title: "Hospedagem de graça"
+    description: "Nada de R$ 200/mês. Seu site fica na nuvem, disponível o tempo todo, sem conta de hospedagem para pagar."
   - number: "03"
-    icon: "🎨"
-    title: "Personalizar Design"
-    description: "Sistema de temas, cores e layout. Tudo visual, sem escrever CSS."
-  - number: "04"
-    icon: "🚀"
-    title: "Colocar no Ar"
-    description: "Deploy automático no Cloudflare. Site no ar em segundos, gratuito para sempre."
-mechanismFooter: "Tudo isso sem escrever uma linha de código"
+    icon: "🤖"
+    title: "CMS + IA: você só cria, o resto o sistema faz"
+    description: "Um CMS simples de usar. Você cria e edita; a IA ajuda no conteúdo e na estrutura. Sem código, sem plugin, sem dor de cabeça."
+mechanismFooter: "Quando os 3 pilares trabalham juntos: site rápido, custo zero e você no controle. É esse sistema que você aprende a usar."
 
-# 5. DEMONSTRAÇÃO TÉCNICA
-demoTitle: "Veja Como é Simples Criar um Site"
-demoDescription: "Assista ao vídeo e veja como é fácil criar um site completo usando nosso CMS. Em minutos você terá um site profissional no ar."
+# 5. O QUE VOCÊ CONSEGUE (ex-Demonstração Técnica)
+demoTitle: "O que você consegue com o sistema"
+demoDescription: "Quando você usa o sistema que ensino, é isso que você tem na mão:"
 demoVideoUrl: ""
+demoImage: ""
 demoFeatures:
   - icon: "⚡"
-    title: "Editor Visual"
-    description: "Igual WordPress, mas melhor. Interface simples e intuitiva."
-  - icon: "🎨"
-    title: "Temas Prontos"
-    description: "4 layouts diferentes para escolher. Personalize cores e estilo."
-  - icon: "🚀"
-    title: "Deploy Automático"
-    description: "1 clique e seu site está no ar. Deploy instantâneo."
+    title: "Site ou blog no ar em minutos"
+    description: "Sem esperar dias ou depender de desenvolvedor. Você cria e publica."
+  - icon: "🤖"
+    title: "Conteúdo com ajuda da IA, sem código"
+    description: "A IA entra no conteúdo e na estrutura. Você só edita e aprova."
+  - icon: "✏️"
+    title: "Publicar e atualizar quando quiser"
+    description: "CMS simples. Você manda e o site atualiza. Sem plugin, sem susto."
   - icon: "💰"
-    title: "Zero Custos"
-    description: "Hospedagem 100% gratuita. Sem custos recorrentes."
+    title: "Zero mensalidade de hospedagem"
+    description: "Seu site na nuvem, disponível 24/7, sem conta de hospedagem para pagar."
 
 # 6. O CAMINHO COMPLETO (Processo do Curso)
 pathTitle: "Sua Jornada do Zero ao Site no Ar"
-pathSubtitle: "Siga o passo a passo do curso e tenha seu site profissional no ar em horas, não dias ou semanas."
+pathSubtitle: "Passo a passo do curso: em minutos você tem site no ar, com IA e sem código."
 pathSteps:
   - number: "01"
     icon: "📚"
     title: "Entender o CMS"
-    description: "Aprenda como funciona o CMS e por que ele é melhor que WordPress."
+    description: "Como o sistema funciona e por que é rápido e sem hospedagem paga."
   - number: "02"
     icon: "⚙️"
-    title: "Configurar Conta"
-    description: "Configure sua conta no GitHub e Cloudflare. Tudo gratuito."
+    title: "Preparar sua conta"
+    description: "Tudo gratuito, poucos cliques."
   - number: "03"
-    icon: "✍️"
-    title: "Criar Primeiro Post"
-    description: "Crie seu primeiro post/blog usando o editor visual."
+    icon: "🤖"
+    title: "Criar seu primeiro conteúdo com IA"
+    description: "Você escreve ou usa a IA; o CMS publica."
   - number: "04"
     icon: "🎨"
-    title: "Personalizar Design"
-    description: "Escolha um tema e personalize cores e layout."
+    title: "Ajustar o visual"
+    description: "Escolher estilo e deixar do seu jeito."
   - number: "05"
     icon: "🚀"
-    title: "Fazer Deploy"
-    description: "Coloque seu site no ar com 1 clique. Deploy automático."
-  - number: "06"
-    icon: "🤖"
-    title: "Usar IA para Conteúdo"
-    description: "Aprenda a usar IA para criar conteúdo automaticamente (bônus)."
+    title: "Publicar e deixar no ar"
+    description: "Um clique e o site está no ar, sem mensalidade."
 
-# 7. DEPOIMENTOS/PROVA SOCIAL
-testimonialsTitle: "O Que Nossos Alunos Estão Dizendo"
-testimonialsSubtitle: "Resultados reais de quem fez o curso e criou seu site"
+# 7. DEPOIMENTOS/PROVA SOCIAL (oculta se showTestimonials: false)
+showTestimonials: false
+testimonialsTitle: "O Que Nossos Clientes Estão Dizendo"
+testimonialsSubtitle: "Resultados reais de quem migrou do WordPress para JAMstack e viu o ranqueamento melhorar"
 testimonials:
-  - name: "Maria Silva"
-    role: "Empreendedora"
+  - name: "Empresário Digital"
+    role: "E-commerce"
     rating: "★★★★★"
-    text: "Criei meu blog em 1 hora seguindo o curso. Economizei R$ 2.400/ano em hospedagem. Site 10x mais rápido que meu WordPress antigo!"
-  - name: "João Santos"
+    text: "Meu site WordPress estava na página 3 do Google. Migrei para JAMstack e em 2 meses estava na primeira página. Performance incrível! Economizei R$ 2.400/ano em hospedagem."
+  - name: "Agência Digital"
+    role: "Agência"
+    rating: "★★★★★"
+    text: "Zero custo de hospedagem. Site 10x mais rápido. O Google adorou. Por que não fizemos isso antes? Migramos 15 sites de clientes e todos melhoraram no ranqueamento."
+  - name: "Desenvolvedor"
     role: "Freelancer"
     rating: "★★★★★"
-    text: "Interface mais simples que WordPress, resultado profissional. Consegui criar sites para meus clientes muito mais rápido."
-  - name: "Ana Costa"
-    role: "Empresária"
-    rating: "★★★★★"
-    text: "Finalmente consegui ter um site rápido e profissional sem depender de desenvolvedor. O curso é completo e fácil de seguir."
+    text: "WordPress era um pesadelo. Plugins quebrando, site lento, hospedagem cara. JAMstack mudou tudo. Agora entrego sites que carregam em 0.3s e meus clientes amam."
 
 # 8. A OFERTA
-offerTitle: "O Que Você Recebe no Curso"
+offerTitle: "O que você recebe no Meu Site com IA"
 offerItems:
-  - title: "Curso Completo"
-    description: "Vídeo-aulas gravadas + aulas ao vivo. Acesso vitalício."
-  - title: "Acesso ao CMS CNX"
-    description: "Ferramenta completa para criar sites. Sem limites."
-  - title: "4 Temas Prontos"
-    description: "Layouts profissionais para usar imediatamente."
-  - title: "Suporte Durante o Curso"
-    description: "Tire suas dúvidas e receba ajuda quando precisar."
-  - title: "Comunidade de Alunos"
-    description: "Grupo exclusivo para trocar experiências e dicas."
-offerBadge: "🎯 TUDO QUE VOCÊ PRECISA PARA CRIAR SEU SITE"
+  - title: "Módulo 1 — Escolhendo seu tipo de site ou blog"
+    description: "Defina o que você quer construir: blog, site institucional, portfólio ou loja."
+    image: "/images/modulo-1.png"
+  - title: "Módulo 2 — Site no ar em 5 minutos com IA"
+    description: "Do zero ao site publicado usando o CMS e a IA, sem código."
+    image: "/images/modulo-2.png"
+  - title: "Módulo 3 — SEO com IA para ranquear no Google"
+    description: "Otimize títulos, descrições e estrutura com a IA. O Google premia."
+    image: "/images/modulo-3.png"
+  - title: "Módulo 4 — Personalizando design e conteúdo"
+    description: "Deixe do seu jeito: visual e textos, com a IA ajudando na coerência."
+    image: "/images/modulo-4.png"
+  - title: "Módulo 5 — Publicando sem custo de hospedagem"
+    description: "Seu site no ar de graça, sem mensalidade. Para sempre."
+    image: "/images/modulo-5.png"
+  - title: "Módulo 6 — Mantendo e escalando com IA"
+    description: "Atualize e crie novas páginas e posts com a IA fazendo o trabalho pesado."
+    image: "/images/modulo-6.png"
+offerBadge: "⚡ PREÇO DE PRÉ-VENDA"
+offerPriceAnchor: "7.997"
 offerPriceTitle: "Investimento"
-offerPriceSubtitle: "Acesso completo ao curso"
-offerPrice: "R$ 997"
+offerPriceParcelas: "12"
+offerPriceParcelaValor: "103,11"
+offerPriceAvista: "997"
+offerPriceSubtitle: "Preço de lançamento por tempo limitado."
+offerPriceFull: "997"
 offerCtaText: "QUERO MEU ACESSO AGORA"
-offerCtaUrl: "/contato"
+offerCtaUrl: "https://pay.kiwify.com.br/kqtFZQk"
 offerBonuses:
-  - title: "Bônus: Como Usar IA para Criar Conteúdo"
-    description: "Aprenda a usar inteligência artificial para gerar conteúdo automaticamente."
+  - title: "Ferramenta de IA para postagem de blogs"
+    description: "Use a IA para criar e publicar posts no seu blog de forma rápida e otimizada."
     icon: "🤖"
-  - title: "Bônus: Migração do WordPress"
-    description: "Módulo completo ensinando a migrar seu site WordPress para o novo CMS."
+    value: "1.997"
+  - title: "Mentoria semanal ao vivo"
+    description: "Aulas ao vivo para tirar dúvidas, ver casos e acompanhar sua evolução."
+    icon: "📺"
+    value: "2.497"
+  - title: "Grupo no WhatsApp para tirar dúvidas"
+    description: "Acesso ao grupo exclusivo: suporte e troca com outros alunos em tempo real."
+    icon: "💬"
+    value: "997"
+  - title: "Ferramenta para migração de blogs WordPress para JAMstack"
+    description: "Migre seu conteúdo do WordPress para o novo sistema sem perder posts nem SEO."
     icon: "🔄"
+    value: "2.506"
 
 # 9. GARANTIA
-guaranteeTitle: "O Risco Está 100% Nas Minhas Costas"
-guaranteeText: "Teste o curso por 7 dias. Se não conseguir criar seu site seguindo as aulas, devolvo 100% do seu dinheiro. Sem perguntas, sem burocracia."
-guaranteeBadge: "Garantia Incondicional"
+guaranteeTitle: "O risco está 100% nas minhas costas."
+guaranteeText: "Teste o Meu Site com IA por 7 dias. Se não gostar, devolvo 100% do seu investimento. Sem perguntas, sem burocracia."
+guaranteeBadges:
+  - label: "7 dias"
+    icon: "🛡️"
+    description: "Teste sem compromisso."
+  - label: "100% devolvido"
+    icon: "💰"
+    description: "Reembolso integral."
+  - label: "Sem burocracia"
+    icon: "✅"
+    description: "Sem perguntas."
 guaranteeDays: "7"
 
 # 10. FAQ
 faqTitle: "Suas dúvidas respondidas"
 faqItems:
-  - question: "Preciso saber programar?"
-    answer: "Não! Tudo é visual. O curso ensina a usar o CMS através de interface gráfica, igual WordPress, mas muito mais simples."
-  - question: "Quanto tempo leva para criar um site?"
-    answer: "Seguindo o curso, você consegue ter um site no ar em 1-2 horas. O curso completo tem cerca de 6 horas de conteúdo."
-  - question: "A hospedagem é realmente gratuita?"
-    answer: "Sim! Cloudflare Pages oferece hospedagem gratuita na Edge. Seu site será servido de servidores distribuídos globalmente, sem custos."
-  - question: "E se eu tiver dúvidas?"
-    answer: "Você terá suporte durante o curso através da comunidade de alunos e também em aulas ao vivo onde pode tirar dúvidas em tempo real."
-  - question: "Funciona para blog e site institucional?"
-    answer: "Sim! O CMS funciona perfeitamente para blogs, sites institucionais, portfólios e landing pages."
-  - question: "Posso migrar meu WordPress?"
-    answer: "Sim! Temos um módulo bônus completo ensinando a migrar conteúdo do WordPress para o novo CMS."
-  - question: "O curso é para sempre?"
-    answer: "Sim! Você tem acesso vitalício ao curso. Pode assistir quantas vezes quiser, quando quiser."
+  - question: "Por que JAMstack é melhor que WordPress para SEO?"
+    answer: >-
+      JAMstack gera sites estáticos pré-renderizados que carregam instantaneamente. O Google Core Web Vitals premia velocidade, 
+      e sites JAMstack consistentemente superam WordPress em performance, resultando em melhor ranqueamento.
+  - question: "Como a hospedagem pode ser gratuita?"
+    answer: >-
+      Cloudflare Workers oferece hospedagem gratuita na Edge para sites estáticos. Seu site é servido de servidores distribuídos 
+      globalmente, com zero custo de infraestrutura. WordPress requer servidores caros que você precisa pagar mensalmente.
+  - question: "Preciso saber programar para usar JAMstack?"
+    answer: >-
+      Com Keystatic CMS, você edita conteúdo sem código, igual WordPress. A diferença é que o site gerado é estático e super rápido, 
+      enquanto WordPress precisa de PHP e banco de dados que tornam tudo lento.
+  - question: "Quanto tempo para ver resultados no Google?"
+    answer: >-
+      Sites JAMstack geralmente começam a ranquear melhor em 2-4 semanas devido à performance superior. WordPress pode levar meses 
+      para melhorar porque o Google penaliza sites lentos.
+  - question: "Posso migrar meu WordPress existente?"
+    answer: "Sim! Oferecemos migração completa do WordPress para JAMstack, incluindo todo o conteúdo, posts e páginas."
+  - question: "E se eu precisar de ajuda?"
+    answer: "Oferecemos suporte por 30 dias durante a migração e configuração inicial. Você não fica sozinho."
 
 # 11. A ESCOLHA É SUA
 choiceTitle: "A Escolha é Sua"
 choiceOption1Title: "Opção 1"
-choiceOption1Text: "Continuar pagando hospedagem cara, site lento, dependendo de desenvolvedor para cada mudança."
+choiceOption1Text: "Continuar com WordPress, pagando hospedagem cara e lutando para ranquear na página 2 do Google."
 choiceOption2Title: "Opção 2"
-choiceOption2Text: "Criar seu site hoje, **zero custos**, site rápido, **independência total**. Aprenda uma vez, use para sempre."
-choiceCtaText: "QUERO CRIAR MEU SITE AGORA"
-choiceCtaUrl: "/contato"
-choiceFooter: "Comece hoje. Site no ar em horas. Economia para sempre."
+choiceOption2Text: "Migrar para JAMstack e construir um site que ranqueia no topo do Google com custo zero de hospedagem."
+choiceCtaText: "QUERO DOMINAR O GOOGLE AGORA"
+choiceCtaUrl: "https://pay.kiwify.com.br/kqtFZQk"
+choiceFooter: "Migração completa do WordPress para JAMstack"

@@ -12,14 +12,10 @@ import { readSingleton } from '../../../utils/singleton-utils';
 const { activeThemeId } = Astro.props;
 
 const menuData   = await readSingleton('menu', activeThemeId);
-const menuItems  = menuData?.items  || [];
 const logoType   = menuData?.logoType  || 'text';
-const logoText   = menuData?.logoText  || 'CNX.AGENCY';
+const logoText   = 'Main Astro';
 const logoImage  = menuData?.logoImage || '';
 
-if (!menuData || !menuItems || menuItems.length === 0) {
-    console.warn('⚠️ Menu não encontrado ou vazio. Verifique src/content/singletons/classic/menu.yaml');
-}
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md" style="background: var(--blog-nav-bg); border-bottom: 1px solid var(--blog-nav-border);">
@@ -39,20 +35,6 @@ if (!menuData || !menuItems || menuItems.length === 0) {
             )}
         </a>
         <div class="hidden md:flex gap-10 text-sm font-bold uppercase tracking-widest items-center" style="color: var(--blog-text);">
-            {menuItems.length > 0 ? (
-                menuItems.map((item: any) => (
-                    <a 
-                        href={item.href || '#'} 
-                        target={item.target || '_self'}
-                        class="hover:text-primary transition-colors"
-                    >
-                        {item.icon && <span class="mr-1">{item.icon}</span>}
-                        {item.label || 'Sem Label'}
-                    </a>
-                ))
-            ) : (
-                <span class="text-xs" style="color: var(--blog-text-subtle);">Menu não configurado</span>
-            )}
             <a href="/login" class="ml-4 px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25">
                 Login / Painel
             </a>
@@ -77,21 +59,6 @@ if (!menuData || !menuItems || menuItems.length === 0) {
             style="background: var(--blog-mob-bg); border-top: 1px solid var(--blog-mob-border);"
         >
             <div class="flex flex-col gap-4">
-                {menuItems.length > 0 ? (
-                    menuItems.map((item: any) => (
-                        <a 
-                            href={item.href || '#'} 
-                            target={item.target || '_self'}
-                            class="hover:text-primary transition-colors py-2"
-                            style="color: var(--blog-text);"
-                        >
-                            {item.icon && <span class="mr-2">{item.icon}</span>}
-                            {item.label || 'Sem Label'}
-                        </a>
-                    ))
-                ) : (
-                    <span class="text-xs" style="color: var(--blog-text-subtle);">Menu não configurado</span>
-                )}
                 <a href="/login" class="w-full text-center py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors mt-2 shadow-lg shadow-primary/25">
                     Login / Painel
                 </a>

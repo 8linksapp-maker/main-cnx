@@ -12,7 +12,7 @@ import '../styles/global.css';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Login | CNX SaaS</title>
+    <title>Login | Main Astro</title>
 </head>
 <body class="min-h-screen font-sans antialiased text-slate-800 bg-gradient-to-b from-slate-50 via-white to-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
@@ -20,7 +20,7 @@ import '../styles/global.css';
             Acesse sua conta
         </h2>
         <p class="mt-2 text-center text-sm text-slate-600">
-            Ou <button id="toggle-mode-btn" class="font-medium text-violet-600 hover:text-violet-500">crie sua conta grátis</button>
+            Esqueceu a senha? <button id="toggle-mode-btn" type="button" class="font-medium text-violet-600 hover:text-violet-500">Recupere aqui</button>
         </p>
     </div>
 
@@ -35,10 +35,10 @@ import '../styles/global.css';
                     </div>
                 </div>
 
-                <div>
+                <div id="password-container">
                     <label for="password" class="block text-sm font-medium text-slate-700">Senha</label>
                     <div class="mt-1">
-                        <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm">
+                        <input id="password" name="password" type="password" autocomplete="current-password" class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm">
                     </div>
                 </div>
 
@@ -79,16 +79,28 @@ import '../styles/global.css';
         }
         checkSession();
 
-        // UI Toggle Login / Cadastro
+        // UI Toggle Login / Recuperar Senha
+        const passwordContainer = document.getElementById('password-container');
+
         if (toggleBtn) {
             toggleBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 isLoginMode = !isLoginMode;
-                toggleBtn.textContent = isLoginMode ? "crie sua conta grátis" : "faça login";
-                if(submitBtn) submitBtn.textContent = isLoginMode ? "Entrar" : "Criar Conta";
+                toggleBtn.textContent = isLoginMode ? "Recupere aqui" : "fazer login";
+                if(submitBtn) submitBtn.textContent = isLoginMode ? "Entrar" : "Enviar link de recuperação";
                 
                 const heading = document.querySelector('h2');
-                if(heading) heading.textContent = isLoginMode ? "Acesse sua conta" : "Criar Nova Conta";
+                if(heading) heading.textContent = isLoginMode ? "Acesse sua conta" : "Recuperar Senha";
+
+                if (passwordContainer) {
+                    if (isLoginMode) {
+                        passwordContainer.classList.remove('hidden');
+                        passwordInput.setAttribute('required', 'true');
+                    } else {
+                        passwordContainer.classList.add('hidden');
+                        passwordInput.removeAttribute('required');
+                    }
+                }
 
                 if(errorDiv) errorDiv.classList.add('hidden');
                 if(successDiv) successDiv.classList.add('hidden');
@@ -119,18 +131,15 @@ import '../styles/global.css';
                         if (error) throw error;
                         window.location.href = '/dashboard';
                     } else {
-                        const { data, error } = await supabase.auth.signUp({
-                            email,
-                            password,
+                        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                            redirectTo: `${window.location.origin}/dashboard`,
                         });
                         if (error) throw error;
                         
                         if (successDiv) {
-                            successDiv.textContent = "Contra criada! Verifique seu email ou tente fazer login.";
+                            successDiv.textContent = "Link de recuperação enviado! Verifique seu email.";
                             successDiv.classList.remove('hidden');
                         }
-                        // Força toggle pro modo login na interface
-                        if(toggleBtn) toggleBtn.click(); 
                     }
                 } catch (err: any) {
                     if (errorDiv) {
@@ -139,7 +148,7 @@ import '../styles/global.css';
                     }
                 } finally {
                     if (submitBtn) {
-                        submitBtn.textContent = isLoginMode ? "Entrar" : "Criar Conta";
+                        submitBtn.textContent = isLoginMode ? "Entrar" : "Enviar link de recuperação";
                         submitBtn.removeAttribute("disabled");
                     }
                 }

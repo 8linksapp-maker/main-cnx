@@ -1,11 +1,26 @@
 ---
-import { readSingleton } from '../utils/singleton-utils';
-import Lp1Template from '../themes/classic/lp1.astro';
+/**
+ * index.astro - Página Inicial (Baseada em curso-vendas)
+ * 
+ * Landing page principal.
+ * Segue estrutura Dot Com Secrets do Russell Brunson com 11 seções.
+ * Usa dados do singleton cursoVendas para todo o conteúdo editável
+ */
 
-const lp1Data = await readSingleton('lp1', 'classic') || {};
+import { readSingleton } from '../utils/singleton-utils';
+
+// Buscar tema ativo (fallback para classic)
+const activeThemeId = 'classic';
+
+// Buscar dados do curso-vendas do singleton do tema ativo
+const cursoVendasData = await readSingleton('curso-vendas', activeThemeId) || {};
+
+// Importar o template curso-vendas do tema classic
+const layoutStyle = 'classic';
+const CursoVendasTemplate = (await import(`../themes/${layoutStyle}/curso-vendas.astro`)).default;
 ---
 
-<Lp1Template 
-    lp1Data={lp1Data}
-    themeId="classic"
+<CursoVendasTemplate 
+    cursoVendasData={cursoVendasData}
+    themeId={activeThemeId}
 />
