@@ -1,0 +1,361 @@
+---
+/**
+ * settings.astro
+ *
+ * Página de configurações do SaaS. Permite ao usuário colar seu
+ * Access Token da Vercel para conectarmos a Visão Geral, além de
+ * gerenciar sua conta (ex: atualizar senha).
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import '@fontsource/inter';
+import '@fontsource/outfit';
+import { supabaseSSR } from '../../lib/supabaseSSR';
+
+// Verifica a sessão logada no lado do Servidor com a lib SSR já pronta.
+const supabase = supabaseSSR(Astro);
+const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+if (authError || !user) {
+    return Astro.redirect('/login');
+}
+
+// Buscamos todas as integrações da Vercel
+const { data: vercelIntegrations, error: integrationsError } = await supabase
+    .from('integrations')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('provider', 'vercel')
+    .order('created_at', { ascending: false });
+
+let successMessage = '';
+let errorMessage = '';
+
+// Se vier var ?tab=integracoes da URL do Dropdown Menu Lateral
+const queryTab = Astro.url.searchParams.get('tab');
+let activeTab = queryTab || 'minha-conta'; // 'minha-conta' ou 'integracoes'
+
+
+// Se for requisição POST
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        const action = data.get('action')?.toString();
+
+        if (action === 'update_vercel') {
+            activeTab = 'integracoes';
+            const vercelToken = data.get('vercel_token')?.toString().trim() || '';
+            const accountName = data.get('account_name')?.toString().trim() || 'Conta Padrão';
+
+            // Insere a nova integração na tabela
+            const { error: insertError } = await supabase
+                .from('integrations')
+                .insert({
+                    user_id: user.id,
+                    provider: 'vercel',
+                    token: vercelToken,
+                    account_name: accountName
+                });
+
+            if (insertError) {
+                errorMessage = insertError.message;
+            } else {
+                successMessage = 'Conta da Vercel conectada com sucesso!';
+                // Atualiza lista na hora
+                const { data: updatedIntegrations } = await supabase
+                    .from('integrations')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .eq('provider', 'vercel')
+                    .order('created_at', { ascending: false });
+                if (updatedIntegrations) {
+                    vercelIntegrations.length = 0;
+                    vercelIntegrations.push(...updatedIntegrations);
+                }
+            }
+        } 
+        else if (action === 'delete_vercel') {
+            activeTab = 'integrations';
+            const integrationId = data.get('integration_id')?.toString() || '';
+
+            const { error: deleteError } = await supabase
+                .from('integrations')
+                .delete()
+                .eq('id', integrationId)
+                .eq('user_id', user.id); // Segurança extra
+
+            if (deleteError) {
+                errorMessage = deleteError.message;
+            } else {
+                successMessage = 'Integração removida com sucesso.';
+                const index = vercelIntegrations?.findIndex((i: any) => i.id === integrationId);
+                if (index !== undefined && index > -1) {
+                    vercelIntegrations?.splice(index, 1);
+                }
+            }
+        }
+        else if (action === 'update_password') {
+            activeTab = 'account';
+            const newPassword = data.get('new_password')?.toString() || '';
+            const confirmPassword = data.get('confirm_password')?.toString() || '';
+
+            if (newPassword !== confirmPassword) {
+                errorMessage = 'As senhas não coincidem.';
+            } else if (newPassword.length < 6) {
+                errorMessage = 'A nova senha deve ter pelo menos 6 caracteres.';
+            } else {
+                const { error: pwdError } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (pwdError) {
+                    errorMessage = pwdError.message;
+                } else {
+                    successMessage = 'Sua senha foi atualizada com sucesso!';
+                }
+            }
+        }
+    } catch (e: any) {
+        errorMessage = e.message || 'Erro inesperado ao salvar';
+    }
+}
+---
+
+<DashboardLayout title="Configurações | CNX SaaS">
+    <div class="max-w-4xl mx-auto pb-10">
+        <h2 class="font-heading font-bold text-3xl text-slate-800 mb-6">Configurações</h2>
+        
+        <!-- Header de Abas -->
+        <nav class="flex flex-row gap-6 overflow-x-auto border-b border-slate-200 mb-8 pb-px">
+            <button 
+                class="tab-btn active text-left pb-3 font-semibold transition-colors border-b-2"
+                data-target="tab-minha-conta"
+            >
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">👤</span>
+                    <span>Minha Conta</span>
+                </div>
+            </button>
+            <button 
+                class="tab-btn text-left pb-3 font-semibold transition-colors border-b-2"
+                data-target="tab-integracoes"
+            >
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🔌</span>
+                    <span>Integrações</span>
+                </div>
+            </button>
+        </nav>
+
+        <!-- Área Principal -->
+        <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+            
+            {successMessage && (
+                <div class="mb-6 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex gap-2 items-center">
+                    <span>✅</span> {successMessage}
+                </div>
+            )}
+
+            {errorMessage && (
+                <div class="mb-6 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 flex gap-2 items-center">
+                    <span>⚠️</span> {errorMessage}
+                </div>
+            )}
+
+            <!-- ABA: MINHA CONTA -->
+            <div id="tab-minha-conta" class="tab-content">
+                <div class="mb-6 border-b border-slate-100 pb-4">
+                    <h3 class="font-heading font-bold text-xl text-slate-800 mb-1">Dados de Acesso</h3>
+                    <p class="text-sm text-slate-500">
+                        Gerencie as credenciais com as quais você acessa nosso painel.
+                    </p>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">E-mail Cadastrado</label>
+                    <input 
+                        type="email" 
+                        value={user.email} 
+                        disabled 
+                        class="w-full px-4 py-3 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl cursor-not-allowed"
+                    >
+                    <p class="mt-2 text-xs text-slate-500">O e-mail é fixo e não pode ser alterado por aqui.</p>
+                </div>
+
+                <form method="POST" class="space-y-6">
+                    <input type="hidden" name="action" value="update_password" />
+                    
+                    <h4 class="font-heading font-bold text-lg text-slate-800 mb-4 border-t border-slate-100 pt-6">Mudar Senha</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="new_password" class="block text-sm font-semibold text-slate-700 mb-2">Nova Senha</label>
+                            <input 
+                                type="password" 
+                                id="new_password" 
+                                name="new_password" 
+                                required
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors"
+                            >
+                        </div>
+                        <div>
+                            <label for="confirm_password" class="block text-sm font-semibold text-slate-700 mb-2">Confirme a Senha</label>
+                            <input 
+                                type="password" 
+                                id="confirm_password" 
+                                name="confirm_password" 
+                                required
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="pt-4 text-right">
+                        <button type="submit" class="px-6 py-2.5 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-500/25">
+                            Atualizar Senha
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ABA: INTEGRAÇÕES -->
+            <div id="tab-integracoes" class="tab-content hidden">
+                <div class="mb-6 border-b border-slate-100 pb-4">
+                    <div class="flex items-center gap-3 mb-1">
+                        <span class="p-2 bg-black rounded-lg text-white">
+                            <svg class="h-5 w-5 fill-current" viewBox="0 0 512 512"><path d="M256 48l240 416H16z"/></svg>
+                        </span>
+                        <h3 class="font-heading font-bold text-xl text-slate-800">Integração com a Vercel</h3>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-2">
+                        A Vercel é onde seus sites ficam hospedados de forma segura e rápida. 
+                        Precisamos de permissão para ler seus projetos criados e listarmos na Visão Geral.
+                    </p>
+                </div>
+
+                <!-- Lista de Integrações -> Vercel -->
+                <div class="mb-8">
+                    <h4 class="font-bold text-slate-800 mb-4">Contas Conectadas</h4>
+                    
+                    {(!vercelIntegrations || vercelIntegrations.length === 0) ? (
+                        <div class="p-6 border border-dashed border-slate-300 rounded-xl text-center bg-slate-50 text-slate-500">
+                            Nenhuma conta da Vercel conectada no momento. <br/>Adicione uma abaixo.
+                        </div>
+                    ) : (
+                        <div class="space-y-3">
+                            {vercelIntegrations.map((integration: any) => (
+                                <div class="flex items-center justify-between p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-800">
+                                            <svg class="h-5 w-5 fill-current" viewBox="0 0 512 512"><path d="M256 48l240 416H16z"/></svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-800">{integration.account_name || 'Conta Vercel'}</p>
+                                            <p class="text-xs text-slate-500 tracking-wider">Token: {integration.token.slice(0, 5)}••••••••</p>
+                                        </div>
+                                    </div>
+                                    <form method="POST" onsubmit="return confirm('Tem certeza que deseja remover esta conexão? A Visão Geral perderá acesso a estes sites.');">
+                                        <input type="hidden" name="action" value="delete_vercel" />
+                                        <input type="hidden" name="integration_id" value={integration.id} />
+                                        <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remover Conexão">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <form method="POST" class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <input type="hidden" name="action" value="update_vercel" />
+                    
+                    <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-2 mb-4">Adicionar Nova Conta da Vercel</h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="account_name" class="block text-sm font-semibold text-slate-700 mb-1">
+                                Nome para Identificação
+                            </label>
+                            <input 
+                                type="text" 
+                                id="account_name" 
+                                name="account_name" 
+                                placeholder="Ex: Minha Conta Pessoal, Agência, etc."
+                                required
+                                class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="vercel_token" class="block text-sm font-semibold text-slate-700 mb-1">
+                                Vercel Access Token Pessoal
+                            </label>
+                            <input 
+                                type="password" 
+                                id="vercel_token" 
+                                name="vercel_token" 
+                                placeholder="Ex: 5r7oXqA9zB2vV..."
+                                required
+                                class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors font-mono"
+                            >
+                            <p class="mt-2 text-xs text-slate-500">
+                                Não sabe criar um token? <a href="https://vercel.com/account/tokens" target="_blank" rel="noopener noreferrer" class="text-violet-600 hover:text-violet-700 underline font-medium">Clique aqui</a> e crie um usando sua conta.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 relative text-right">
+                        <button type="submit" class="px-6 py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-black transition-colors shadow-lg">
+                            Conectar Nova Conta
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</DashboardLayout>
+
+<!-- Variável enviada pelo Server pro Client saber qual aba abrir (útil no refresh após POST) -->
+<script define:vars={{ initialTab: activeTab }}>
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        function activateTab(tabId) {
+            // Esconde tudos conteúdos e limpa formato ativo
+            contents.forEach(c => c.classList.add('hidden'));
+            buttons.forEach(b => {
+                b.classList.remove('text-violet-600', 'border-violet-600');
+                b.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:border-slate-300');
+            });
+
+            // Ativa o alvo
+            const targetContent = document.getElementById(tabId);
+            const targetBtn = document.querySelector(`[data-target="${tabId}"]`);
+            
+            if (targetContent && targetBtn) {
+                targetContent.classList.remove('hidden');
+                targetBtn.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:border-slate-300');
+                targetBtn.classList.add('text-violet-600', 'border-violet-600');
+            }
+        }
+
+        // Event Listeners
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                activateTab(btn.getAttribute('data-target'));
+            });
+        });
+
+        // Inicializa aba correta (vindo do SRR Astro)
+        activateTab(`tab-${initialTab}`);
+    });
+</script>
+
+<style>
+    .font-heading {
+        font-family: 'Outfit', system-ui, sans-serif;
+    }
+</style>

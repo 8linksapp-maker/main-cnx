@@ -14,8 +14,12 @@ export default defineConfig({
             jsxRuntime: 'automatic',
             jsxImportSource: 'react',
         }),
-        tailwind(), 
+        tailwind(),
         markdoc()
     ],
+    redirects: {
+        '/admin': '/',
+        '/admin/[...all]': '/'
+    }
     // Reset Trigger: 2026-02-07 11:40
 });

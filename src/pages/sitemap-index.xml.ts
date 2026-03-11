@@ -67,7 +67,7 @@ ${stylesheet}
     const urls: string[] = [];
 
     // Páginas estáticas
-    const staticPaths = ['/', '/blog', '/servicos', '/contato', '/sobre', '/lp1', '/curso-vendas'];
+    const staticPaths = ['/', '/blog', '/servicos', '/contato', '/sobre', '/curso-vendas'];
     for (const p of staticPaths) {
         urls.push(urlNode(base, p, today));
     }

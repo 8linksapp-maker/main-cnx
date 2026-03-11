@@ -1,0 +1,987 @@
+---
+/**
+ * dashboard/sites/[id].astro
+ *
+ * Exibe detalhes específicos de um projeto através da API da Vercel.
+ * Precisamos do ID do projeto na Vercel e do "integration_id" que 
+ * gerou o projeto para usarmos o token correto.
+ */
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import { supabaseSSR } from '../../../lib/supabaseSSR';
+
+// Verifica a sessão logada
+const supabase = supabaseSSR(Astro);
+const { data: { user } } = await supabase.auth.getUser();
+
+if (!user) {
+    return Astro.redirect('/login');
+}
+
+const { id } = Astro.params;
+const integrationId = Astro.url.searchParams.get('integration');
+
+if (!id || !integrationId) {
+    return Astro.redirect('/dashboard/sites?error=missing_params');
+}
+
+// 1. Achar o Token Específico dessa Integração
+const { data: integration } = await supabase
+    .from('integrations')
+    .select('*')
+    .eq('id', integrationId)
+    .eq('user_id', user.id)
+    .single();
+
+if (!integration) {
+    return Astro.redirect('/dashboard/sites?error=integration_not_found');
+}
+
+const vercelToken = integration.token;
+let project: any = null;
+let projectError = '';
+
+// 2. Buscar Dados Completos do Projeto Vercel
+try {
+    const res = await fetch(`https://api.vercel.com/v9/projects/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${vercelToken}`
+        }
+    });
+
+    if (!res.ok) {
+        projectError = 'Não foi possível carregar os detalhes do projeto na Vercel.';
+    } else {
+        project = await res.json();
+    }
+} catch (e: any) {
+    projectError = 'Falha de comunicação com a plataforma Vercel.';
+}
+
+// 3. Buscar Deploys Recentes
+let deployments: any[] = [];
+try {
+    const depRes = await fetch(`https://api.vercel.com/v6/deployments?projectId=${id}&limit=10`, {
+        headers: {
+            "Authorization": `Bearer ${vercelToken}`
+        }
+    });
+
+    if (depRes.ok) {
+        const depData = await depRes.json();
+        deployments = depData.deployments || [];
+    }
+} catch (e: any) {
+    // Silencioso se der erro nos deploys, a tela principal ainda funciona
+}
+
+// 4. Buscar Variáveis de Ambiente
+let envVars: any[] = [];
+try {
+    const envRes = await fetch(`https://api.vercel.com/v9/projects/${id}/env`, {
+        headers: {
+            "Authorization": `Bearer ${vercelToken}`
+        }
+    });
+
+    if (envRes.ok) {
+        const envData = await envRes.json();
+        envVars = envData.envs || [];
+    }
+} catch (e: any) {
+    // Silencioso
+}
+
+// 5. Buscar Domínios Detalhados (Status DNS, Verificados)
+let projectDomains: any[] = [];
+try {
+    const domRes = await fetch(`https://api.vercel.com/v9/projects/${id}/domains`, {
+        headers: {
+            "Authorization": `Bearer ${vercelToken}`
+        }
+    });
+
+    if (domRes.ok) {
+        const domData = await domRes.json();
+        const rawDomains = domData.domains || [];
+
+        // Verifica configuração real de DNS (misconfigured) e Target Map
+        projectDomains = await Promise.all(rawDomains.map(async (dom: any) => {
+            // Descobre o Target Correto cruzando com a Rota project.alias
+            const al = project?.alias?.find((a: any) => a.domain === dom.name);
+            if (al && al.target === 'PRODUCTION') dom.target = 'production';
+            else if (!al && dom.gitBranch === null) dom.target = 'production'; // root
+            else dom.target = 'preview';
+
+            // Verifica o DNS real na Vercel
+            try {
+                const cfgRes = await fetch(`https://api.vercel.com/v6/domains/${dom.name}/config`, {
+                    headers: { "Authorization": `Bearer ${vercelToken}` }
+                });
+                if (cfgRes.ok) {
+                    const cfgData = await cfgRes.json();
+                    dom.misconfigured = cfgData.misconfigured === true;
+                } else {
+                    dom.misconfigured = false;
+                }
+            } catch (e) {
+                dom.misconfigured = false;
+            }
+
+            return dom;
+        }));
+    }
+} catch (e: any) {
+    // Fallback silencioso
+}
+
+// Lógica corrigida para pegar o Domínio Principal real e não a URL com Hash do Deploy
+const prodAlias = project?.alias?.find((a: any) => a.target === 'PRODUCTION' || a.isDefault)?.domain;
+const mainDomain = prodAlias || project?.alias?.[0]?.domain || `${project?.name}.vercel.app`;
+
+const deployState = project?.latestDeployments?.[0]?.readyState || 'UNKNOWN';
+const adminUrl = `https://${mainDomain}/admin`;
+---
+
+<DashboardLayout title={project ? `${project.name} | Detalhes` : 'Detalhes do Site'}>
+    
+    <div class="mb-6">
+        <a href="/dashboard/sites" class="text-sm font-semibold text-slate-500 hover:text-violet-600 transition-colors flex items-center gap-1 w-max mb-4">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Voltar para Meus Sites
+        </a>
+    </div>
+
+    {projectError && (
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-700 font-medium mb-8">
+            ⚠️ {projectError}
+        </div>
+    )}
+
+    {project && (
+        <div class="space-y-6">
+            
+            <!-- Header de Abas -->
+            <nav class="flex flex-row gap-6 overflow-x-auto border-b border-slate-200 mb-6 pb-px">
+                <button class="tab-btn active text-left text-violet-600 border-violet-600 pb-3 font-semibold transition-colors border-b-2" data-target="tab-overview">
+                    <div class="flex items-center gap-2">Visão Geral</div>
+                </button>
+                <button class="tab-btn text-left text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300 pb-3 font-semibold transition-colors border-b-2" data-target="tab-deploys">
+                    <div class="flex items-center gap-2">Deploys</div>
+                </button>
+                <button class="tab-btn text-left text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300 pb-3 font-semibold transition-colors border-b-2" data-target="tab-domains">
+                    <div class="flex items-center gap-2">Domínios</div>
+                </button>
+                <button class="tab-btn text-left text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300 pb-3 font-semibold transition-colors border-b-2" data-target="tab-envs">
+                    <div class="flex items-center gap-2">Variáveis (ENV)</div>
+                </button>
+                <button class="tab-btn text-left text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300 pb-3 font-semibold transition-colors border-b-2" data-target="tab-settings">
+                    <div class="flex items-center gap-2">Configurações</div>
+                </button>
+            </nav>
+
+            <!-- ABA OVEVIEW -->
+            <div id="tab-overview" class="tab-content space-y-6">
+                {/* Cabeçalho do Projeto */}
+            <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-16 h-16 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-3xl text-slate-900 mb-2">{project.name}</h1>
+                        <a href={`https://${mainDomain}`} target="_blank" rel="noopener noreferrer" class="text-violet-600 hover:text-violet-700 hover:underline font-mono font-medium flex items-center gap-1.5 w-max">
+                            {mainDomain}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a href={adminUrl} target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                        CMS
+                    </a>
+                </div>
+            </div>
+
+            {/* Métricas Principais */}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Status do Deploy</p>
+                    <div class="flex items-center gap-2">
+                        {deployState === 'READY' ? (
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-xl font-bold text-slate-800">Pronto no Ar</span></div>
+                        ) : deployState === 'ERROR' ? (
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-xl font-bold text-slate-800">Falhou</span></div>
+                        ) : deployState === 'BUILDING' ? (
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span><span class="text-xl font-bold text-slate-800">Construindo...</span></div>
+                        ) : (
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-400"></span><span class="text-xl font-bold text-slate-800">Desconhecido</span></div>
+                        )}
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Framework Utilizado</p>
+                    <p class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <span class="p-1 bg-slate-100 rounded text-slate-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                        </span>
+                        {project.framework === 'astro' ? 'Astro' : (project.framework || 'HTML Estático')}
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Data de Criação</p>
+                    <p class="text-xl font-bold text-slate-800">
+                        {new Date(project.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </p>
+                </div>
+            </div>
+
+            {/* Mais Configurações do Vercel */}
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <h3 class="font-bold text-lg text-slate-800 mb-6 border-b border-slate-100 pb-4">Domínios Conectados (Vercel)</h3>
+                
+                {(!projectDomains || projectDomains.length === 0) ? (
+                    <div class="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                        <p class="text-slate-500 font-medium">Este projeto não possui domínios adicionados ainda.</p>
+                    </div>
+                ) : (
+                    <ul class="space-y-3">
+                        {projectDomains.map((dom: any) => (
+                            <li class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl gap-2">
+                                <a href={`https://${dom.name}`} target="_blank" rel="noopener noreferrer" class="font-mono text-slate-700 font-medium hover:text-violet-600 hover:underline">
+                                    {dom.name}
+                                </a>
+                                <div class="flex items-center gap-2">
+                                    {(!dom.verified || dom.misconfigured) && (
+                                        <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded uppercase tracking-wide">
+                                            Pendente (DNS)
+                                        </span>
+                                    )}
+                                    <span class="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-bold rounded uppercase tracking-wide">
+                                        {dom.target === 'production' ? 'Produção' : 'Preview'}
+                                    </span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            </div><!-- FIM ABA OVERVIEW -->
+
+            <!-- ABA DEPLOYS -->
+            <div id="tab-deploys" class="tab-content hidden space-y-6">
+                <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-800">Histórico de Deploys</h3>
+                            <p class="text-sm text-slate-500">Últimas 10 atualizações e publicações que ocorreram no site.</p>
+                        </div>
+                        <form method="POST" action={`/api/vercel/redeploy`} onSubmit="return confirm('Deseja agendar um novo deploy agora mesmo? O site ficará indisponível por alguns segundos enquanto reconstrói.');">
+                            <input type="hidden" name="integration_id" value={integrationId} />
+                            <input type="hidden" name="project_id" value={id} />
+                            <input type="hidden" name="deployment_id" value={deployments[0]?.uid || ''} />
+                            <input type="hidden" name="project_name" value={project.name} />
+                            
+                            <button type="submit" disabled={!deployments[0]?.uid} class="px-5 py-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                Forçar Novo Deploy
+                            </button>
+                        </form>
+                    </div>
+
+                    {deployments.length === 0 ? (
+                        <div class="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                            <p class="text-slate-500 font-medium">Nenhum deploy registrado neste projeto ainda.</p>
+                        </div>
+                    ) : (
+                        <ul class="divide-y divide-slate-100">
+                            {deployments.map((dep: any) => {
+                                const isReady = dep.readyState === 'READY';
+                                const isError = dep.readyState === 'ERROR';
+                                const isBuilding = dep.readyState === 'BUILDING';
+                                
+                                let statusColor = 'bg-slate-300 text-slate-700';
+                                let statusPillHover = 'hover:bg-slate-100';
+                                if (isReady) { statusColor = 'bg-emerald-100 text-emerald-800 border-emerald-200'; statusPillHover = 'hover:border-emerald-300'; }
+                                else if (isError) { statusColor = 'bg-red-100 text-red-800 border-red-200'; statusPillHover = 'hover:border-red-300'; }
+                                else if (isBuilding) { statusColor = 'bg-amber-100 text-amber-800 border-amber-200 animate-pulse'; statusPillHover = 'hover:border-amber-300'; }
+
+                                return (
+                                    <li class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                                        <div>
+                                            <div class="flex items-center gap-3 mb-1">
+                                                <span class={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded border ${statusColor} ${statusPillHover} transition-colors`}>
+                                                    {isReady ? 'Concluído' : isError ? 'Falhou' : isBuilding ? 'Processando' : dep.readyState}
+                                                </span>
+                                                <a href={`https://${dep.url}`} target="_blank" rel="noopener noreferrer" class="font-mono text-sm text-slate-700 group-hover:text-violet-600 font-medium">
+                                                    {dep.url}
+                                                </a>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-xs text-slate-500 mt-1">
+                                                    Fonte: {dep.source || 'Manual/API'} • Gerado em: {new Date(dep.createdAt).toLocaleString('pt-BR')}
+                                                </p>
+                                                <p class="text-xs font-mono text-slate-400">ID: {dep.uid.split('-')[0]}...</p>
+                                            </div>
+                                            
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+            </div><!-- FIM ABA DEPLOYS -->
+
+            <!-- ABA DOMÍNIOS -->
+            <div id="tab-domains" class="tab-content hidden space-y-6">
+                
+                <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+                    <div class="mb-6">
+                        <h3 class="font-bold text-lg text-slate-800">Gerenciar Domínios</h3>
+                        <p class="text-sm text-slate-500">Adicione domínios personalizados (`www.seudominio.com.br`) para este projeto.</p>
+                    </div>
+
+                    <form method="POST" action={`/api/vercel/domains/add`} class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <input type="hidden" name="integration_id" value={integrationId} />
+                        <input type="hidden" name="project_id" value={id} />
+                        <input 
+                            type="text" 
+                            name="domain_name" 
+                            placeholder="Ex: meudominio.com.br"
+                            required
+                            class="flex-1 px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors font-mono text-sm"
+                        />
+                        <select name="target" class="px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors text-slate-700 font-medium cursor-pointer max-w-xs">
+                            <option value="production">Ir para Produção</option>
+                            <option value="preview">Ir para Preview</option>
+                        </select>
+                        <button type="submit" class="px-6 py-3 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-500/25 whitespace-nowrap">
+                            Adicionar Domínio
+                        </button>
+                    </form>
+
+                    <h4 class="font-bold text-sm text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Domínios Ativos</h4>
+                    
+                    {(!projectDomains || projectDomains.length === 0) ? (
+                        <div class="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                            <p class="text-slate-500 font-medium">Nenhum domínio configurado.</p>
+                        </div>
+                    ) : (
+                        <ul class="space-y-4">
+                            {projectDomains.map((dom: any) => (
+                                <li class="flex flex-col p-5 bg-white border border-slate-200 rounded-xl shadow-sm gap-4 transition-all hover:border-slate-300 relative">
+                                    {/* Linha Fogo: Verificação Status */}
+                                    {(!dom.verified || dom.misconfigured) && (
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-l-xl"></div>
+                                    )}
+
+                                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                                        <div>
+                                            <a href={`https://${dom.name}`} target="_blank" rel="noopener noreferrer" class="font-mono text-slate-800 font-bold hover:text-violet-600 hover:underline flex items-center gap-2 mb-2 text-lg">
+                                                {dom.name}
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                            </a>
+                                            <div class="flex items-center gap-2 text-xs mb-3">
+                                                <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-600 font-bold rounded uppercase tracking-wide">
+                                                    Target: {dom.target === 'production' ? 'Produção' : 'Preview'}
+                                                </span>
+                                                {(dom.verified && !dom.misconfigured) ? (
+                                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded uppercase tracking-wide flex items-center gap-1">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verificado
+                                                    </span>
+                                                ) : (
+                                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-700 font-bold rounded uppercase tracking-wide flex items-center gap-1 border border-amber-200">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Configuração Pendente
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* UI de Instruções de DNS caso pendente */}
+                                            {(!dom.verified || dom.misconfigured) && (
+                                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden mt-4 w-full text-slate-800 shadow-sm">
+                                                    {/* Header Tabs */}
+                                                    <div class="flex border-b border-slate-200 bg-slate-50/50 px-4">
+                                                        <button type="button" class="dns-tab-btn px-4 py-3 text-sm font-semibold text-slate-900 border-b-2 border-slate-900 -mb-[1px]" data-domain-id={dom.name.replace(/\./g, '-')} data-target="dns-records">
+                                                            DNS Records
+                                                        </button>
+                                                        <button type="button" class="dns-tab-btn px-4 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors" data-domain-id={dom.name.replace(/\./g, '-')} data-target="vercel-dns">
+                                                            Vercel DNS
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {/* Content: DNS Records */}
+                                                    <div id={`dns-records-${dom.name.replace(/\./g, '-')}`} class="p-5 block">
+                                                        <p class="text-[13px] text-slate-600 mb-4 font-sans tracking-wide">Os registros DNS no seu provedor devem corresponder aos seguintes registros para verificar e conectar seu domínio à Vercel.</p>
+                                                        
+                                                        {/* Tabela Light */}
+                                                        <div class="border border-slate-200 rounded-lg overflow-hidden">
+                                                            <table class="w-full text-left text-[13px] whitespace-nowrap table-fixed">
+                                                                <thead class="border-b border-slate-200 bg-slate-50">
+                                                                    <tr>
+                                                                        <th class="px-4 py-3 text-slate-500 font-semibold w-1/4">Tipo</th>
+                                                                        <th class="px-4 py-3 text-slate-500 font-semibold w-1/4">Nome</th>
+                                                                        <th class="px-4 py-3 text-slate-500 font-semibold w-1/2">Valor</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="divide-y divide-slate-100 bg-white">
+                                                                    <tr class="transition-colors hover:bg-slate-50">
+                                                                        <td class="px-4 py-3.5 font-mono text-slate-700">
+                                                                            {dom.name.split('.').length > 2 ? 'CNAME' : 'A'}
+                                                                        </td>
+                                                                        <td class="px-4 py-3.5 font-mono text-slate-800 font-medium group/copy">
+                                                                            <div class="flex items-center gap-2">
+                                                                                {dom.name.split('.').length > 2 ? dom.name.split('.')[0] : '@'}
+                                                                                <svg class="w-3.5 h-3.5 text-slate-400 cursor-pointer opacity-0 group-hover/copy:opacity-100 hover:text-slate-800 transition-all transform hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="px-4 py-3.5 font-mono text-slate-800 font-medium group/copy2">
+                                                                            <div class="flex items-center gap-2">
+                                                                                {dom.name.split('.').length > 2 ? 'cname.vercel-dns.com.' : '76.76.21.21'}
+                                                                                <svg class="w-3.5 h-3.5 text-slate-400 cursor-pointer opacity-0 group-hover/copy2:opacity-100 hover:text-slate-800 transition-all transform hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        {/* Alerta Adicional */}
+                                                        {dom.name.split('.').length <= 2 && (
+                                                            <div class="mt-3 p-3.5 border border-slate-200 rounded-lg text-[13px] text-slate-600 bg-white">
+                                                                Como parte de uma expansão planejada de IP, você pode notar <span class="text-violet-600 font-medium">novos registros</span> acima.
+                                                            </div>
+                                                        )}
+
+                                                        <div class="mt-3 p-3.5 border border-slate-200 rounded-lg text-[13px] text-slate-600 flex items-center gap-1.5 bg-slate-50">
+                                                            Pode levar algum tempo para os registros DNS serem aplicados. <span class="text-violet-600 hover:text-violet-700 transition-colors font-semibold cursor-pointer">Saiba Mais <svg class="inline w-3 h-3 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Content: Vercel DNS (Nameservers) */}
+                                                    <div id={`vercel-dns-${dom.name.replace(/\./g, '-')}`} class="p-5 hidden">
+                                                        <p class="text-[13px] text-slate-600 mb-4 font-sans tracking-wide">Atualize os nameservers do seu domínio para ativar o Vercel DNS.</p>
+                                                        
+                                                        <div class="border border-slate-200 rounded-lg overflow-hidden">
+                                                            <table class="w-full text-left text-[13px] whitespace-nowrap table-fixed">
+                                                                <thead class="border-b border-slate-200 bg-slate-50">
+                                                                    <tr>
+                                                                        <th class="px-4 py-3 text-slate-500 font-semibold">Nameservers</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="divide-y divide-slate-100 bg-white">
+                                                                    <tr class="transition-colors hover:bg-slate-50">
+                                                                        <td class="px-4 py-3.5 font-mono text-slate-800 font-medium group/ns1">
+                                                                            <div class="flex items-center gap-2">
+                                                                                ns1.vercel-dns.com
+                                                                                <svg class="w-3.5 h-3.5 text-slate-400 cursor-pointer opacity-0 group-hover/ns1:opacity-100 hover:text-slate-800 transition-all transform hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr class="transition-colors hover:bg-slate-50">
+                                                                        <td class="px-4 py-3.5 font-mono text-slate-800 font-medium group/ns2">
+                                                                            <div class="flex items-center gap-2">
+                                                                                ns2.vercel-dns.com
+                                                                                <svg class="w-3.5 h-3.5 text-slate-400 cursor-pointer opacity-0 group-hover/ns2:opacity-100 hover:text-slate-800 transition-all transform hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        <div class="mt-3 p-3.5 border border-slate-200 rounded-lg text-[13px] text-slate-600 flex items-center gap-1.5 bg-slate-50">
+                                                            Pode levar algum tempo para as alterações de nameservers serem aplicadas. <span class="text-violet-600 hover:text-violet-700 transition-colors font-semibold cursor-pointer">Saiba Mais <svg class="inline w-3 h-3 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div class="flex items-center gap-2 mt-1 shrink-0">
+                                            {(!dom.verified || dom.misconfigured) && (
+                                                <form method="POST" action="/api/vercel/domains/verify">
+                                                    <input type="hidden" name="integration_id" value={integrationId} />
+                                                    <input type="hidden" name="project_id" value={id} />
+                                                    <input type="hidden" name="domain_name" value={dom.name} />
+                                                    <button type="submit" class="px-3 py-1.5 bg-white border border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium text-xs flex items-center gap-1.5 shadow-sm">
+                                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                                        Refresh DNS
+                                                    </button>
+                                                </form>
+                                            )}
+                                            
+                                            {/* DROPDOWN EDITAR TARGET */}
+                                            <div class="relative group/edit">
+                                                <button type="button" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 rounded-lg transition-colors font-medium text-xs flex items-center gap-1.5 shadow-sm">
+                                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                                    Editar
+                                                </button>
+                                                {/* Mini Form Popover */}
+                                                <div class="absolute right-0 top-full mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl opacity-0 invisible group-hover/edit:opacity-100 group-hover/edit:visible transition-all z-50 p-4">
+                                                    <p class="text-xs font-bold text-slate-700 mb-3">Alterar Destino (Target):</p>
+                                                    <form method="POST" action="/api/vercel/domains/edit" class="flex flex-col gap-3">
+                                                        <input type="hidden" name="integration_id" value={integrationId} />
+                                                        <input type="hidden" name="project_id" value={id} />
+                                                        <input type="hidden" name="domain_name" value={dom.name} />
+                                                        <select name="target" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-violet-500">
+                                                            <option value="production" selected={dom.target === 'production'}>Produção</option>
+                                                            <option value="preview" selected={dom.target === 'preview'}>Preview</option>
+                                                        </select>
+                                                        <button type="submit" class="w-full py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-900 transition-colors">
+                                                            Salvar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            
+                                            <form method="POST" action={`/api/vercel/domains/remove`} onSubmit={`return confirm("CUIDADO: Remover '${dom.name}' tirará o site do ar imediatamente. Confirma?");`}>
+                                                <input type="hidden" name="integration_id" value={integrationId} />
+                                                <input type="hidden" name="project_id" value={id} />
+                                                <input type="hidden" name="domain_name" value={dom.name} />
+                                                <button type="submit" class="px-3 py-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium text-xs flex items-center gap-1.5 shadow-sm" title="Remover Domínio">
+                                                    <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                                    Remover
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+            </div><!-- FIM ABA DOMINIOS -->
+
+            <!-- ABA VARIAVEIS (ENV) -->
+            <div id="tab-envs" class="tab-content hidden space-y-6">
+                
+                <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+                    <div class="mb-6">
+                        <h3 class="font-bold text-lg text-slate-800">Variáveis de Ambiente (Environment)</h3>
+                        <p class="text-sm text-slate-500">Adicione tokens, chaves de API e URLs secretas que seu projeto consome.</p>
+                    </div>
+
+                    <form method="POST" action={`/api/vercel/envs/add`} class="p-6 bg-slate-50 border border-slate-200 rounded-2xl mb-8 space-y-4">
+                        <input type="hidden" name="integration_id" value={integrationId} />
+                        <input type="hidden" name="project_id" value={id} />
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Nome da Variável (Key)</label>
+                                <input 
+                                    type="text" 
+                                    name="env_key" 
+                                    placeholder="Ex: API_URL_SECRETA"
+                                    required
+                                    class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Valor (Value)</label>
+                                <input 
+                                    type="password" 
+                                    name="env_value" 
+                                    placeholder="••••••••••••••"
+                                    required
+                                    class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none flex-1 font-mono text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2 mt-4">Ambientes Alvo (Target)</label>
+                            <select name="target_env" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 font-medium text-slate-700 cursor-pointer">
+                                <option value="all">Todas as opções (Produção, Prévia, Desenvolvimento)</option>
+                                <option value="production">Produção</option>
+                                <option value="preview">Prévia</option>
+                                <option value="development">Desenvolvimento</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-4 text-right">
+                            <button type="submit" class="px-6 py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-black transition-colors shadow-lg">
+                                Salvar Variável
+                            </button>
+                        </div>
+                    </form>
+
+                    <h4 class="font-bold text-sm text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Variáveis Salvas</h4>
+                    
+                    {envVars.length === 0 ? (
+                        <div class="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                            <p class="text-slate-500 font-medium">Nenhuma variável de ambiente encontrada.</p>
+                        </div>
+                    ) : (
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200">
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50 rounded-tl-lg">Chave (Key)</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50">Ambientes</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50">Valor</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50 rounded-tr-lg w-24 text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {envVars.map((env: any) => (
+                                        <tr class="border-b border-slate-100 group hover:bg-slate-50">
+                                            <td class="py-3 px-4 font-mono font-semibold text-slate-700">{env.key}</td>
+                                            <td class="py-3 px-4">
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    {(env.target || []).map((t: string) => (
+                                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded border border-slate-200">
+                                                            {t === 'production' ? 'Produção' : t === 'preview' ? 'Prévia' : t === 'development' ? 'Desenvolvimento' : t}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-mono text-sm text-slate-600 truncate max-w-[120px] sm:max-w-[200px] env-value-display cursor-pointer hover:text-violet-600 transition-colors" data-value="" title="Clique para copiar">••••••••••••</span>
+                                                    <button type="button" class="p-1 text-slate-400 hover:text-slate-700 transition-colors btn-toggle-env" data-env-id={env.id} title="Ver Valor">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button type="button" class="p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors inline-block btn-edit-env" data-id={env.id} data-key={env.key} data-targets={(env.target || []).join(',')} title="Editar Referência">
+                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                                    </button>
+                                                    <form method="POST" action={`/api/vercel/envs/remove`} class="form-confirm inline-block" data-message={`Deletar a variável ${env.key}? O site pode quebrar se essa for essencial.`}>
+                                                        <input type="hidden" name="integration_id" value={integrationId} />
+                                                        <input type="hidden" name="project_id" value={id} />
+                                                        <input type="hidden" name="env_id" value={env.id} />
+                                                        <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Excluir Variável">
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+
+            </div><!-- FIM ABA ENVS -->
+
+            {/* MODAL EDITAR ENVS (UI Oculta por padrão) */}
+            <div id="modal-edit-env" class="hidden fixed inset-0 z-[120] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-200" id="box-edit-env">
+                    <h3 class="font-bold text-lg text-slate-800 mb-4 border-b border-slate-100 pb-3" id="env-edit-modal-title">Editar Variável</h3>
+                    <form method="POST" action={`/api/vercel/envs/edit`} class="space-y-4">
+                        <input type="hidden" name="integration_id" value={integrationId} />
+                        <input type="hidden" name="project_id" value={id} />
+                        <input type="hidden" name="env_id" id="edit-env-id" value="" />
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nome da Variável (Key)</label>
+                            <input 
+                                type="text" 
+                                name="env_key" 
+                                id="edit-env-key"
+                                required
+                                class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 font-mono text-sm mb-4"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Novo Valor da Variável</label>
+                            <input 
+                                type="text" 
+                                name="env_value" 
+                                placeholder="Deixe em branco para manter o segredo atual..."
+                                class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 font-mono text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2 mt-2">Ambientes Alvo (Target)</label>
+                            <select name="target_env" id="edit-env-target" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 font-medium text-slate-700 cursor-pointer">
+                                <option value="all">Todas as opções (Produção, Prévia, Desenvolvimento)</option>
+                                <option value="production">Produção</option>
+                                <option value="preview">Prévia</option>
+                                <option value="development">Desenvolvimento</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 pt-4">
+                            <button type="button" id="btn-cancel-env-edit" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">Cancelar</button>
+                            <button type="submit" class="flex-1 py-2.5 px-4 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-violet-500/25">Atualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ABA CONFIGURAÇÕES GERAIS -->
+            <div id="tab-settings" class="tab-content hidden space-y-6">
+                
+                <div class="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 mb-6">
+                    <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-4 mb-6">Configurações Base</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Framework Preset</p>
+                            <p class="text-slate-800 font-medium bg-slate-50 px-3 py-2 border border-slate-200 rounded-lg">{project.framework || 'Other'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Versão do Node.js</p>
+                            <p class="text-slate-800 font-medium bg-slate-50 px-3 py-2 border border-slate-200 rounded-lg">{project.nodeVersion || 'Padrão'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Build Command</p>
+                            <p class="font-mono text-sm text-slate-700 bg-slate-50 px-3 py-2 border border-slate-200 rounded-lg overflow-x-auto">{project.buildCommand || 'Padrão da Vercel'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Diretório Raiz (Root)</p>
+                            <p class="font-mono text-sm text-slate-700 bg-slate-50 px-3 py-2 border border-slate-200 rounded-lg">{project.rootDirectory || '/'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8">
+                    <h3 class="font-bold text-xl text-red-800 mb-2">Zona de Perigo</h3>
+                    <p class="text-red-700 mb-6">As ações abaixo são destrutivas e afetam o site permanentemente na Vercel.</p>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <form method="POST" action={`/api/vercel/project/delete`} class="flex-1 form-confirm" data-message="PERIGO: Isso vai deletar o repositório e tirar o projeto do ar permanentemente na Vercel. Tem certeza absoluta?">
+                            <input type="hidden" name="integration_id" value={integrationId} />
+                            <input type="hidden" name="project_id" value={id} />
+                            <button type="submit" class="w-full text-center px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-red-500/25">
+                                Excluir Projeto Permanentemente
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div><!-- FIM ABA CONFIGS -->
+
+        </div>
+    )}
+</DashboardLayout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        // Função para ativar uma Aba Específica
+        const activateTab = (targetId: string) => {
+            // Esconde conteúdos
+            contents.forEach(c => c.classList.add('hidden'));
+            const targetContent = document.getElementById(targetId);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            // Reseta botoes
+            buttons.forEach(b => {
+                b.classList.remove('text-violet-600', 'border-violet-600');
+                b.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:border-slate-300');
+            });
+            
+            // Ativa botão atual
+            const activeBtn = Array.from(buttons).find(b => b.getAttribute('data-target') === targetId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:border-slate-300');
+                activeBtn.classList.add('text-violet-600', 'border-violet-600');
+            }
+
+            // Salva na Memória do Navegador
+            sessionStorage.setItem('cnx_active_tab', targetId);
+        };
+
+        // Eventos de Clique
+        buttons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                if (targetId) activateTab(targetId);
+            });
+        });
+
+        // 1. Tenta recuperar o estado da Hash URL (#tab-domains) ou Query (?tab=domains)
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryTab = urlParams.get('tab');
+        
+        let initialTab = 'tab-overview'; // Padrão
+        
+        if (window.location.hash && window.location.hash.startsWith('#tab-')) {
+            initialTab = window.location.hash.replace('#', '');
+        } else if (queryTab) {
+            initialTab = `tab-${queryTab}`;
+        } else {
+            // 2. Tenta recuperar da Memória do Navegador (Session)
+            const savedTab = sessionStorage.getItem('cnx_active_tab');
+            if (savedTab) {
+                initialTab = savedTab;
+            }
+        }
+
+        // Ativa Aba Inicial e remove o offset de pulo da tela
+        activateTab(initialTab);
+        window.history.replaceState(null, '', window.location.pathname + window.location.search); // Limpa o hash visual
+
+        // Toggle para as abas Dark de DNS (Mantido inalterado)
+        const dnsButtons = document.querySelectorAll('.dns-tab-btn');
+        dnsButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const domainId = btn.getAttribute('data-domain-id');
+                const targetType = btn.getAttribute('data-target'); // 'dns-records' or 'vercel-dns'
+
+                // Esconde ambos
+                document.getElementById(`dns-records-${domainId}`)?.classList.add('hidden');
+                document.getElementById(`dns-records-${domainId}`)?.classList.remove('block');
+                document.getElementById(`vercel-dns-${domainId}`)?.classList.add('hidden');
+                document.getElementById(`vercel-dns-${domainId}`)?.classList.remove('block');
+
+                // Mostra o ativo
+                document.getElementById(`${targetType}-${domainId}`)?.classList.add('block');
+                document.getElementById(`${targetType}-${domainId}`)?.classList.remove('hidden');
+
+                // Toggle Estilos das Abas
+                const localBtns = document.querySelectorAll(`.dns-tab-btn[data-domain-id="${domainId}"]`);
+                localBtns.forEach(b => {
+                    b.classList.remove('text-slate-900', 'border-b-2', 'border-slate-900', '-mb-[1px]', 'font-semibold');
+                    b.classList.add('text-slate-500', 'font-medium');
+                });
+
+                // Ativa o botao atual
+                btn.classList.add('text-slate-900', 'border-b-2', 'border-slate-900', '-mb-[1px]', 'font-semibold');
+                btn.classList.remove('text-slate-500', 'font-medium');
+            });
+        });
+        // 3. Listener Global para Interceptar Submissões de Formulários ".form-confirm"
+        const confirmForms = document.querySelectorAll('.form-confirm');
+        confirmForms.forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault(); // Impede submissão nativa
+                const message = form.getAttribute('data-message') || "Tem certeza que deseja continuar?";
+                
+                if ((window as any).cnxConfirm) {
+                    (window as any).cnxConfirm(message, () => {
+                        // Se aceitar, envia o formulário real
+                        (form as HTMLFormElement).submit();
+                    });
+                } else {
+                    // Fallback se algo no JS quebrar
+                    if (confirm(message)) {
+                        (form as HTMLFormElement).submit();
+                    }
+                }
+            });
+        });
+
+        // 4. Listeners para Lógica de Visualizar ENVs (Olhinho GET individual) e Copiar pro Clipboard
+        document.querySelectorAll('.btn-toggle-env').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+                const btnEl = e.currentTarget as HTMLElement;
+                const targetDisplay = btnEl.previousElementSibling as HTMLElement;
+                if (!targetDisplay) return;
+
+                if (targetDisplay.innerText === '••••••••••••') {
+                    const envId = btnEl.getAttribute('data-env-id');
+                    const projectId = document.querySelector('input[name="project_id"]')?.getAttribute('value');
+                    const integrationId = document.querySelector('input[name="integration_id"]')?.getAttribute('value');
+
+                    let actualValue = targetDisplay.getAttribute('data-value') || '';
+                    
+                    // Fetch real decryption
+                    if (!actualValue && envId) {
+                        targetDisplay.innerText = 'Buscando...';
+                        try {
+                            const res = await fetch(`/api/vercel/envs/decrypt?project_id=${projectId}&integration_id=${integrationId}&env_id=${envId}`);
+                            const data = await res.json();
+                            if (data.success && data.value) {
+                                actualValue = data.value;
+                                targetDisplay.setAttribute('data-value', actualValue);
+                            } else {
+                                actualValue = 'Não Autorizado / Vazio';
+                            }
+                        } catch(err) {
+                            actualValue = 'Falha na conexão';
+                        }
+                    }
+
+                    targetDisplay.innerText = actualValue || 'Sem Valor';
+                    targetDisplay.classList.remove('text-slate-600');
+                    targetDisplay.classList.add('text-slate-900');
+                } else {
+                    targetDisplay.innerText = '••••••••••••';
+                    targetDisplay.classList.add('text-slate-600');
+                    targetDisplay.classList.remove('text-slate-900');
+                }
+            });
+        });
+
+        document.querySelectorAll('.env-value-display').forEach((display) => {
+            display.addEventListener('click', async (e) => {
+                const el = e.currentTarget as HTMLElement;
+                if (el.innerText !== '••••••••••••') {
+                    const actualValue = el.getAttribute('data-value') || '';
+                    if (actualValue) {
+                        try {
+                            await navigator.clipboard.writeText(actualValue);
+                            if ((window as any).cnxToast) {
+                                (window as any).cnxToast('Credencial copiada!', 'success');
+                            }
+                        } catch (err) {
+                            console.error('Failed to copy', err);
+                        }
+                    }
+                }
+            });
+        });
+
+        // 5. Modal de Editar ENV
+        const editModal = document.getElementById('modal-edit-env');
+        const editBox = document.getElementById('box-edit-env');
+        const closeEditBtn = document.getElementById('btn-cancel-env-edit');
+        const envIdField = document.getElementById('edit-env-id') as HTMLInputElement;
+        const envTitle = document.getElementById('env-edit-modal-title');
+
+        if (editModal && closeEditBtn && editBox) {
+            document.querySelectorAll('.btn-edit-env').forEach(b => {
+                b.addEventListener('click', (e) => {
+                    const btnEl = e.currentTarget as HTMLElement;
+                    const id = btnEl.getAttribute('data-id');
+                    const keyName = btnEl.getAttribute('data-key');
+                    const targetsRaw = btnEl.getAttribute('data-targets') || '';
+                    
+                    if (envIdField) envIdField.value = id || '';
+                    if (envTitle) envTitle.innerText = `Editar Variável`;
+
+                    const envKeyField = document.getElementById('edit-env-key');
+                    if (envKeyField) (envKeyField as HTMLInputElement).value = keyName || '';
+
+                    // Configura o Select
+                    const targetArr = targetsRaw.split(',').map(t => t.trim());
+                    const targetSelect = document.getElementById('edit-env-target') as HTMLSelectElement;
+                    if (targetSelect) {
+                        if (targetArr.length >= 3) targetSelect.value = 'all';
+                        else targetSelect.value = targetArr[0] || 'all';
+                    }
+
+                    editModal.classList.remove('hidden');
+                    // Animate In effect
+                    requestAnimationFrame(() => {
+                        editBox.classList.remove('scale-95');
+                    });
+                });
+            });
+
+            closeEditBtn.addEventListener('click', () => {
+                editBox.classList.add('scale-95');
+                setTimeout(() => {
+                    editModal.classList.add('hidden');
+                }, 150);
+            });
+        }
+
+    });
+</script>

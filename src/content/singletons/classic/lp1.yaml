@@ -11,8 +11,8 @@ heroSubtitle: >-
   E você nem sabe por quê.
   
   A verdade: WordPress é tecnologia de 2003. O Google mudou. A web mudou. Mas você ainda usa o método antigo.
-heroCtaText: "QUERO DOMINAR O GOOGLE AGORA"
-heroCtaUrl: "#oferta"
+heroCtaText: "CRIAR MEU SITE GRÁTIS"
+heroCtaUrl: "/login"
 heroFeatures: "✅ Performance 10x superior | ✅ SEO otimizado | ✅ Custo zero de hospedagem"
 heroImage: null
 
@@ -156,8 +156,8 @@ offerItems:
 offerBadge: "⚡ PERFORMANCE 10X SUPERIOR"
 offerPriceTitle: "Comece Agora"
 offerPriceSubtitle: "Migre do WordPress para JAMstack"
-offerCtaText: "QUERO RANQUEAR NO GOOGLE"
-offerCtaUrl: "/contato"
+offerCtaText: "CRIAR MEU SITE GRÁTIS"
+offerCtaUrl: "/login"
 offerStack:
   - title: "100% Gratuito"
     description: "Hospedagem e deploy sem custos"
@@ -205,6 +205,6 @@ choiceOption1Text: >-
 choiceOption2Title: "Opção 2"
 choiceOption2Text: >-
   Migrar para JAMstack e construir um site que ranqueia no topo do Google com custo zero de hospedagem.
-choiceCtaText: "QUERO RANQUEAR NO GOOGLE AGORA"
-choiceCtaUrl: "/contato"
+choiceCtaText: "CRIAR MEU SITE AGORA"
+choiceCtaUrl: "/login"
 choiceFooter: "Migração completa do WordPress para JAMstack"
