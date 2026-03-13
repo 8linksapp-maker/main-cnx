@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Código de Verificação - MAIN CNX</title>
+</head>
+
+<body
+    style="margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #030712; color: #f9fafb;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+        style="max-width: 600px; margin: 40px auto; background: #111827; border-radius: 16px; overflow: hidden; border: 1px solid #374151;">
+        <!-- Header -->
+        <tr>
+            <td align="center" style="padding: 40px 0; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+                <h1
+                    style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; color: #ffffff;">
+                    MAIN CNX</h1>
+            </td>
+        </tr>
+
+        <!-- Content -->
+        <tr>
+            <td style="padding: 40px 32px;">
+                <h2 style="margin: 0 0 16px; font-size: 20px; font-weight: 600;">Verificação de Segurança</h2>
+                <p style="margin: 0 0 24px; line-height: 1.6; color: #9ca3af;">Use o código abaixo para confirmar sua
+                    identidade na <strong>MAIN CNX</strong> para o e-mail <strong>{{ .Email }}</strong>:</p>
+
+                <div
+                    style="text-align: center; padding: 24px; background-color: #1f2937; border-radius: 12px; border: 1px dashed #4b5563;">
+                    <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #6366f1;">{{ .Token
+                        }}</span>
+                </div>
+
+                <p style="margin: 24px 0 0; font-size: 14px; line-height: 1.6; color: #6b7280; text-align: center;">
+                    Este código é único e expira em poucos minutos. Não compartilhe com ninguém.
+                </p>
+            </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+            <td style="padding: 32px; border-top: 1px solid #1f2937; background-color: #111827; text-align: center;">
+                <p style="margin: 0; font-size: 12px; color: #4b5563;">&copy; 2026 MAIN CNX. Todos os direitos
+                    reservados.</p>
+                <div style="display: none;">
+                    Site: {{ .SiteURL }} | Data: {{ .Data }}
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
