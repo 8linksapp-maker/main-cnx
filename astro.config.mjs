@@ -10,7 +10,7 @@ export default defineConfig({
     adapter: vercel(),
     integrations: [
         react(),
-        tailwind()
+        tailwind({ applyBaseStyles: false })
     ],
     security: {
         checkOrigin: false
