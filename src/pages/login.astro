@@ -2,158 +2,123 @@
 /**
  * login.astro
  *
- * Página de login do SaaS. Usuários criam conta e entram por aqui usando Supabase.
+ * Página de autenticação do SaaS via Supabase.
  */
-import '../styles/global.css';
+import Layout from '../layouts/MainLayout.astro';
+import '@fontsource/inter';
+import '@fontsource/outfit';
+
+// Se já estiver logado, manda pro dashboard
+import { supabaseSSR } from '../lib/supabaseSSR';
+const supabaseSsr = supabaseSSR(Astro);
+const { data: { user } } = await supabaseSsr.auth.getUser();
+
+if (user) {
+    return Astro.redirect('/dashboard');
+}
 ---
-<!doctype html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Login | Main Astro</title>
-</head>
-<body class="min-h-screen font-sans antialiased text-slate-800 bg-gradient-to-b from-slate-50 via-white to-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-slate-900">
-            Acesse sua conta
-        </h2>
-        <p class="mt-2 text-center text-sm text-slate-600">
-            Esqueceu a senha? <button id="toggle-mode-btn" type="button" class="font-medium text-violet-600 hover:text-violet-500">Recupere aqui</button>
-        </p>
-    </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-slate-200">
-            <!-- Form -->
-            <form id="auth-form" class="space-y-6">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
-                    <div class="mt-1">
-                        <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm">
+<Layout title="Entrar | Main Astro">
+    <div class="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h1 class="text-center font-bold text-3xl text-violet-600 font-heading">Main Astro</h1>
+            <h2 class="mt-6 text-center text-2xl font-black text-slate-800 tracking-tight">
+                Entre na sua conta
+            </h2>
+            <p class="mt-2 text-center text-sm text-slate-600">
+                Gerencie seus sites JAMstack com facilidade.
+            </p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-200">
+                <form class="space-y-6" id="login-form">
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-slate-700">E-mail</label>
+                        <div class="mt-1">
+                            <input id="email" name="email" type="email" autocomplete="email" required 
+                                class="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm transition-all bg-slate-50 focus:bg-white"
+                                placeholder="seu@email.com" />
+                        </div>
                     </div>
-                </div>
 
-                <div id="password-container">
-                    <label for="password" class="block text-sm font-medium text-slate-700">Senha</label>
-                    <div class="mt-1">
-                        <input id="password" name="password" type="password" autocomplete="current-password" class="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm">
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-slate-700">Senha</label>
+                        <div class="mt-1">
+                            <input id="password" name="password" type="password" autocomplete="current-password" required 
+                                class="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm transition-all bg-slate-50 focus:bg-white"
+                                placeholder="••••••••" />
+                        </div>
                     </div>
-                </div>
 
-                <!-- Error Message Container -->
-                <div id="error-message" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200"></div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm">
+                            <a href="/forgot-password" class="font-semibold text-violet-600 hover:text-violet-500">
+                                Esqueceu sua senha?
+                            </a>
+                        </div>
+                    </div>
 
-                <!-- Success Message Container -->
-                <div id="success-message" class="hidden text-sm text-emerald-600 bg-emerald-50 p-3 rounded-md border border-emerald-200"></div>
+                    <div>
+                        <button type="submit" id="submit-btn" 
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-violet-500/20 text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
+                            Entrar no Painel
+                        </button>
+                    </div>
+                </form>
 
-                <div>
-                    <button type="submit" id="submit-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-colors">
-                        Entrar
-                    </button>
-                </div>
-            </form>
+                <div id="error-msg" class="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-semibold hidden"></div>
+            </div>
+            
+            <p class="mt-8 text-center text-xs text-slate-400">
+                &copy; {new Date().getFullYear()} CNX SaaS — Todos os direitos reservados.
+            </p>
         </div>
     </div>
+</Layout>
 
-    <script>
-        import { supabase } from '../lib/supabase';
+<style>
+    .font-heading {
+        font-family: 'Outfit', system-ui, sans-serif;
+    }
+</style>
 
-        let isLoginMode = true;
+<script>
+    import { supabase } from '../lib/supabase';
 
-        const form = document.getElementById('auth-form') as HTMLFormElement;
-        const emailInput = document.getElementById('email') as HTMLInputElement;
-        const passwordInput = document.getElementById('password') as HTMLInputElement;
-        const submitBtn = document.getElementById('submit-btn');
-        const toggleBtn = document.getElementById('toggle-mode-btn');
-        const errorDiv = document.getElementById('error-message');
-        const successDiv = document.getElementById('success-message');
+    const loginForm = document.getElementById('login-form') as HTMLFormElement;
+    const errorMsg = document.getElementById('error-msg') as HTMLDivElement;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
-        // Check if user is already logged in
-        async function checkSession() {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) {
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Entrando...';
+
+        const formData = new FormData(loginForm);
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Entrar no Painel';
+            } else {
                 window.location.href = '/dashboard';
             }
+        } catch (err: any) {
+            errorMsg.textContent = 'Erro inesperado. Tente novamente.';
+            errorMsg.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Entrar no Painel';
         }
-        checkSession();
-
-        // UI Toggle Login / Recuperar Senha
-        const passwordContainer = document.getElementById('password-container');
-
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                isLoginMode = !isLoginMode;
-                toggleBtn.textContent = isLoginMode ? "Recupere aqui" : "fazer login";
-                if(submitBtn) submitBtn.textContent = isLoginMode ? "Entrar" : "Enviar link de recuperação";
-                
-                const heading = document.querySelector('h2');
-                if(heading) heading.textContent = isLoginMode ? "Acesse sua conta" : "Recuperar Senha";
-
-                if (passwordContainer) {
-                    if (isLoginMode) {
-                        passwordContainer.classList.remove('hidden');
-                        passwordInput.setAttribute('required', 'true');
-                    } else {
-                        passwordContainer.classList.add('hidden');
-                        passwordInput.removeAttribute('required');
-                    }
-                }
-
-                if(errorDiv) errorDiv.classList.add('hidden');
-                if(successDiv) successDiv.classList.add('hidden');
-            });
-        }
-
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                
-                if (submitBtn) {
-                    submitBtn.textContent = "Processando...";
-                    submitBtn.setAttribute("disabled", "true");
-                }
-
-                if(errorDiv) errorDiv.classList.add('hidden');
-                if(successDiv) successDiv.classList.add('hidden');
-
-                try {
-                    if (isLoginMode) {
-                        const { data, error } = await supabase.auth.signInWithPassword({
-                            email,
-                            password,
-                        });
-                        if (error) throw error;
-                        window.location.href = '/dashboard';
-                    } else {
-                        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                            redirectTo: `${window.location.origin}/update-password`,
-                        });
-                        if (error) throw error;
-                        
-                        if (successDiv) {
-                            successDiv.textContent = "Link de recuperação enviado! Verifique seu email.";
-                            successDiv.classList.remove('hidden');
-                        }
-                    }
-                } catch (err: any) {
-                    if (errorDiv) {
-                        errorDiv.textContent = err.message || "Ocorreu um erro temporário.";
-                        errorDiv.classList.remove('hidden');
-                    }
-                } finally {
-                    if (submitBtn) {
-                        submitBtn.textContent = isLoginMode ? "Entrar" : "Enviar link de recuperação";
-                        submitBtn.removeAttribute("disabled");
-                    }
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+    });
+</script>

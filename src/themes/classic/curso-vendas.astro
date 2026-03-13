@@ -20,6 +20,7 @@
  */
 
 import MainLayout from '../../layouts/MainLayout.astro';
+import Header from './components/Header.astro';
 
 interface Props {
     cursoVendasData: any;
@@ -29,7 +30,8 @@ interface Props {
 const { cursoVendasData, themeId } = Astro.props;
 ---
 
-<MainLayout title={cursoVendasData.courseName ? `${cursoVendasData.courseName} - Curso` : 'Main Astro'} description="Plataforma Main Astro: crie site ou blog em 5 minutos com IA, sem código e sem custo de hospedagem. Crie, publique e ranqueie.">
+<MainLayout title={cursoVendasData.courseName ? `${cursoVendasData.courseName} - Curso` : 'Meu Site com IA - Curso'} description="Curso Meu Site com IA: crie site ou blog em 5 minutos com IA, sem código e sem custo de hospedagem. Crie, publique e ranqueie.">
+    <Header activeThemeId={themeId} />
     
     <!-- 1. HERO SECTION -->
     <section class="relative min-h-screen flex items-center justify-center pt-24 md:pt-32 overflow-hidden">
