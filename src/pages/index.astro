@@ -161,7 +161,14 @@
 										<img src="/braine-assets/images/main-slider/graph.png" alt="" />
 									</div>
 									<div class="slider-one_image">
-										<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										<div class="browser-mockup">
+											<div class="browser-header">
+												<span class="dot"></span>
+												<span class="dot"></span>
+												<span class="dot"></span>
+											</div>
+											<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										</div>
 									</div>
 								</div>
 							</div>
@@ -212,7 +219,14 @@
 										<img src="/braine-assets/images/main-slider/graph.png" alt="" />
 									</div>
 									<div class="slider-one_image">
-										<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										<div class="browser-mockup">
+											<div class="browser-header">
+												<span class="dot"></span>
+												<span class="dot"></span>
+												<span class="dot"></span>
+											</div>
+											<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										</div>
 									</div>
 								</div>
 							</div>
@@ -263,7 +277,14 @@
 										<img src="/braine-assets/images/main-slider/graph.png" alt="" />
 									</div>
 									<div class="slider-one_image">
-										<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										<div class="browser-mockup">
+											<div class="browser-header">
+												<span class="dot"></span>
+												<span class="dot"></span>
+												<span class="dot"></span>
+											</div>
+											<img src="/braine-assets/images/main-slider/hero-ia.png" alt="" />
+										</div>
 									</div>
 								</div>
 							</div>
@@ -277,18 +298,68 @@
 	</section>
 
 	<style is:global>
-		/* Estabiliza a animação de revelação do Hero e ajusta a imagem focando na esquerda */
+		/* Define o fundo do Header com a cor exata #17121e apenas no estado inicial, ocultando padrões */
+		.main-header.header-style-one:not(.fixed-header) {
+			background-color: #17121e !important;
+		}
+		
+		.main-header.header-style-one:not(.fixed-header) .header-lower,
+		.main-header.header-style-one:not(.fixed-header) .inner-container {
+			background: none !important;
+		}
+
+		/* Estabiliza a animação de revelação do Hero e Estilo Browser Mockup */
 		.slider-one .swiper-slide-active .slider-one_image {
 			clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
 			opacity: 1 !important;
 			visibility: visible !important;
 		}
 
+		.browser-mockup {
+			position: relative;
+			background: #1a1a1a;
+			border-radius: 12px;
+			padding-top: 25px; 
+			box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 20px rgba(108, 92, 231, 0.2); 
+			border: 1px solid rgba(255,255,255,0.1);
+			overflow: hidden;
+			transition: transform 0.4s ease;
+		}
+
+		.browser-header {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 25px;
+			background: rgba(255,255,255,0.05);
+			display: flex;
+			align-items: center;
+			padding: 0 12px;
+			gap: 6px;
+		}
+
+		.browser-header .dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.browser-header .dot:nth-child(1) { background: #ff5f56; }
+		.browser-header .dot:nth-child(2) { background: #ffbd2e; }
+		.browser-header .dot:nth-child(3) { background: #27c93f; }
+
 		.slider-one_image img {
 			width: 100% !important;
-			height: 600px !important;
+			height: 575px !important; 
 			object-fit: cover !important;
-			object-position: left top !important; /* Foca no canto superior esquerdo */
+			object-position: left top !important;
+			display: block;
+		}
+
+		.browser-mockup:hover {
+			transform: translateY(-5px); 
 		}
 	</style>
 	<!-- End Main Slider Section -->
