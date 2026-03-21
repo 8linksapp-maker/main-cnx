@@ -115,11 +115,10 @@ if (vercelToken) {
 ---
 
 <CmsLayout title={`Configurações: ${site.company_name} | CMS`} siteId={id as string} siteName={site.company_name} repoName={site.repo_name}>
-    <div class="mb-10">
-        <h2 class="text-3xl font-black text-slate-900 mb-3 tracking-tight">Configurações Globais</h2>
-        <p class="text-slate-500 font-medium text-lg leading-relaxed max-w-2xl">
-            Edite a identidade viva do seu Site. O título principal, links das redes sociais no rodapé, endereço e e-mails de contato da empresa e paleta de cores inteira.
-        </p>
+    <div class="mb-8 pb-6 border-b border-slate-100">
+        <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Configurações</p>
+        <h2 class="text-2xl font-bold text-slate-900 mb-1">Configurações Globais</h2>
+        <p class="text-sm text-slate-400 max-w-xl">Nome do site, redes sociais, e-mails de contato, paleta de cores e fontes.</p>
     </div>
 
     <!-- O Editor Interativo em React que falará com a API GitBehind -->

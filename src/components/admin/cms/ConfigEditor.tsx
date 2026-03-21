@@ -25,7 +25,7 @@ function DnsInstructions({ domain }: { domain: any }) {
     const copy = (text: string) => navigator.clipboard.writeText(text);
 
     return (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden mt-4 w-full text-slate-800 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-md overflow-hidden mt-4 w-full text-slate-800 shadow-sm">
             {/* Tabs */}
             <div className="flex border-b border-slate-200 bg-slate-50/50 px-4">
                 <button
@@ -302,7 +302,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
 
     // ─── Classes de Aba ───────────────────────────────────────────────────────
     const tabClass = (tab: ActiveTab) =>
-        `pb-3 font-semibold border-b-2 transition-colors flex items-center gap-2 text-sm ${activeTab === tab
+        `pb-3 font-medium border-b-2 transition-colors flex items-center gap-2 text-sm ${activeTab === tab
             ? 'text-violet-600 border-violet-600'
             : 'text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300'}`;
 
@@ -330,7 +330,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                     {/* Card */}
                     <div className="relative bg-white rounded-2xl shadow-2xl shadow-slate-900/25 border border-slate-200 p-8 max-w-md w-full">
                         <div className="flex items-start gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                            <div className="w-12 h-12 rounded-md bg-red-100 flex items-center justify-center shrink-0">
                                 <Trash2 className="w-6 h-6 text-red-600" />
                             </div>
                             <div>
@@ -343,13 +343,13 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
-                                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+                                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-md transition-colors"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={confirmDelete}
-                                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-red-500/20"
+                                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-md transition-colors shadow-lg shadow-red-500/20"
                             >
                                 Sim, excluir tudo
                             </button>
@@ -380,14 +380,14 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
             {activeTab === 'geral' && (
                 <form onSubmit={handleSave} className="space-y-8">
                     {/* Action Bar Sticky */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-xl p-5 px-8 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 sticky top-20 z-40">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/90 backdrop-blur-md py-4 px-6 border-b border-slate-200 sticky top-0 z-40 -mx-6 mb-8 mt-[-1.5rem]">
                         <div>
                             <h2 className="text-lg font-bold text-slate-800">Status de Sincronização</h2>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-slate-500"></span> Conectado a branch Main
                             </p>
                         </div>
-                        <button type="submit" disabled={saving} className="w-full sm:w-auto bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-8 py-3 rounded-xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                        <button type="submit" disabled={saving} className="w-full sm:w-auto bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow-sm shadow-violet-600/20 transition-all">
                             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                             {saving ? 'Validando e Comitando...' : 'Salvar Alterações Globais'}
                         </button>
@@ -396,14 +396,14 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                     {configError && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200 flex gap-3"><AlertCircle className="w-5 h-5 shrink-0" /> {configError}</div>}
 
                     {/* Identidade Base */}
-                    <div className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-                        <h3 className="text-xl font-bold text-slate-800 mb-8 border-b border-slate-100 pb-4 flex items-center gap-3">
-                            <span className="bg-slate-100 p-2 rounded-lg text-slate-600">📦</span> Identidade Base
+                    <div className="p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2">
+                            Identidade Base
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="md:col-span-2 flex flex-col sm:flex-row gap-8 items-start">
                                 <div className="w-full sm:w-1/3">
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">Logo Principal</label>
+                                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Logo Principal</label>
                                     <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
                                         <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                                             const file = e.target.files?.[0];
@@ -426,28 +426,28 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                                 </div>
                                 <div className="w-full sm:w-2/3 space-y-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Nome do Site / Empresa</label>
-                                        <input type="text" value={config?.name || ''} onChange={e => setConfig({ ...config, name: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all text-slate-800 font-medium" />
+                                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Nome do Site / Empresa</label>
+                                        <input type="text" value={config?.name || ''} onChange={e => setConfig({ ...config, name: e.target.value })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm text-slate-800 font-medium" />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-bold text-slate-700 mb-2">Cor Primária (Hex)</label>
-                                            <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Cor Primária (Hex)</label>
+                                            <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-md">
                                                 <input type="color" value={config?.theme?.primary || '#000000'} onChange={e => setConfig({ ...config, theme: { ...config.theme, primary: e.target.value, primaryDark: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
                                                 <input type="text" value={config?.theme?.primary || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, primary: e.target.value, primaryDark: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-bold text-slate-700 mb-2">Cor Secundária (Hex)</label>
-                                            <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Cor Secundária (Hex)</label>
+                                            <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-md">
                                                 <input type="color" value={config?.theme?.accent || '#ffffff'} onChange={e => setConfig({ ...config, theme: { ...config.theme, accent: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
                                                 <input type="text" value={config?.theme?.accent || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, accent: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Combinação de Fontes</label>
-                                        <select value={config?.theme?.font || 'outfit'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 font-medium text-slate-700">
+                                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Combinação de Fontes</label>
+                                        <select value={config?.theme?.font || 'outfit'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 font-medium text-slate-700 shadow-sm">
                                             <optgroup label="Mais Usadas / Populares">
                                                 <option value="inter">Inter & Roboto Mono (Moderno / Tech)</option>
                                                 <option value="outfit">Outfit & Inter (Clean / SaaS)</option>
@@ -485,37 +485,37 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
 
 
                     {/* Redes Sociais */}
-                    <div className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-                        <h3 className="text-xl font-bold text-slate-800 mb-8 border-b border-slate-100 pb-4 flex items-center gap-3">
-                            <span className="bg-slate-100 p-2 rounded-lg text-slate-600">🔗</span> Redes Sociais (Rodapé)
+                    <div className="p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2">
+                            Redes Sociais (Rodapé)
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {['instagram', 'twitter', 'linkedin', 'github'].map(social => (
                                 <div key={social}>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2 capitalize">{social}</label>
-                                    <input type="url" placeholder={`https://${social}.com/seuperfil`} value={config?.social?.[social] || ''} onChange={e => setConfig({ ...config, social: { ...config.social, [social]: e.target.value } })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all text-sm font-mono text-slate-600" />
+                                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">{social}</label>
+                                    <input type="url" placeholder={`https://${social}.com/seuperfil`} value={config?.social?.[social] || ''} onChange={e => setConfig({ ...config, social: { ...config.social, [social]: e.target.value } })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all font-mono text-slate-600 shadow-sm" />
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Contato */}
-                    <div className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-                        <h3 className="text-xl font-bold text-slate-800 mb-8 border-b border-slate-100 pb-4 flex items-center gap-3">
-                            <span className="bg-slate-100 p-2 rounded-lg text-slate-600">📬</span> SAC / Localização
+                    <div className="p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2">
+                            SAC / Localização
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">E-mail Comercial Oficial</label>
-                                <input type="email" value={config?.contact?.email || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, email: e.target.value } })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all text-slate-700 font-medium" />
+                                <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">E-mail Comercial Oficial</label>
+                                <input type="email" value={config?.contact?.email || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, email: e.target.value } })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all text-slate-700 font-medium shadow-sm" />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Telefone (Formato Visível)</label>
-                                <input type="text" placeholder="+55 (11) 90000-0000" value={config?.contact?.phone || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, phone: e.target.value } })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all text-slate-700 font-medium" />
+                                <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Telefone (Formato Visível)</label>
+                                <input type="text" placeholder="+55 (11) 90000-0000" value={config?.contact?.phone || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, phone: e.target.value } })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all text-slate-700 font-medium shadow-sm" />
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Endereço Comercial / Sede</label>
-                                <input type="text" value={config?.contact?.address || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, address: e.target.value } })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-all text-slate-700 font-medium" />
+                                <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Endereço Comercial / Sede</label>
+                                <input type="text" value={config?.contact?.address || ''} onChange={e => setConfig({ ...config, contact: { ...config.contact, address: e.target.value } })} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all text-slate-700 font-medium shadow-sm" />
                             </div>
                         </div>
                     </div>
@@ -528,7 +528,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
             {activeTab === 'deploys' && (
                 <div className="space-y-6">
                     {
-                        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+                        <div className="p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                                 <div>
                                     <h3 className="font-bold text-lg text-slate-800">Histórico de Deploys</h3>
@@ -537,7 +537,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                                 <button
                                     onClick={handleRedeploy}
                                     disabled={redeploying || !deploys[0]?.uid}
-                                    className="px-5 py-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2"
+                                    className="px-5 py-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 bg-slate-800 text-white font-bold rounded-md hover:bg-slate-900 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2"
                                 >
                                     {redeploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                                     {redeploying ? 'Agendando...' : 'Forçar Deploy'}
@@ -545,7 +545,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                             </div>
 
                             {deploys.length === 0 ? (
-                                <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                                <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-md">
                                     <p className="text-slate-500 font-medium">Nenhum deploy registrado.</p>
                                 </div>
                             ) : (
@@ -575,7 +575,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
 
             {activeTab === 'dominios' && (
                 <div className="space-y-6">
-                    <div className="bg-white border text-left border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8">
+                    <div className="p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
                         <div className="mb-6">
                             <h3 className="font-bold text-lg text-slate-800">Gerenciar Domínios</h3>
                             <p className="text-sm text-slate-500">Adicione domínios personalizados (<code>www.seudominio.com.br</code>) para este projeto.</p>
@@ -591,18 +591,18 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                                 name="domain_name"
                                 placeholder="Ex: meudominio.com.br"
                                 required
-                                className="flex-1 px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-colors font-mono text-sm"
+                                className="flex-1 px-4 py-3 bg-slate-50 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-violet-600 focus:border-violet-500 transition-colors font-mono text-sm"
                             />
                             <select
                                 name="target"
-                                className="px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors text-slate-700 font-medium cursor-pointer"
+                                className="px-4 py-3 bg-slate-50 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-violet-600 transition-colors text-slate-700 font-medium cursor-pointer"
                             >
                                 <option value="production">Ir para Produção</option>
                                 <option value="preview">Ir para Preview</option>
                             </select>
                             <button
                                 type="submit"
-                                className="px-6 py-3 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-500/25 whitespace-nowrap flex items-center gap-2"
+                                className="px-6 py-3 bg-violet-600 text-white font-bold rounded-md hover:bg-violet-700 transition-colors shadow-lg shadow-violet-500/25 whitespace-nowrap flex items-center gap-2"
                             >
                                 Adicionar Domínio
                             </button>
@@ -612,13 +612,13 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                         <h4 className="font-bold text-sm text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Domínios Ativos</h4>
 
                         {domains.length === 0 ? (
-                            <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                            <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-300 rounded-md">
                                 <p className="text-slate-500 font-medium">Nenhum domínio configurado.</p>
                             </div>
                         ) : (
                             <ul className="space-y-4">
                                 {domains.map((dom: any) => (
-                                    <li key={dom.name} className="flex flex-col p-5 bg-white border border-slate-200 rounded-xl shadow-sm gap-4 transition-all hover:border-slate-300 relative">
+                                    <li key={dom.name} className="flex flex-col p-5 bg-white border border-slate-200 rounded-md shadow-sm gap-4 transition-all hover:border-slate-300 relative">
                                         {/* Barra âmbar para configuração pendente */}
                                         {(!dom.verified || dom.misconfigured) && (
                                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-l-xl"></div>
@@ -687,7 +687,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
             {/* ABA: ZONA DE PERIGO                                            */}
             {/* ═══════════════════════════════════════════════════════════════ */}
             {activeTab === 'perigo' && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8">
+                <div className="p-8 mb-8 bg-red-50 border border-red-200 rounded-2xl shadow-sm">
                     <h3 className="font-bold text-xl text-red-800 mb-2">Zona de Perigo</h3>
                     <p className="text-red-700 mb-6">As ações abaixo são destrutivas e afetam o site permanentemente na Vercel e no GitHub.</p>
 
@@ -695,7 +695,7 @@ export default function ConfigEditor({ siteId, repoName, vercelProject: initialP
                         <button
                             onClick={handleDelete}
                             disabled={deleting}
-                            className="flex-1 text-center px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-red-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="flex-1 text-center px-6 py-3 bg-red-600 text-white font-bold rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-red-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                             {deleting ? 'Excluindo...' : 'Excluir Projeto Permanentemente'}

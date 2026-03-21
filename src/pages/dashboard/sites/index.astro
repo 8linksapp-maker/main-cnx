@@ -62,29 +62,24 @@ if (hasVercelIntegration) {
 ---
 
 <DashboardLayout title="Meus Sites | Main CNX">
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-6">
+    <!-- Page Header -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-slate-900 mb-2 flex items-center gap-3">
-                <span class="text-3xl">📁</span> Meus Sites
-            </h2>
-            <p class="text-slate-600">Gerencie todos os seus domínios e projetos integrados da Vercel.</p>
+            <h2 class="text-2xl font-bold text-slate-900 mb-1">Projetos Vercel</h2>
+            <p class="text-sm text-slate-600 font-medium">Gerencie todos os seus domínios e projetos integrados da Vercel.</p>
         </div>
-        <a href="/dashboard/create-site" class="px-5 py-2.5 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-colors shadow-md shadow-violet-500/20 flex items-center gap-2 w-max">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
+        <a href="/dashboard/create-site" class="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-700 transition-colors shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
             Novo Site
         </a>
     </div>
 
     {/* Alertas */}
     {!hasVercelIntegration && (
-        <div class="mb-8 bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
-            <h3 class="font-bold text-amber-800 text-lg mb-2">Acesso Necessário</h3>
-            <p class="text-amber-700 mb-4">
-                Você ainda não conectou nenhuma conta da Vercel. Não podemos exibir seus sites.
-            </p>
-            <a href="/dashboard/settings" class="inline-block px-4 py-2 bg-amber-100 font-semibold text-amber-800 rounded-lg hover:bg-amber-200 transition-colors border border-amber-300">
+        <div class="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <h3 class="font-bold text-amber-800 text-sm mb-1">Acesso Necessário</h3>
+            <p class="text-amber-700 text-sm mb-3">Você ainda não conectou nenhuma conta da Vercel.</p>
+            <a href="/dashboard/settings" class="inline-block px-4 py-1.5 bg-amber-100 font-semibold text-amber-800 text-sm rounded-lg hover:bg-amber-200 transition-colors border border-amber-200">
                 Conectar Conta
             </a>
         </div>
@@ -93,8 +88,9 @@ if (hasVercelIntegration) {
     {accountErrors.length > 0 && (
         <div class="mb-8 space-y-2">
             {accountErrors.map(err => (
-                <div class="bg-red-50 border border-red-200 rounded-2xl p-5 text-red-700 text-sm font-medium">
-                    ⚠️ {err}
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 text-red-700 text-sm font-medium flex gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    {err}
                 </div>
             ))}
         </div>
@@ -104,12 +100,12 @@ if (hasVercelIntegration) {
     {hasVercelIntegration && (
         <div>
             {allProjects.length === 0 ? (
-                <div class="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-12 text-center">
-                    <span class="text-4xl block mb-4">🕸️</span>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Nenhum Projeto Encontrado</h3>
-                    <p class="text-slate-500 font-medium mb-6">As suas conexões com a Vercel estão vazias.</p>
-                    <a href="/dashboard/create-site" class="inline-block px-6 py-3 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors shadow-sm gap-2">
-                        Deploiar Meu Primeiro Site Agora
+                <div class="bg-white rounded-xl border border-dashed border-slate-200 p-12 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-300 mx-auto mb-4"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <h3 class="text-base font-bold text-slate-700 mb-2">Nenhum Projeto Encontrado</h3>
+                    <p class="text-slate-400 font-medium text-sm mb-6">As suas conexões com a Vercel estão vazias.</p>
+                    <a href="/dashboard/create-site" class="inline-block px-5 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
+                        Deploiar Meu Primeiro Site
                     </a>
                 </div>
             ) : (
@@ -123,32 +119,29 @@ if (hasVercelIntegration) {
                             const isError = deployState === 'ERROR';
                             const isBuilding = deployState === 'BUILDING';
                             
-                            // Badge color logic
                             let statusColor = 'bg-slate-400';
                             let statusText = 'Desconhecido';
                             
-                            if (isReady) { statusColor = 'bg-emerald-500'; statusText = 'Disponível'; }
+                            if (isReady) { statusColor = 'bg-emerald-500'; statusText = 'Online'; }
                             else if (isError) { statusColor = 'bg-red-500'; statusText = 'Falha'; }
-                            else if (isBuilding) { statusColor = 'bg-amber-500 animate-pulse'; statusText = 'Construindo'; }
+                            else if (isBuilding) { statusColor = 'bg-amber-500 animate-pulse'; statusText = 'Building'; }
 
                             return (
                                 <li>
-                                    <a href={`/dashboard/sites/${proj.id}?integration=${proj._integrationId}`} class="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-slate-50 transition-colors group">
+                                    <a href={`/dashboard/sites/${proj.id}?integration=${proj._integrationId}`} class="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 hover:bg-slate-50 transition-colors group">
                                         <div class="flex items-center gap-4 mb-4 sm:mb-0">
-                                            <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                                            <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors shrink-0">
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
                                             </div>
                                             <div>
-                                                <div class="flex items-center gap-3 mb-1">
-                                                    <h4 class="font-bold text-lg text-slate-800 group-hover:text-violet-700 transition-colors">
-                                                        {proj.name}
-                                                    </h4>
-                                                    <span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100/80 text-xs font-medium text-slate-600 border border-slate-200">
+                                                <div class="flex items-center gap-2 mb-0.5">
+                                                    <h4 class="font-bold text-sm text-slate-800 group-hover:text-violet-700 transition-colors">{proj.name}</h4>
+                                                    <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-xs font-medium text-slate-500 border border-slate-200">
                                                         <span class={`w-1.5 h-1.5 rounded-full ${statusColor}`}></span>
                                                         {statusText}
                                                     </span>
                                                 </div>
-                                                <p class="text-sm text-slate-500 font-mono">{domain}</p>
+                                                <p class="text-xs text-slate-400 font-mono">{domain}</p>
                                             </div>
                                         </div>
                                         

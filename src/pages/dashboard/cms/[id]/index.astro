@@ -2,7 +2,6 @@
 import CmsLayout from '../../../../layouts/CmsLayout.astro';
 import CmsDashboard from '../../../../components/admin/cms/CmsDashboard.tsx';
 import { supabaseSSR } from '../../../../lib/supabaseSSR';
-import { LayoutTemplate, Settings, Users, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
 
 const { id } = Astro.params;
 const supabase = supabaseSSR(Astro);
@@ -23,90 +22,88 @@ if (!site || siteError) {
 }
 ---
 
-<CmsLayout title={`Painel: ${site.company_name} | CMS`} siteId={id} siteName={site.company_name} repoName={site.repo_name}>
-    
-    <!-- Cabeçalho (Simplificado pois a sidebar já faz o trabalho duro) -->
-    <div class="mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
-        <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-50 rounded-full blur-3xl"></div>
-        <div class="relative z-10 w-full flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-black text-slate-900 mb-2">
-                    Bem-vindo ao Painel, <span class="text-violet-600">{site.company_name}</span> 👋
-                </h2>
-                <p class="text-slate-500 font-medium">Você está no painel central da sua publicação digital.</p>
-            </div>
-            <a href={site.url} target="_blank" class="px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 flex items-center gap-2">
-                Abrir Site Live <ExternalLink class="w-4 h-4" />
+<CmsLayout title={`${site.company_name} · CMS`} siteId={id} siteName={site.company_name} repoName={site.repo_name}>
+
+    <!-- Hero -->
+    <div class="mb-8 pb-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Painel do projeto</p>
+            <h2 class="text-xl font-bold text-slate-900">{site.company_name}</h2>
+        </div>
+        <a
+            href={site.url}
+            target="_blank"
+            class="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900 text-sm font-semibold rounded-lg transition-all shrink-0"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+            Abrir Site
+        </a>
+    </div>
+
+    <!-- Stats (React) -->
+    <CmsDashboard client:load siteId={id as string} repoName={site.repo_name} />
+
+    <!-- Atalhos Rápidos -->
+    <div class="mt-8">
+        <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Atalhos</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+            <!-- Blog -->
+            <a href={`/dashboard/cms/${id}/posts`} class="group bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-sm p-5 flex items-start gap-4 transition-all duration-150">
+                <div class="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-600"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-bold text-slate-800 mb-0.5 group-hover:text-violet-700 transition-colors">Posts</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Escreva, edite e publique postagens do blog.</p>
+                </div>
             </a>
+
+            <!-- Páginas -->
+            <a href={`/dashboard/cms/${id}/pages`} class="group bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-sm p-5 flex items-start gap-4 transition-all duration-150">
+                <div class="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-600"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-bold text-slate-800 mb-0.5 group-hover:text-violet-700 transition-colors">Páginas</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Hero, slogans, missões e blocos estáticos.</p>
+                </div>
+            </a>
+
+            <!-- Categorias -->
+            <a href={`/dashboard/cms/${id}/categories`} class="group bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-sm p-5 flex items-start gap-4 transition-all duration-150">
+                <div class="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-600"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" x2="7.01" y1="7" y2="7"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-bold text-slate-800 mb-0.5 group-hover:text-violet-700 transition-colors">Categorias</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Taxonomia do blog — crie, renomeie ou remova.</p>
+                </div>
+            </a>
+
+            <!-- Autores -->
+            <a href={`/dashboard/cms/${id}/authors`} class="group bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-sm p-5 flex items-start gap-4 transition-all duration-150">
+                <div class="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-600"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-bold text-slate-800 mb-0.5 group-hover:text-violet-700 transition-colors">Autores</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Perfis de autores — nomes, bios e fotos.</p>
+                </div>
+            </a>
+
+            <!-- Configurações -->
+            <a href={`/dashboard/cms/${id}/config`} class="group bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-sm p-5 flex items-start gap-4 transition-all duration-150">
+                <div class="w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-600"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-bold text-slate-800 mb-0.5 group-hover:text-violet-700 transition-colors">Configurações</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Nome, cores, fontes, e-mails e redes sociais.</p>
+                </div>
+            </a>
+
         </div>
     </div>
 
-    <!-- Estatísticas Vivas (React Component) -->
-    <CmsDashboard client:load siteId={id as string} repoName={site.repo_name} />
-
-    <!-- Grid de Módulos Rápidos -->
-    <h3 class="text-xl font-bold text-slate-800 mb-6 px-1">Atalhos Rápidos</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        <!-- Módulo: Configurações Globais -->
-        <a href={`/dashboard/cms/${id}/config`} class="group bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-start hover:border-violet-500 hover:shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-violet-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-violet-600 group-hover:text-white group-hover:border-violet-600 transition-all duration-300 shadow-sm relative z-10">
-                <Settings className="w-8 h-8" />
-            </div>
-            <h4 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-violet-600 transition-colors relative z-10">Configurações Base</h4>
-            <p class="text-sm text-slate-500 leading-relaxed relative z-10 font-medium">
-                Altere nome do site, paleta de cores globais, fontes, e-mails de contato e redes sociais do rodapé.
-            </p>
-        </a>
-
-        <!-- Módulo: Páginas Estáticas -->
-        <a href={`/dashboard/cms/${id}/pages`} class="group bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-start hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 transition-all duration-300 shadow-sm relative z-10">
-                <LayoutTemplate className="w-8 h-8" />
-            </div>
-            <h4 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors relative z-10">Páginas Estruturais</h4>
-            <p class="text-sm text-slate-500 leading-relaxed relative z-10 font-medium">
-                Edite os textos do Hero, slogões, missões e blocos estáticos das páginas Home e Sobre Nós.
-            </p>
-        </a>
-
-        <!-- Módulo: Posts (Blog) -->
-        <a href={`/dashboard/cms/${id}/posts`} class="group bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-start hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all duration-300 shadow-sm relative z-10">
-                <FileText className="w-8 h-8" />
-            </div>
-            <h4 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors relative z-10">Artigos do Blog</h4>
-            <p class="text-sm text-slate-500 leading-relaxed relative z-10 font-medium">
-                Gerenciador da redação. Escreva, edite ou exclua postagens. Altere status e defina categorias e datas.
-            </p>
-        </a>
-
-        <!-- Módulo: Categorias -->
-        <a href={`/dashboard/cms/${id}/categories`} class="group bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-start hover:border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-500 transition-all duration-300 shadow-sm relative z-10">
-                <span class="text-3xl">🏷️</span>
-            </div>
-            <h4 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors relative z-10">Categorias</h4>
-            <p class="text-sm text-slate-500 leading-relaxed relative z-10 font-medium">
-                Gerencie as taxonomia do seu blog. Crie, renomeie ou remova categorias que serão usadas nos seus artigos.
-            </p>
-        </a>
-
-        <!-- Módulo: Autores -->
-        <a href={`/dashboard/cms/${id}/authors`} class="group bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-start hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 text-slate-600 flex items-center justify-center mb-8 group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-500 transition-all duration-300 shadow-sm relative z-10">
-                <Users className="w-8 h-8" />
-            </div>
-            <h4 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors relative z-10">Equipe Editora</h4>
-            <p class="text-sm text-slate-500 leading-relaxed relative z-10 font-medium">
-                Gerencie os perfis assinantes do blog. Altere nomenclaturas, biografias rápidas e links de foto.
-            </p>
-        </a>
-
-    </div>
 </CmsLayout>

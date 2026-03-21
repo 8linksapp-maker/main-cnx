@@ -187,7 +187,7 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
                         {previewMode ? "Fechar Visor" : "Visualizar Parte A Parte ◨"}
                     </button>
 
-                    <button type="button" onClick={() => handleSave(activeTab)} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors">
+                    <button type="button" onClick={() => handleSave(activeTab)} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-violet-600/20">
                         {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                         {saving ? 'Atualizando...' : 'Atualizar'}
                     </button>
@@ -238,16 +238,16 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
                                             />
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-violet-50 focus:outline-none transition-colors"><ChevronUp className="w-4 h-4" /></button>
-                                            <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-violet-50 focus:outline-none transition-colors"><ChevronDown className="w-4 h-4" /></button>
-                                            <button onClick={() => removeSection(activeTab, idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 focus:outline-none transition-colors ml-2"><Trash2 className="w-4 h-4" /></button>
+                                            <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 focus:outline-none transition-colors rounded"><ChevronUp className="w-4 h-4" /></button>
+                                            <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 focus:outline-none transition-colors rounded"><ChevronDown className="w-4 h-4" /></button>
+                                            <button onClick={() => removeSection(activeTab, idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 focus:outline-none transition-colors ml-2 rounded"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
                                     <textarea
                                         value={section.text}
                                         onChange={(e) => updateSection(activeTab, idx, 'text', e.target.value)}
                                         rows={6}
-                                        className="w-full bg-white border border-[#8c8f94] rounded-sm px-4 py-3 text-slate-800 text-sm leading-relaxed focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] transition-colors resize-none"
+                                        className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-800 text-base leading-relaxed focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors resize-none shadow-sm"
                                         placeholder="Escreva o texto jurídico aqui..."
                                     />
                                 </div>
@@ -255,7 +255,7 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
 
                             <button
                                 onClick={() => addSection(activeTab)}
-                                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-violet-50/20 transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase"
+                                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-lg text-slate-500 hover:text-violet-600 hover:border-violet-600 hover:bg-violet-50 transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase"
                             >
                                 <Plus className="w-6 h-6" />
                                 Adicionar Nova Seção / Bloco de Texto

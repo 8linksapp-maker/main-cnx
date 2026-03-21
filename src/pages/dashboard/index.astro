@@ -33,12 +33,10 @@ let healthStats = { ready: 0, error: 0, building: 0 };
 if (hasVercelIntegration) {
     const fetchPromises = vercelIntegrations!.map(async (integration: any) => {
         try {
-            // 1. Busca todos os projetos
             const vRes = await fetch('https://api.vercel.com/v9/projects?limit=100', {
                 headers: { "Authorization": `Bearer ${integration.token}` }
             });
             
-            // 2. Busca últimos 10 deploys GERAIS da conta
             const depRes = await fetch('https://api.vercel.com/v6/deployments?limit=10', {
                 headers: { "Authorization": `Bearer ${integration.token}` }
             });
@@ -51,7 +49,6 @@ if (hasVercelIntegration) {
             const data = await vRes.json();
             const depData = depRes.ok ? await depRes.json() : { deployments: [] };
 
-            // Adicionamos o account_name e id da integração
             const mappedProjects = (data.projects || []).map((p: any) => ({ 
                 ...p, 
                 _accountName: integration.account_name,
@@ -73,22 +70,16 @@ if (hasVercelIntegration) {
 
     const results = await Promise.all(fetchPromises);
     
-    // Mescla tudo de todas as contas Vercel Integradas
     allProjects = results.flatMap(r => r.projects);
     globalDeployments = results.flatMap(r => r.deployments);
     
-    // Ordena os deploys globais do mais recente pro mais antigo e pega só os últimos 5
     globalDeployments.sort((a, b) => b.createdAt - a.createdAt);
     globalDeployments = globalDeployments.slice(0, 5);
 
-    // Calcula Estatísticas de Saúde e Domínios
     allProjects.forEach(proj => {
-        // Quantos Aliases (Domínios Customizados) existem
         if (proj.alias && Array.isArray(proj.alias)) {
             totalCustomDomains += proj.alias.length;
         }
-
-        // Estatísticas do Último Deploy (Health)
         const state = proj.latestDeployments?.[0]?.readyState;
         if (state === 'READY') healthStats.ready++;
         else if (state === 'ERROR') healthStats.error++;
@@ -98,164 +89,133 @@ if (hasVercelIntegration) {
 ---
 
 <DashboardLayout title="Visão Geral | Main CNX">
+
+    <!-- Page Header -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-slate-900 mb-2">Bem-vindo de volta! 👋</h2>
-            <p class="text-slate-600">Confira o resumo das suas ferramentas e sites JAMstack ativos.</p>
+            <h2 class="text-2xl font-bold text-slate-900 mb-1">Visão Geral</h2>
+            <p class="text-sm text-slate-600 font-medium">Resumo das ferramentas e sites JAMstack ativos.</p>
         </div>
-        <a href="/dashboard/create-site" class="px-5 py-2.5 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-colors shadow-md shadow-violet-500/20 flex items-center gap-2 w-max">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
+        <a href="/dashboard/create-site" class="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-700 transition-colors shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
             Novo Site
         </a>
     </div>
 
-    {/* Alerta caso o token não exista ou esteja errado */}
+    <!-- Alerta sem integração -->
     {!hasVercelIntegration && (
-        <div class="mb-8 bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
-            <h3 class="font-bold text-amber-800 text-lg mb-2">Configure sua Nuvem</h3>
-            <p class="text-amber-700 mb-4">
-                Para visualizar e gerenciar os seus sites aqui na Visão Geral, você precisa vincular uma <strong>Conta da Vercel</strong>.
+        <div class="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <h3 class="font-bold text-amber-800 text-sm mb-1">Configure sua Nuvem</h3>
+            <p class="text-amber-700 text-sm mb-3">
+                Para visualizar e gerenciar os seus sites, vincule uma <strong>Conta da Vercel</strong>.
             </p>
-            <a href="/dashboard/settings" class="inline-block px-4 py-2 bg-amber-100 font-semibold text-amber-800 rounded-lg hover:bg-amber-200 transition-colors border border-amber-300">
+            <a href="/dashboard/settings" class="inline-block px-4 py-1.5 bg-amber-100 font-semibold text-amber-800 text-sm rounded-lg hover:bg-amber-200 transition-colors border border-amber-200">
                 Ir para Configurações
             </a>
         </div>
     )}
 
+    <!-- Erros de conta -->
     {accountErrors.length > 0 && (
         <div class="mb-8 space-y-2">
             {accountErrors.map(err => (
-                <div class="bg-red-50 border border-red-200 rounded-2xl p-5 text-red-700 text-sm font-medium">
-                    ⚠️ {err}
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 text-red-700 text-sm font-medium flex gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    {err}
                 </div>
             ))}
         </div>
     )}
 
-    <!-- Painel Mestre de Monitoramento -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <!-- Cards de Monitoramento -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <!-- Card 1: Sites Totais -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-5">
-                <span class="text-8xl">📦</span>
+        <div class="bg-white rounded-xl border border-slate-100 p-5 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-400">Total de Sites</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-400"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center text-xl mb-4 relative z-10">
-                🌐
+            <p class="text-3xl font-bold text-slate-900 leading-none">{hasVercelIntegration ? allProjects.length : '0'}</p>
+            <p class="text-xs text-slate-400 font-medium">
+                {hasVercelIntegration ? `Em ${vercelIntegrations!.length} conta(s) Vercel` : 'Integração Vercel pendente'}
+            </p>
+        </div>
+
+        <!-- Card 2: Health -->
+        <div class="bg-white rounded-xl border border-slate-100 p-5 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-400">Saúde dos Projetos</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-            <h3 class="font-semibold text-lg text-slate-800 mb-1 relative z-10">Total de Sites</h3>
-            <p class="text-4xl font-black text-slate-900 mb-2 relative z-10">{hasVercelIntegration ? allProjects.length : '0'}</p>
             {hasVercelIntegration ? (
-                <p class="text-sm text-slate-500 font-medium relative z-10">Conectados em {vercelIntegrations!.length} conta(s) Vercel</p>
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="flex items-center gap-1.5 text-slate-500 font-medium"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Online</span>
+                        <span class="font-bold text-slate-700">{healthStats.ready}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="flex items-center gap-1.5 text-slate-500 font-medium"><span class="w-2 h-2 rounded-full bg-red-500"></span>Com Erros</span>
+                        <span class="font-bold text-slate-700">{healthStats.error}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="flex items-center gap-1.5 text-slate-500 font-medium"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Building</span>
+                        <span class="font-bold text-slate-700">{healthStats.building}</span>
+                    </div>
+                </div>
             ) : (
-                <p class="text-sm text-slate-500 relative z-10">Integração Vercel pendente.</p>
+                <p class="text-xs text-slate-400 font-medium">Métricas indisponíveis</p>
             )}
         </div>
 
-        <!-- Card 2: Health Check -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-xl">
-                    🩺
-                </div>
-                {hasVercelIntegration && (
-                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full border border-slate-200">
-                        {healthStats.ready + healthStats.error + healthStats.building} Válidos
-                    </span>
-                )}
+        <!-- Card 3: Domínios -->
+        <div class="bg-white rounded-xl border border-slate-100 p-5 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-400">Inventário de Domínios</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             </div>
-            <h3 class="font-semibold text-lg text-slate-800 mb-4">Saúde dos Projetos (Health)</h3>
-            
-            {hasVercelIntegration ? (
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="flex items-center gap-2 text-slate-600 font-medium">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Online (Prontos)
-                        </span>
-                        <span class="font-bold text-slate-800">{healthStats.ready}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="flex items-center gap-2 text-slate-600 font-medium">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Com Erros (Falha)
-                        </span>
-                        <span class="font-bold text-slate-800">{healthStats.error}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="flex items-center gap-2 text-slate-600 font-medium">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Building (Na Fila)
-                        </span>
-                        <span class="font-bold text-slate-800">{healthStats.building}</span>
-                    </div>
-                </div>
-            ) : (
-                <div class="h-full flex items-center pb-8">
-                     <p class="text-sm text-slate-400 font-medium">Métricas indisponíveis</p>
-                </div>
-            )}
-        </div>
-
-        <!-- Card 3: Domínios Registrados -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-             <div class="absolute top-0 right-0 p-4 opacity-5">
-                <span class="text-8xl">🔗</span>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mb-4 relative z-10">
-                🌍
-            </div>
-            <h3 class="font-semibold text-lg text-slate-800 mb-1 relative z-10">Inventário de Domínios</h3>
-            <p class="text-4xl font-black text-slate-900 mb-2 relative z-10">{hasVercelIntegration ? totalCustomDomains : '0'}</p>
-            {hasVercelIntegration ? (
-                <p class="text-sm text-slate-500 font-medium relative z-10">Aliases únicos rooteados pra Vercel</p>
-            ) : (
-                <p class="text-sm text-slate-500 relative z-10">---</p>
-            )}
+            <p class="text-3xl font-bold text-slate-900 leading-none">{hasVercelIntegration ? totalCustomDomains : '0'}</p>
+            <p class="text-xs text-slate-400 font-medium">
+                {hasVercelIntegration ? 'Aliases rooteados na Vercel' : '---'}
+            </p>
         </div>
     </div>
 
-    {/* Seção Secundária: Logs Rápido e CMS Rápidos */}
+    <!-- Atividade Recente + Atalhos CMS -->
     {hasVercelIntegration && (
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-            <!-- Timeline de Deploys Globais -->
-            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+            <!-- Timeline de Deploys -->
+            <div class="lg:col-span-2 bg-white rounded-xl border border-slate-100 p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <span class="text-xl">⏱️</span> Atividade Recente
-                    </h3>
-                    <a href="/dashboard/sites" class="text-sm font-semibold text-violet-600 hover:text-violet-700">Ver Sites &rarr;</a>
+                    <h3 class="font-bold text-slate-800 text-sm">Atividade Recente</h3>
+                    <a href="/dashboard/sites" class="text-xs font-semibold text-violet-600 hover:text-violet-700">Ver Sites &rarr;</a>
                 </div>
                 
                 {globalDeployments.length === 0 ? (
-                     <div class="py-6 text-center text-sm text-slate-500 bg-slate-50 rounded-xl border border-slate-100">
-                         Nenhum deploy disparado recentemente.
-                     </div>
+                    <div class="py-8 text-center text-sm text-slate-400 bg-slate-50 rounded-lg border border-slate-100">
+                        Nenhum deploy disparado recentemente.
+                    </div>
                 ) : (
-                    <div class="relative pl-6 space-y-6">
-                        <!-- Linha Pescadora -->
-                        <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-slate-100"></div>
-                        
+                    <div class="relative pl-5 space-y-5">
+                        <div class="absolute left-[9px] top-2 bottom-2 w-px bg-slate-100"></div>
                         {globalDeployments.map((dep: any) => {
                             const isReady = dep.readyState === 'READY';
                             const isError = dep.readyState === 'ERROR';
-                            const bgIndicator = isReady ? 'bg-emerald-500' : (isError ? 'bg-red-500' : 'bg-amber-500 ring-4 ring-amber-100/50 blink');
+                            const bg = isReady ? 'bg-emerald-500' : (isError ? 'bg-red-500' : 'bg-amber-500');
                             const timeAgo = new Date(dep.createdAt).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-
                             return (
                                 <div class="relative">
-                                    <div class={`absolute -left-[30px] top-1.5 w-3 h-3 rounded-full border-2 border-white ring-2 ring-slate-100 ${bgIndicator}`}></div>
+                                    <div class={`absolute -left-[28px] top-1.5 w-3 h-3 rounded-full border-2 border-white ring-1 ring-slate-100 ${bg}`}></div>
                                     <div class="flex items-start justify-between">
                                         <div>
                                             <p class="font-semibold text-slate-800 text-sm mb-0.5">
-                                                Novo Deploy <span class="font-normal text-slate-500">em</span> {dep.name}
+                                                Deploy <span class="font-normal text-slate-400">em</span> {dep.name}
                                             </p>
-                                            <p class="text-xs text-slate-500 font-medium">Conta: {dep._accountName}</p>
+                                            <p class="text-xs text-slate-400 font-medium">Conta: {dep._accountName}</p>
                                         </div>
                                         <div class="text-right">
-                                            <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg inline-block mb-1">
-                                                {timeAgo}
-                                            </span>
+                                            <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md inline-block mb-1">{timeAgo}</span>
                                             {isReady && dep.url && (
-                                                <a href={`https://${dep.url}`} target="_blank" class="block text-xs font-medium text-violet-600 hover:underline">Testar Link</a>
+                                                <a href={`https://${dep.url}`} target="_blank" class="block text-xs font-medium text-violet-600 hover:underline">Testar</a>
                                             )}
                                         </div>
                                     </div>
@@ -266,32 +226,25 @@ if (hasVercelIntegration) {
                 )}
             </div>
 
-            <!-- Atalhos Rápidos para CMS -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
-                    <span class="text-xl">⚡</span> Acesso ao Painel CMS
-                </h3>
-                
+            <!-- Atalhos CMS -->
+            <div class="bg-white rounded-xl border border-slate-100 p-6 flex flex-col">
+                <h3 class="font-bold text-slate-800 text-sm mb-5">Acesso Rápido ao CMS</h3>
                 {allProjects.length === 0 ? (
-                    <div class="flex-1 flex items-center justify-center p-6 bg-slate-50 rounded-xl border border-slate-100">
-                        <p class="text-sm font-medium text-slate-500 text-center">Nenhum site online para acessar o CMS.</p>
+                    <div class="flex-1 flex items-center justify-center p-6 bg-slate-50 rounded-lg border border-slate-100">
+                        <p class="text-sm font-medium text-slate-400 text-center">Nenhum site online.</p>
                     </div>
                 ) : (
-                    <div class="space-y-3 flex-1">
+                    <div class="space-y-2 flex-1">
                         {allProjects.slice(0, 4).map((proj: any) => {
                             const prodAlias = proj.alias?.find((a: any) => a.target === 'PRODUCTION' || a.isDefault)?.domain;
                             const domain = prodAlias || proj.alias?.[0]?.domain || `${proj.name}.vercel.app`;
                             return (
-                                <a href={`https://${domain}/admin`} target="_blank" class="block p-4 rounded-xl border border-slate-200 hover:border-violet-300 hover:shadow-sm hover:ring-2 hover:ring-violet-50 transition-all group bg-slate-50 hover:bg-white">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="font-bold text-slate-800 text-sm group-hover:text-violet-700 transition-colors mb-0.5">{proj.name}</p>
-                                            <p class="text-xs text-slate-400 font-medium">{domain}</p>
-                                        </div>
-                                        <div class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 group-hover:text-violet-600 group-hover:bg-violet-50 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                        </div>
+                                <a href={`https://${domain}/admin`} target="_blank" class="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:border-violet-200 hover:bg-violet-50/50 transition-all group">
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-sm group-hover:text-violet-700 transition-colors">{proj.name}</p>
+                                        <p class="text-xs text-slate-400 font-mono">{domain}</p>
                                     </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 20 20" fill="currentColor" class="text-slate-300 group-hover:text-violet-500 transition-colors shrink-0"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                                 </a>
                             );
                         })}
@@ -301,59 +254,46 @@ if (hasVercelIntegration) {
         </div>
     )}
 
-    <!-- Lista de Projetos (Exclusivo se tiver Token) -->
+    <!-- Lista de Projetos Vercel -->
     {hasVercelIntegration && (
         <div>
-            <h3 class="text-xl font-bold text-slate-800 mb-5">Sites Ativos</h3>
-            
+            <h3 class="text-sm font-bold text-slate-800 mb-4">Sites Ativos</h3>
             {allProjects.length === 0 ? (
-                <div class="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-10 text-center">
-                    <p class="text-slate-500 font-medium mb-4">Nenhum site encontrado nas suas contas Vercel conectadas.</p>
-                    <a href="/dashboard/create-site" class="inline-block px-5 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-xl hover:bg-slate-50 transition-colors">
+                <div class="bg-white rounded-xl border border-dashed border-slate-200 p-12 text-center">
+                    <p class="text-slate-400 font-medium text-sm mb-4">Nenhum site encontrado nas suas contas Vercel conectadas.</p>
+                    <a href="/dashboard/create-site" class="inline-block px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
                         Criar meu primeiro site
                     </a>
                 </div>
             ) : (
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     {allProjects.map((proj: any) => {
                         const prodAlias = proj.alias?.find((a: any) => a.target === 'PRODUCTION' || a.isDefault)?.domain;
                         const domain = prodAlias || proj.alias?.[0]?.domain || `${proj.name}.vercel.app`;
-                        const statusColor = proj.latestDeployments?.[0]?.readyState === 'READY' ? 'bg-emerald-500' : 'bg-amber-500';
+                        const isReady = proj.latestDeployments?.[0]?.readyState === 'READY';
                         const adminUrl = `https://${domain}/admin`;
-
                         return (
-                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between">
-                                <div>
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div>
-                                            <div class="flex items-center gap-2 mb-1">
-                                                <h4 class="font-bold text-lg text-slate-800">{proj.name}</h4>
-                                                <span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 text-xs font-medium text-slate-600 border border-slate-200">
-                                                    <span class={`w-1.5 h-1.5 rounded-full ${statusColor}`}></span>
-                                                    {proj.framework === 'astro' ? 'Astro CSR' : 'CMS'}
-                                                </span>
-                                            </div>
-                                            <a href={`https://${domain}`} target="_blank" rel="noopener noreferrer" class="text-sm text-violet-600 hover:text-violet-700 hover:underline flex items-center gap-1">
-                                                {domain}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /></svg>
-                                            </a>
+                            <div class="bg-white rounded-xl border border-slate-100 hover:border-violet-200 hover:shadow-md hover:shadow-violet-500/5 transition-all duration-200 flex flex-col overflow-hidden group">
+                                <div class="p-5 flex-1">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="w-9 h-9 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-sm shrink-0">
+                                            {proj.name?.charAt(0)?.toUpperCase() || 'S'}
                                         </div>
-                                        <div class="p-2 bg-slate-50 rounded-lg text-slate-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                        </div>
+                                        <span class={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${isReady ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                            {isReady ? 'online' : 'building'}
+                                        </span>
                                     </div>
-                                    <div class="mb-4">
-                                        <p class="text-xs text-slate-500">
-                                            Integração: <span class="font-medium text-slate-600">{proj._accountName}</span>
-                                        </p>
-                                    </div>
+                                    <h4 class="text-base font-bold text-slate-900 mb-0.5 group-hover:text-violet-700 transition-colors">{proj.name}</h4>
+                                    <p class="text-xs text-slate-400 font-mono truncate mb-3">{domain}</p>
+                                    <p class="text-xs text-slate-400">Conta: <span class="font-medium text-slate-500">{proj._accountName}</span></p>
                                 </div>
-                                <div class="pt-4 border-t border-slate-100 flex gap-3">
-                                    <a href={adminUrl} target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-900 transition-colors">
-                                        Entrar no CMS
+                                <div class="px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                                    <a href={`https://${domain}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                                        Ver site
                                     </a>
-                                    <a href={`https://vercel.com/dashboard`} target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors">
-                                        Vercel
+                                    <a href={adminUrl} target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-lg transition-colors">
+                                        Entrar no CMS
                                     </a>
                                 </div>
                             </div>

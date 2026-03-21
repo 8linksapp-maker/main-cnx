@@ -127,10 +127,10 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
         </div>
     );
 
-    const cardClass = "bg-white p-5 rounded-sm border border-slate-200";
-    const inputClass = "w-full bg-white border border-[#8c8f94] rounded-sm px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] transition-colors";
-    const labelClass = "block text-xs font-semibold text-slate-700 mb-1";
-    const headerTitleClass = "text-sm font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200";
+    const cardClass = "p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm";
+    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
+    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const headerTitleClass = "text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2";
 
     return (
         <div className="w-full max-w-[1300px] mx-auto isolate relative pt-20 pb-12 px-6 flex flex-col xl:flex-row gap-8 items-start">
@@ -144,7 +144,7 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Termos de Uso</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button type="button" onClick={handleSave} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors">
+                    <button type="button" onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-violet-600/20">
                         {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                         {saving ? 'Atualizando...' : 'Atualizar'}
                     </button>
@@ -176,8 +176,8 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
                         <h3 className={headerTitleClass}>2. Seções de Conteúdo</h3>
                         <div className="space-y-4">
                             {(data?.content || []).map((section: LegalSection, idx: number) => (
-                                <div key={idx} className="bg-slate-50 p-4 border border-slate-200 rounded-sm group">
-                                    <div className="flex items-center justify-between mb-3">
+                                <div key={idx} className="bg-slate-50 p-6 border border-slate-200 rounded-2xl group">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center gap-2">
                                             <span className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs">{idx + 1}</span>
                                             <input
@@ -189,8 +189,8 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
                                             />
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button type="button" onClick={() => moveSection(idx, 'up')} disabled={idx === 0} className="p-1.5 text-slate-400 hover:text-[#2271b1] rounded"><ChevronUp className="w-4 h-4" /></button>
-                                            <button type="button" onClick={() => moveSection(idx, 'down')} disabled={idx === (data?.content?.length || 0) - 1} className="p-1.5 text-slate-400 hover:text-[#2271b1] rounded"><ChevronDown className="w-4 h-4" /></button>
+                                            <button type="button" onClick={() => moveSection(idx, 'up')} disabled={idx === 0} className="p-1.5 text-slate-400 hover:text-violet-600 rounded"><ChevronUp className="w-4 h-4" /></button>
+                                            <button type="button" onClick={() => moveSection(idx, 'down')} disabled={idx === (data?.content?.length || 0) - 1} className="p-1.5 text-slate-400 hover:text-violet-600 rounded"><ChevronDown className="w-4 h-4" /></button>
                                             <button type="button" onClick={() => removeSection(idx)} className="p-1.5 text-slate-400 hover:text-red-600 rounded ml-1"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
@@ -207,7 +207,7 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
                             <button
                                 type="button"
                                 onClick={addSection}
-                                className="w-full py-6 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-violet-50/20 transition-all font-bold flex items-center justify-center gap-2 text-xs uppercase"
+                                className="w-full py-6 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 hover:text-violet-600 hover:border-violet-600 hover:bg-violet-50/50 transition-all font-bold flex items-center justify-center gap-2 text-xs uppercase cursor-pointer"
                             >
                                 <Plus className="w-5 h-5" />
                                 Adicionar Nova Seção
@@ -219,7 +219,7 @@ export default function TermosEditor({ siteId, repoName, siteUrl }: TermosEditor
 
             {/* Sidebar SEO */}
             <div className="w-full xl:w-[320px] shrink-0 sticky top-20 space-y-6 z-10">
-                <div className="bg-white p-5 rounded-sm border border-slate-200">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Configurações globais da Página</h3>
                     <div className="space-y-4">
                         <div>

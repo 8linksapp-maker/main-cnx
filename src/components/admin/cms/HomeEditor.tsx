@@ -367,10 +367,10 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
     );
 
     // CSS Classes reutilizáveis do design maduro WordPress-like (Menos sombra, bordas finas, box mais rigido)
-    const cardClass = "bg-white p-5 rounded-sm border border-slate-200";
-    const inputClass = "w-full bg-white border border-[#8c8f94] rounded-sm px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] transition-colors";
-    const labelClass = "block text-xs font-semibold text-slate-700 mb-1";
-    const headerTitleClass = "text-sm font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200";
+    const cardClass = "p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm";
+    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
+    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const headerTitleClass = "text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2";
 
     return (
         <div className="w-full max-w-[1300px] mx-auto isolate relative pt-20 pb-12 px-6 flex flex-col xl:flex-row gap-8 items-start">
@@ -389,7 +389,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     key={iconName}
                                     type="button"
                                     onClick={() => handleIconSelect(iconName)}
-                                    className="p-3 border border-slate-200 rounded-sm hover:border-[#2271b1] hover:bg-violet-50 flex items-center justify-center text-slate-600 hover:text-[#2271b1] transition-colors"
+                                    className="p-3 border border-slate-200 rounded-md hover:border-[#2271b1] hover:bg-violet-50 flex items-center justify-center text-slate-600 hover:text-[#2271b1] transition-colors"
                                     title={iconName}
                                 >
                                     <DynamicIcon name={iconName} />
@@ -409,7 +409,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Home</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button type="button" onClick={() => setPreviewMode(!previewMode)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors hidden sm:flex">
+                    <button type="button" onClick={() => setPreviewMode(!previewMode)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors hidden sm:flex">
                         {previewMode ? (
                             <><X className="w-4 h-4" /> Fechar</>
                         ) : (
@@ -417,9 +417,9 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         )}
                     </button>
 
-                    <button type="button" onClick={handleSave} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors">
+                    <button type="button" onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-violet-600/20">
                         {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                        {saving ? 'Atualizando...' : 'Atualizar'}
+                        {saving ? 'Atualizando...' : 'Atualizar e Publicar'}
                     </button>
                 </div>
             </div>
@@ -498,14 +498,14 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {home?.benefits?.items?.map((item: any, idx: number) => (
-                                <div key={idx} className="p-5 border border-slate-200 bg-slate-50 rounded-xl shadow-sm flex flex-col gap-4 relative hover:border-violet-300 transition-colors">
+                                <div key={idx} className="p-4 border border-slate-200 bg-white rounded-md shadow-sm flex flex-col gap-4 relative hover:border-violet-300 transition-colors">
                                     <div className="flex gap-4 items-start border-b border-slate-200 pb-4">
                                         <div className="shrink-0">
-                                            <label className="text-[10px] font-bold text-slate-500 uppercase flex flex-col items-center">
+                                            <label className="text-xs font-bold text-slate-500 uppercase flex flex-col items-center">
                                                 <button
                                                     type="button"
                                                     onClick={() => setIconModalFor({ section: 'benefits', idx })}
-                                                    className="w-12 h-12 mt-1 rounded-xl bg-white border border-slate-300 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm"
+                                                    className="w-12 h-12 mt-1 rounded-md bg-white border border-slate-300 text-slate-700 hover:border-violet-600 hover:text-violet-600 hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm"
                                                     title="Trocar Ícone"
                                                 >
                                                     <DynamicIcon name={item.icon} className="w-6 h-6" />
@@ -513,12 +513,12 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                             </label>
                                         </div>
                                         <div className="flex-1">
-                                            <label className="text-[10px] font-bold text-slate-500 uppercase">Título</label>
+                                            <label className="text-xs font-bold text-slate-500 uppercase">Título</label>
                                             <input type="text" value={item.title} onChange={e => updateItemArray('benefits', idx, 'title', e.target.value)} className="w-full bg-transparent py-1 text-base font-bold text-slate-800 focus:outline-none" placeholder="Ex: Rápido" />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-slate-500 uppercase">Descrição Textual</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase">Descrição Textual</label>
                                         <textarea rows={3} value={item.desc} onChange={e => updateItemArray('benefits', idx, 'desc', e.target.value)} className="w-full bg-transparent py-1 text-sm text-slate-600 focus:outline-none resize-none" placeholder="Detalhes do benefício..." />
                                     </div>
                                 </div>
@@ -531,14 +531,14 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         <h3 className={headerTitleClass}>3. Seção Diferenciais</h3>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                             {/* Bloco Esquerda */}
-                            <div className="space-y-4 bg-slate-50 p-5 border border-slate-200 rounded-xl w-full">
+                            <div className="space-y-4 py-2 w-full">
                                 <h4 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-4">Bloco Formato Esquerdo (Mídia e Badge)</h4>
                                 <div>
                                     <label className={labelClass}>Foto Lateral Esquerda</label>
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-between">
                                             <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'diffImg')} className="text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 cursor-pointer w-full" />
-                                            {pendingUploads['diffImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 rounded-sm font-bold mx-2">Pendente</span>}
+                                            {pendingUploads['diffImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 rounded-md font-bold mx-2">Pendente</span>}
                                         </div>
                                         {(home?.differentiators?.image?.startsWith('blob:')) && (
                                             <div className="mt-2 w-full h-32 border border-slate-300 rounded overflow-hidden relative">
@@ -574,7 +574,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     <h4 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-3">Lista de Diferenciais</h4>
                                     <div className="space-y-3">
                                         {home?.differentiators?.items?.map((item: any, idx: number) => (
-                                            <div key={idx} className="p-4 border border-slate-200 bg-slate-50 flex flex-col gap-2 rounded-xl focus-within:border-violet-400 focus-within:shadow-md transition-all">
+                                            <div key={idx} className="p-4 border border-slate-200 bg-white flex flex-col gap-2 rounded-md focus-within:border-violet-400 focus-within:shadow-md transition-all">
                                                 <input type="text" value={item.title} onChange={e => updateItemArray('differentiators', idx, 'title', e.target.value)} className="bg-transparent text-sm font-bold text-slate-800 focus:outline-none border-b border-slate-300 pb-1" placeholder="Título (ex: Inovação)" />
                                                 <textarea rows={2} value={item.desc} onChange={e => updateItemArray('differentiators', idx, 'desc', e.target.value)} className="bg-transparent text-sm text-slate-600 focus:outline-none resize-y" placeholder="Descrição do diferencial..."></textarea>
                                             </div>
@@ -594,13 +594,13 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {home?.categories?.items?.map((item: any, idx: number) => (
-                                <div key={idx} className="p-4 border border-slate-200 bg-slate-50 rounded-xl relative flex flex-col gap-4 group">
+                                <div key={idx} className="p-4 border border-slate-200 bg-white rounded-md relative flex flex-col gap-4 group">
                                     <div className="flex flex-col gap-4 mb-auto">
                                         <div className="flex justify-between items-start">
                                             <button
                                                 type="button"
                                                 onClick={() => setIconModalFor({ section: 'categories', idx })}
-                                                className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm shrink-0"
+                                                className="w-14 h-14 rounded-md bg-white border border-slate-200 text-slate-700 hover:border-violet-600 hover:text-violet-600 hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm shrink-0"
                                                 title="Trocar Ícone"
                                             >
                                                 {item.icon && item.icon.length > 2 ? <DynamicIcon name={item.icon} className="w-6 h-6" /> : <span className="text-xl font-bold">{item.icon || '#'}</span>}
@@ -621,7 +621,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     </div>
 
                                     <div className="mt-2 border-t border-slate-200 pt-3">
-                                        <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Destino do Botão</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Destino do Botão</label>
                                         <input type="text" value={item.link} onChange={e => updateItemArray('categories', idx, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-violet-600 focus:border-[#2271b1] focus:outline-none" />
                                     </div>
                                 </div>
@@ -632,7 +632,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                 <button
                                     type="button"
                                     onClick={() => addArrayItem('categories', { title: 'Nova Especialidade', desc: 'Edite a descrição curta aqui para aparecer no front', icon: 'Star', link: '/blog' })}
-                                    className="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded border border-slate-200 shadow-sm hover:bg-[#2271b1] hover:text-white hover:border-[#2271b1] transition-colors"
+                                    className="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded border border-slate-200 shadow-sm hover:bg-violet-600 hover:text-white hover:border-violet-600 transition-colors"
                                 >
                                     + Adicionar Novo Card
                                 </button>
@@ -645,7 +645,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         <h3 className={headerTitleClass}>5. Texto Sobre e Contadores</h3>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
                             {/* Bloco Esquerda (Imagem Redonda + Badges Flutuantes) */}
-                            <div className="border border-slate-200 p-5 bg-slate-50 flex flex-col gap-5 rounded-xl">
+                            <div className="py-4 flex flex-col gap-5">
                                 <h4 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2">Bloco Esquerdo: Fotografia e Selo</h4>
                                 <div>
                                     <label className={labelClass}>Imagem de Retrato Redonda</label>
@@ -686,7 +686,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     </div>
                                 </div>
 
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div className="py-4">
                                     <label className="block text-xs font-bold text-slate-500 mb-3 uppercase w-full border-b border-slate-200 pb-2">Marcos da Empresa (Painel Inferior)</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         {home?.about?.stats?.map((stat: any, idx: number) => (
@@ -706,11 +706,10 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
 
             {/* Sidebar Persistente (SEO) */}
             <div className="w-full xl:w-[320px] shrink-0 sticky top-20 space-y-6 z-10">
-                <div className="bg-white p-5 rounded-sm border border-slate-200">
+                <div className="p-6 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
                     <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Configurações globais da Página</h3>
 
                     <div>
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">SEO e Social (Open Graph)</h4>
                         <div className="space-y-4">
                             <div>
                                 <label className={labelClass}>Título Otimizado (SEO)</label>

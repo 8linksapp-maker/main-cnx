@@ -222,10 +222,10 @@ export default function AuthorsEditor({ siteId, repoName }: AuthorsEditorProps) 
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-200">
-                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">Foto</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[250px]">Dados Pessoais</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[300px]">Biografia / Resumo</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right w-20">Ação</th>
+                                    <th className="py-4 px-6 text-sm font-bold text-slate-500 uppercase tracking-wider w-24">Foto</th>
+                                    <th className="py-4 px-6 text-sm font-bold text-slate-500 uppercase tracking-wider min-w-[250px]">Dados Pessoais</th>
+                                    <th className="py-4 px-6 text-sm font-bold text-slate-500 uppercase tracking-wider min-w-[300px]">Biografia / Resumo</th>
+                                    <th className="py-4 px-6 text-sm font-bold text-slate-500 uppercase tracking-wider text-right w-20">Ação</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -301,16 +301,16 @@ export default function AuthorsEditor({ siteId, repoName }: AuthorsEditorProps) 
 
                             <div className="space-y-4 w-full">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Nome Completo</label>
-                                    <input type="text" placeholder="Ex: João da Silva" value={tempAuthor.name || ''} onChange={e => updateTempAuthor('name', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center" />
+                                    <label className="block text-xs font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Nome Completo</label>
+                                    <input type="text" placeholder="Ex: João da Silva" value={tempAuthor.name || ''} onChange={e => updateTempAuthor('name', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Cargo / Profissão</label>
-                                    <input type="text" placeholder="Ex: Editor Chefe" value={tempAuthor.role || ''} onChange={e => updateTempAuthor('role', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center text-sm" />
+                                    <label className="block text-xs font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Cargo / Profissão</label>
+                                    <input type="text" placeholder="Ex: Editor Chefe" value={tempAuthor.role || ''} onChange={e => updateTempAuthor('role', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Resumo Biográfico</label>
-                                    <textarea rows={4} placeholder="Escreva sobre as especialidades do autor..." value={tempAuthor.bio || ''} onChange={e => updateTempAuthor('bio', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none text-sm text-center leading-relaxed"></textarea>
+                                    <label className="block text-xs font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Resumo Biográfico</label>
+                                    <textarea rows={4} placeholder="Escreva sobre as especialidades do autor..." value={tempAuthor.bio || ''} onChange={e => updateTempAuthor('bio', e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none text-center leading-relaxed"></textarea>
                                 </div>
                             </div>
                         </div>

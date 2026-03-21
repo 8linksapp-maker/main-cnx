@@ -301,9 +301,9 @@ ${quickEditData.rawBody}`;
     }
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-20 bg-white rounded-3xl border border-slate-200 shadow-sm text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin mb-4 text-violet-500" />
-            <p className="font-medium animate-pulse">Inspecionando diretório e frontmatters no Repositório...</p>
+        <div className="flex flex-col items-center justify-center p-16 bg-white rounded-xl border border-slate-100 text-slate-400">
+            <Loader2 className="w-6 h-6 animate-spin mb-3 text-violet-400" />
+            <p className="text-sm font-medium">Carregando artigos do repositório...</p>
         </div>
     );
 
@@ -346,34 +346,34 @@ ${quickEditData.rawBody}`;
     const renderPagination = () => {
         if (totalPages <= 1) return null;
         return (
-            <div className="flex items-center gap-3 text-[13px] text-slate-700">
+            <div className="flex items-center gap-3 text-sm text-slate-700">
                 <span className="text-slate-500">{totalItems} itens</span>
                 <div className="flex bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
                     <button
                         onClick={() => setCurrentPage(1)}
                         disabled={currentPage === 1}
-                        className="px-2.5 py-1 border-r border-[#c3c4c7] text-[var(--tw-colors-violet-600)] font-bold hover:bg-[#f6f7f7] hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
+                        className="px-2.5 py-1 rounded-md text-[var(--tw-colors-violet-600)] font-bold hover:bg-slate-100 hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
                         title="Primeira página"
                     >«</button>
                     <button
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
-                        className="px-2.5 py-1 text-[var(--tw-colors-violet-600)] font-bold hover:bg-[#f6f7f7] hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
+                        className="px-2.5 py-1 text-[var(--tw-colors-violet-600)] font-bold hover:bg-slate-100 hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
                         title="Página anterior"
                     >‹</button>
-                    <div className="px-3 py-1 flex items-center bg-[#f6f7f7] border-x border-[#c3c4c7] text-slate-600 font-medium whitespace-nowrap">
+                    <div className="px-3 py-1 flex items-center bg-slate-100 rounded-md mx-1 text-slate-600 font-medium whitespace-nowrap">
                         {currentPage} de {totalPages}
                     </div>
                     <button
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-2.5 py-1 text-[var(--tw-colors-violet-600)] font-bold hover:bg-[#f6f7f7] hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
+                        className="px-2.5 py-1 text-[var(--tw-colors-violet-600)] font-bold hover:bg-slate-100 hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
                         title="Próxima página"
                     >›</button>
                     <button
                         onClick={() => setCurrentPage(totalPages)}
                         disabled={currentPage === totalPages}
-                        className="px-2.5 py-1 border-l border-[#c3c4c7] text-[var(--tw-colors-violet-600)] font-bold hover:bg-[#f6f7f7] hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
+                        className="px-2.5 py-1 rounded-md text-[var(--tw-colors-violet-600)] font-bold hover:bg-slate-100 hover:text-[var(--tw-colors-violet-800)] disabled:opacity-50 disabled:text-slate-400 disabled:hover:bg-white transition-colors"
                         title="Última página"
                     >»</button>
                 </div>
@@ -381,35 +381,37 @@ ${quickEditData.rawBody}`;
         );
     };
 
-    const inputClass = "w-full bg-white border border-slate-300 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-slate-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all shadow-sm";
-    const labelClass = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
+    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-1.5";
 
     const siteUrl = `https://${repoName.split('/')[1]}.vercel.app`;
 
     return (
-        <div className="space-y-6 pb-20">
-            {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200 shadow-sm flex gap-3"><AlertCircle className="w-5 h-5 shrink-0" /> {error}</div>}
+        <div className="space-y-5 pb-20">
+            {error && <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100 flex gap-2"><AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /> {error}</div>}
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold text-slate-800">Posts</h1>
-                    <a href={`/dashboard/cms/${siteId}/posts/editor`} className="border border-violet-600 text-violet-600 hover:bg-violet-50 px-3 py-1 rounded text-sm font-medium transition-colors">Adicionar novo</a>
+                    <p className="text-sm font-bold text-slate-800">Posts</p>
+                    <a href={`/dashboard/cms/${siteId}/posts/editor`} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-lg transition-colors">
+                        <Plus className="w-3.5 h-3.5" /> Novo Artigo
+                    </a>
                 </div>
 
-                <div className="relative w-full sm:max-w-xs">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                         type="text"
-                        placeholder="Pesquisar posts"
+                        placeholder="Buscar artigos"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-1.5 bg-white border border-slate-300 rounded text-sm focus:outline-none focus:border-violet-500 transition-all font-medium text-slate-700"
+                        className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-violet-400 transition-all font-medium text-slate-700"
                     />
                 </div>
             </div>
 
             {!loading && posts.length === 0 && search === '' && (
-                <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg p-12 flex flex-col items-center justify-center text-center">
+                <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg p-12 flex flex-col items-center justify-center text-center">
                     <FileText className="w-12 h-12 text-slate-300 mb-4" />
                     <h3 className="text-lg font-bold text-slate-700 mb-2">Nenhum post encontrado</h3>
                     <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">Nenhum artigo publicado no diretório de blog deste repositório.</p>
@@ -420,7 +422,7 @@ ${quickEditData.rawBody}`;
                 <div className="space-y-4">
 
                     {/* Status Sub-nav (WP Style) */}
-                    <div className="flex items-center gap-2 text-[13px]">
+                    <div className="flex items-center gap-2 text-sm">
                         <button onClick={() => setStatusFilter('all')} className={`${statusFilter === 'all' ? 'font-bold text-slate-800' : 'text-violet-600 hover:text-violet-800'} transition-colors`}>
                             Todos <span className="text-slate-400 font-normal">({allCount})</span>
                         </button>
@@ -438,15 +440,15 @@ ${quickEditData.rawBody}`;
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex flex-wrap items-center gap-2">
                             {/* Bulk Action */}
-                            <select value={bulkAction} onChange={e => setBulkAction(e.target.value)} className="border border-slate-400 rounded-sm text-[13px] px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
+                            <select value={bulkAction} onChange={e => setBulkAction(e.target.value)} className="border border-slate-400 rounded-sm text-sm px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
                                 <option value="">Ações em massa</option>
                                 <option value="delete">Mover para a lixeira</option>
                             </select>
-                            <button onClick={handleBulkAction} className="border border-violet-600 text-violet-600 hover:bg-violet-50 px-3 py-1 rounded-sm text-[13px] font-medium transition-colors">Aplicar</button>
+                            <button onClick={handleBulkAction} className="border border-violet-600 text-violet-600 hover:bg-violet-50 px-3 py-1 rounded-sm text-sm font-medium transition-colors">Aplicar</button>
 
                             {/* Filters */}
                             <div className="flex items-center gap-1 sm:ml-4">
-                                <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="border border-slate-400 rounded-sm text-[13px] px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
+                                <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="border border-slate-400 rounded-sm text-sm px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
                                     <option value="all">Todas as datas</option>
                                     {availableDates.map(d => {
                                         const [y, m] = d.split('-');
@@ -455,12 +457,12 @@ ${quickEditData.rawBody}`;
                                     })}
                                 </select>
 
-                                <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="border border-slate-400 rounded-sm text-[13px] px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
+                                <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="border border-slate-400 rounded-sm text-sm px-2 py-1 text-slate-700 bg-white hover:border-slate-500 outline-none">
                                     <option value="all">Todas as categorias</option>
                                     {dynamicCategories.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
 
-                                <button className="border border-slate-400 text-slate-700 hover:bg-slate-50 px-3 py-1 ml-1 rounded-sm text-[13px] font-medium transition-colors">Filtrar</button>
+                                <button className="border border-slate-400 text-slate-700 hover:bg-slate-50 px-3 py-1 ml-1 rounded-sm text-sm font-medium transition-colors">Filtrar</button>
                             </div>
                         </div>
 
@@ -469,11 +471,11 @@ ${quickEditData.rawBody}`;
                     </div>
 
                     {/* Table (WP Style) */}
-                    <div className="border border-slate-300 rounded-sm bg-white overflow-hidden shadow-sm">
+                    <div className="border border-slate-200 rounded-sm bg-white overflow-hidden shadow-sm">
                         <div className="w-full relative">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-[#f6f7f7] border-b border-slate-300">
+                                    <tr className="bg-slate-50 border-b border-slate-200 text-sm">
                                         <th className="px-3 py-2 text-center w-12">
                                             <input type="checkbox" className="w-4 h-4 rounded border-slate-400 text-violet-600 focus:ring-transparent"
                                                 onChange={(e) => {
@@ -483,19 +485,19 @@ ${quickEditData.rawBody}`;
                                                 checked={selectedPosts.length === filteredPosts.length && filteredPosts.length > 0}
                                             />
                                         </th>
-                                        <th className="px-4 py-2 font-semibold text-slate-800 text-[13px] border-r border-[#e2e4e7] w-[40%] hover:bg-slate-100 cursor-pointer transition-colors" onClick={() => handleSort('title')}>
+                                        <th className="px-4 py-2 font-semibold text-slate-800 text-sm  w-[40%] hover:bg-slate-100 cursor-pointer transition-colors" onClick={() => handleSort('title')}>
                                             <div className="flex items-center gap-1">
                                                 <span className="text-violet-600">Título</span>
                                                 {sortField === 'title' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />)}
                                             </div>
                                         </th>
-                                        <th className="px-4 py-2 font-semibold text-slate-800 text-[13px] border-r border-[#e2e4e7]">
+                                        <th className="px-4 py-2 font-semibold text-slate-800 text-sm ">
                                             Autor
                                         </th>
-                                        <th className="px-4 py-2 font-semibold text-slate-800 text-[13px] border-r border-[#e2e4e7]">
+                                        <th className="px-4 py-2 font-semibold text-slate-800 text-sm ">
                                             Categorias
                                         </th>
-                                        <th className="px-4 py-2 font-semibold text-slate-800 text-[13px] hover:bg-slate-100 cursor-pointer transition-colors" onClick={() => handleSort('pubDate')}>
+                                        <th className="px-4 py-2 font-semibold text-slate-800 text-sm hover:bg-slate-100 cursor-pointer transition-colors" onClick={() => handleSort('pubDate')}>
                                             <div className="flex items-center gap-1">
                                                 <span className="text-violet-600">Data</span>
                                                 {sortField === 'pubDate' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />)}
@@ -506,7 +508,7 @@ ${quickEditData.rawBody}`;
                                 <tbody className="divide-y divide-slate-200">
                                     {paginatedPosts.map((post, idx) => (
                                         <React.Fragment key={post.sha}>
-                                            <tr className={`${idx % 2 === 0 ? 'bg-[#f9f9f9]' : 'bg-white'} hover:bg-violet-50/50 transition-colors group`}>
+                                            <tr className={`${idx % 2 === 0 ? 'bg-white' : 'bg-white'} hover:bg-slate-50 transition-colors group`}>
                                                 <td className="px-3 py-3 text-center">
                                                     <input type="checkbox" className="w-4 h-4 rounded border-slate-400 text-violet-600 focus:ring-transparent"
                                                         checked={selectedPosts.includes(post.sha)}
@@ -525,7 +527,7 @@ ${quickEditData.rawBody}`;
                                                     </div>
 
                                                     {/* Row Actions WP Style (visible on hover) */}
-                                                    <div className="flex items-center gap-2 text-[13px] opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2 left-4">
+                                                    <div className="flex items-center gap-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2 left-4">
                                                         <a href={`/dashboard/cms/${siteId}/posts/editor?path=${encodeURIComponent(post.path)}`} className="text-violet-600 hover:underline">Editar</a>
                                                         <span className="text-slate-300">|</span>
                                                         <button onClick={() => handleQuickAction(post)} className="text-violet-600 hover:underline">Edição Rápida</button>
@@ -535,13 +537,13 @@ ${quickEditData.rawBody}`;
                                                         <a href={`${siteUrl}/blog/${post.slug}`} target="_blank" rel="noreferrer" className="text-violet-600 hover:underline">Ver</a>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-[13px] text-violet-600 hover:underline cursor-pointer">
+                                                <td className="px-4 py-3 text-sm text-violet-600 hover:underline cursor-pointer">
                                                     {post.author || '—'}
                                                 </td>
-                                                <td className="px-4 py-3 text-[13px] text-violet-600 hover:underline cursor-pointer">
+                                                <td className="px-4 py-3 text-sm text-violet-600 hover:underline cursor-pointer">
                                                     {post.category || '—'}
                                                 </td>
-                                                <td className="px-4 py-3 text-[13px] text-slate-700">
+                                                <td className="px-4 py-3 text-sm text-slate-700">
                                                     {post.draft ? 'Última modificação' : 'Publicado'} <br />
                                                     {post.pubDate ? (() => {
                                                         const [y, m, d] = post.pubDate.split('-');
@@ -552,7 +554,7 @@ ${quickEditData.rawBody}`;
 
                                             {/* Edição Rápida (Inline Editor) */}
                                             {editingSha === post.sha && (
-                                                <tr className="bg-[#f0f0f1] border-y border-slate-300 shadow-inner">
+                                                <tr className="bg-[#f0f0f1] border-y border-slate-200 shadow-inner">
                                                     <td colSpan={5} className="p-0">
                                                         <div className="p-4 border-l-4 border-l-violet-500">
                                                             <div className="flex items-center gap-2 mb-4">
@@ -590,13 +592,13 @@ ${quickEditData.rawBody}`;
                                                                     <label className={labelClass}>Categorias</label>
                                                                     <div className="bg-white border border-[#8c8f94] rounded-sm p-3 h-[140px] overflow-y-auto space-y-2">
                                                                         {dynamicCategories.map(cat => (
-                                                                            <label key={cat} className="flex items-center gap-2 cursor-pointer p-0.5 rounded transition-colors text-[13px]">
+                                                                            <label key={cat} className="flex items-center gap-2 cursor-pointer p-0.5 rounded transition-colors text-sm">
                                                                                 <input
                                                                                     type="radio"
                                                                                     name="quickEditCategory"
                                                                                     checked={quickEditData.category === cat}
                                                                                     onChange={() => setQuickEditData({ ...quickEditData, category: cat })}
-                                                                                    className="w-4 h-4 text-violet-600 focus:ring-violet-500 border-slate-300 cursor-pointer"
+                                                                                    className="w-4 h-4 text-violet-600 focus:ring-violet-500 border-slate-200 cursor-pointer"
                                                                                 />
                                                                                 <span className="text-slate-800">{cat}</span>
                                                                             </label>
@@ -622,7 +624,7 @@ ${quickEditData.rawBody}`;
                                                                 </div>
 
                                                                 {/* Coluna 3 */}
-                                                                <div className="space-y-3 border-l border-slate-300 pl-4 h-full">
+                                                                <div className="space-y-3 border-l border-slate-200 pl-4 h-full">
                                                                     <div>
                                                                         <label className={labelClass}>Status</label>
                                                                         <select
@@ -637,11 +639,11 @@ ${quickEditData.rawBody}`;
                                                                 </div>
                                                             </div>
 
-                                                            <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-300">
-                                                                <button disabled={saving} onClick={() => setEditingSha(null)} className="border border-violet-600 text-violet-600 hover:bg-violet-50 bg-white font-medium px-4 py-1.5 rounded-sm text-[13px] transition-colors">
+                                                            <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-200">
+                                                                <button disabled={saving} onClick={() => setEditingSha(null)} className="border border-violet-600 text-violet-600 hover:bg-violet-50 bg-white font-medium px-4 py-1.5 rounded-sm text-sm transition-colors">
                                                                     Cancelar
                                                                 </button>
-                                                                <button disabled={saving} onClick={saveQuickEdit} className="bg-[var(--tw-colors-violet-600)] hover:bg-[var(--tw-colors-violet-700)] text-white font-medium px-4 py-1.5 rounded-sm text-[13px] flex items-center gap-2 transition-colors">
+                                                                <button disabled={saving} onClick={saveQuickEdit} className="bg-[var(--tw-colors-violet-600)] hover:bg-[var(--tw-colors-violet-700)] text-white font-medium px-4 py-1.5 rounded-sm text-sm flex items-center gap-2 transition-colors">
                                                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Atualizar'}
                                                                 </button>
                                                             </div>

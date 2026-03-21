@@ -319,9 +319,9 @@ ${finalHtmlContent}`;
         </div>
     );
 
-    const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:border-violet-500 focus:bg-white focus:ring-4 focus:ring-violet-500/10 transition-all shadow-sm";
+    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
     const selectClass = `${inputClass} appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_1rem_center] bg-[length:1.2em_1.2em] pr-10`;
-    const labelClass = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
 
     const quillModules = {
         toolbar: [
@@ -341,7 +341,7 @@ ${finalHtmlContent}`;
             <style>{`
                 /* Barra de ferramentas flutuante atrelada ao foco na área Zen */
                 .quill-zen .ql-toolbar {
-                    border: 1px solid #e2e8f0;
+                    border: 1px solid #e2e8f0; border-radius: 8px;
                     background: #ffffff;
                     padding: 8px 16px;
                     position: sticky;
@@ -380,7 +380,7 @@ ${finalHtmlContent}`;
                 .quill-zen .ql-toolbar .ql-picker.ql-header {
                     width: 150px;
                     background-color: #f8fafc;
-                    border: 1px solid #e2e8f0;
+                    border: 1px solid #e2e8f0; border-radius: 8px;
                     border-radius: 0.75rem; /* rounded-xl */
                     padding: 0 12px;
                     height: 38px;
@@ -419,7 +419,7 @@ ${finalHtmlContent}`;
                 /* Caixa do menu em si */
                 .quill-zen .ql-toolbar .ql-picker.ql-header .ql-picker-options {
                     margin-top: 8px;
-                    border: 1px solid #e2e8f0;
+                    border: 1px solid #e2e8f0; border-radius: 8px;
                     border-radius: 0.75rem; /* rounded-xl */
                     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
                     padding: 8px;
@@ -472,9 +472,9 @@ ${finalHtmlContent}`;
                         {isPreview ? <Edit3 className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         {isPreview ? 'Continuar Editando' : 'Pré-visualizar'}
                     </button>
-                    <button type="button" onClick={handleSave} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-5 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors shadow-sm">
+                    <button type="button" onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-violet-600/20">
                         {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                        {saving ? 'Publicando...' : 'Publicar'}
+                        {saving ? 'Atualizando...' : 'Atualizar Publicação'}
                     </button>
                 </div>
             </div>
@@ -482,9 +482,9 @@ ${finalHtmlContent}`;
             <div className="flex-1 min-w-0 w-full space-y-6">
                 {error && <div className="p-3 bg-red-50 text-red-700 border-l-4 border-red-500 text-sm font-medium flex gap-2"><AlertCircle className="w-4 h-4" /> {error}</div>}
 
-                <div className="bg-white rounded-sm border border-slate-200 shadow-sm flex flex-col pt-8 pb-8 px-8 sm:px-12 md:px-16 lg:px-24 quill-zen min-h-[700px]">
+                <div className="flex flex-col p-8 md:p-12 quill-zen min-h-[700px] bg-white rounded-2xl border border-slate-200 shadow-sm">
                     {isPreview ? (
-                        <div className="prose pred-slate pred-lg max-w-none w-full break-words overflow-hidden pb-10 px-2">
+                        <div className="prose pred-slate pred-lg max-w-none w-full break-words overflow-hidden pb-10">
                             <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-8 border-b border-slate-100 pb-8 break-words">{post.title || 'Artigo sem título'}</h1>
                             {post.heroImage && (
                                 <img src={post.heroImage} alt="Capa" className="w-full h-auto rounded-xl mb-10 shadow-sm border border-slate-100" />
@@ -493,12 +493,16 @@ ${finalHtmlContent}`;
                         </div>
                     ) : (
                         <>
-                            <input
-                                type="text"
+                            <textarea
+                                rows={1}
                                 placeholder="Adicionar título"
                                 value={post.title}
                                 onChange={e => handleTitleChange(e.target.value)}
-                                className="w-full text-4xl lg:text-5xl font-black text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-300 tracking-tight leading-tight mb-8"
+                                onInput={(e) => {
+                                    e.currentTarget.style.height = 'auto';
+                                    e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                                }}
+                                className="w-full text-4xl lg:text-5xl font-black text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-300 tracking-tight leading-tight mb-8 resize-none overflow-hidden [overflow-wrap:anywhere]"
                             />
 
                             <QuillEditor
@@ -515,8 +519,8 @@ ${finalHtmlContent}`;
 
             {/* Sidebar Persistente: SEO e Metadados */}
             <div className="w-full xl:w-[320px] shrink-0 sticky top-20 space-y-6 z-10">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3">Resumo (SEO)</h3>
+                <div className="p-6 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-5">
+                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Resumo (SEO)</h3>
                     <div>
                         <label className={labelClass}>Resumo do Post (Descrição)</label>
                         <textarea
@@ -529,8 +533,8 @@ ${finalHtmlContent}`;
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3">Status e Visibilidade</h3>
+                <div className="p-6 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-5">
+                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Status e Visibilidade</h3>
 
                     <div>
                         <label className={labelClass}>Status da Publicação</label>
@@ -569,8 +573,8 @@ ${finalHtmlContent}`;
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3">Autor e Categoria</h3>
+                <div className="p-6 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-5">
+                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Autor e Categoria</h3>
                     <div>
                         <label className={labelClass}>Autor do Artigo</label>
                         <select value={post.author} onChange={e => setPost({ ...post, author: e.target.value })} className={selectClass}>
@@ -607,14 +611,14 @@ ${finalHtmlContent}`;
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                    <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 flex items-center justify-between">
+                <div className="p-6 mb-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-5">
+                    <h3 className="font-semibold text-slate-900 text-sm flex items-center justify-between">
                         <span>Imagem de Capa Frontal</span>
                         <ImageIcon className="w-4 h-4 text-slate-400" />
                     </h3>
 
                     <div>
-                        <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all mb-4 text-center">
+                        <label className="group relative border border-dashed border-slate-300 hover:border-violet-500 bg-white rounded-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all mb-4 text-center">
                             <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'heroImage')} className="hidden" />
                             <ImageIcon className="w-8 h-8 text-slate-400 group-hover:text-violet-500 mb-2 transition-colors" />
                             <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700">Clique para Enviar a Capa</span>
@@ -622,7 +626,7 @@ ${finalHtmlContent}`;
                         </label>
 
                         {post.heroImage && (
-                            <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-200 relative group shadow-sm bg-slate-100">
+                            <div className="w-full aspect-[16/9] rounded-md overflow-hidden border border-slate-200 relative group shadow-sm bg-slate-100">
                                 <img src={getFullImageUrl(post.heroImage)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
                                     <span className="text-white text-xs font-bold uppercase tracking-wider bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-xl">Capa Atual</span>

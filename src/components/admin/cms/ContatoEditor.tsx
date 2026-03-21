@@ -150,10 +150,10 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
         </div>
     );
 
-    const cardClass = "bg-white p-5 rounded-sm border border-slate-200";
-    const inputClass = "w-full bg-white border border-[#8c8f94] rounded-sm px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] transition-colors";
-    const labelClass = "block text-xs font-semibold text-slate-700 mb-1";
-    const headerTitleClass = "text-sm font-semibold text-slate-800 mb-4 pb-2 border-b border-slate-200";
+    const cardClass = "p-8 mb-8 bg-white border border-slate-200 rounded-2xl shadow-sm";
+    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
+    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const headerTitleClass = "text-2xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4 flex items-center gap-2";
 
     return (
         <div className="w-full max-w-[1300px] mx-auto isolate relative pt-20 pb-12 px-6 flex flex-col xl:flex-row gap-8 items-start">
@@ -166,7 +166,7 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Contato</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button type="button" onClick={handleSave} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors">
+                    <button type="button" onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-violet-600/20">
                         {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                         {saving ? 'Atualizando...' : 'Atualizar'}
                     </button>
@@ -229,7 +229,7 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
 
             {/* Sidebar Persistente (SEO) */}
             <div className="w-full xl:w-[320px] shrink-0 sticky top-20 space-y-6 z-10">
-                <div className="bg-white p-5 rounded-sm border border-slate-200">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 className="font-semibold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-5">Configurações globais</h3>
                     <div className="space-y-4">
                         <div>

@@ -1,7 +1,6 @@
 ---
 /**
  * DashboardLayout.astro
- *
  * Layout base para a área protegida do SaaS.
  */
 import '../styles/global.css';
@@ -12,12 +11,27 @@ interface Props {
 
 const { title = "Dashboard | Main CNX" } = Astro.props;
 
-// Componentes da Sidebar
 const navItems = [
-    { label: "Visão Geral", icon: "📊", href: "/dashboard" },
-    { label: "Projetos IA", icon: "✨", href: "/dashboard/cms" },
-    { label: "Projetos Vercel", icon: "📁", href: "/dashboard/sites" },
-    { label: "Sites PBN", icon: "🚀", href: "/dashboard/pbn" }
+    {
+        label: "Visão Geral",
+        href: "/dashboard",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>`
+    },
+    {
+        label: "Projetos IA",
+        href: "/dashboard/cms",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`
+    },
+    {
+        label: "Projetos Vercel",
+        href: "/dashboard/sites",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+    },
+    {
+        label: "Sites PBN",
+        href: "/dashboard/pbn",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`
+    },
 ];
 ---
 <!doctype html>
@@ -29,97 +43,116 @@ const navItems = [
     <title>{title}</title>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
-    <!-- Base App Wrapper -->
-    <div class="flex-1 w-full flex flex-col md:flex-row min-h-screen">
-        
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col shrink-0">
-            <div class="h-16 flex items-center px-6 border-b border-slate-100">
-                <span class="font-bold text-xl text-violet-600">Main CNX</span>
+    <div class="flex w-full min-h-screen">
+
+        <!-- Sidebar Desktop -->
+        <aside class="w-60 bg-white border-r border-slate-100 hidden md:flex flex-col shrink-0 fixed inset-y-0 left-0 z-30">
+            <!-- Logo -->
+            <div class="h-14 flex items-center px-5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-violet-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <span class="font-bold text-slate-900 text-sm tracking-tight">Main CNX</span>
+                </div>
             </div>
-            <nav class="flex-1 px-4 py-6 space-y-1">
+
+            <!-- Nav -->
+            <nav class="flex-1 px-3 py-4 space-y-0.5">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest px-3 mb-2">Menu</p>
                 {navItems.map(item => (
-                    <a 
+                    <a
                         href={item.href}
-                        class={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                        class={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
                             Astro.url.pathname === item.href || (item.href !== '/dashboard' && Astro.url.pathname.startsWith(item.href))
-                                ? 'bg-violet-50 text-violet-700 font-medium' 
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                ? 'bg-violet-50 text-violet-700 font-semibold border-l-2 border-violet-600 rounded-l-none pl-[10px]'
+                                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
                         }`}
                     >
-                        <span>{item.icon}</span>
+                        <span class={`shrink-0 ${Astro.url.pathname === item.href || (item.href !== '/dashboard' && Astro.url.pathname.startsWith(item.href)) ? 'text-violet-600' : 'text-slate-400'}`} set:html={item.icon} />
                         <span>{item.label}</span>
                     </a>
                 ))}
             </nav>
+
+            <!-- Bottom -->
+            <div class="p-3 border-t border-slate-100">
+                <button id="logout-btn-sidebar" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    <span>Sair</span>
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content wrapper -->
-        <div class="flex-1 flex-col min-w-0">
-            <!-- Mobile Sidebar Overlay (Backdrop) -->
-            <div id="mobile-sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden md:hidden"></div>
+        <div class="flex-1 flex flex-col min-w-0 md:pl-60">
+            <!-- Mobile Sidebar Overlay -->
+            <div id="mobile-sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] hidden md:hidden"></div>
 
             <!-- Mobile Sidebar Drawer -->
-            <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 w-72 bg-white z-[70] transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl">
-                <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-                    <span class="font-bold text-xl text-violet-600">Main CNX</span>
-                    <button id="close-mobile-menu" class="text-slate-400 hover:text-slate-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-white z-[70] transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col border-r border-slate-100">
+                <div class="h-14 flex items-center justify-between px-5 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-violet-600 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <span class="font-bold text-slate-900 text-sm">Main CNX</span>
+                    </div>
+                    <button id="close-mobile-menu" class="text-slate-400 hover:text-slate-700 p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                <nav class="flex-1 px-4 py-6 space-y-1">
+                <nav class="flex-1 px-3 py-4 space-y-0.5">
                     {navItems.map(item => (
-                        <a 
+                        <a
                             href={item.href}
-                            class={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                            class={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
                                 Astro.url.pathname === item.href || (item.href !== '/dashboard' && Astro.url.pathname.startsWith(item.href))
-                                    ? 'bg-violet-50 text-violet-700 font-medium' 
-                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-violet-50 text-violet-700 font-semibold border-l-2 border-violet-600 rounded-l-none pl-[10px]'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
                             }`}
                         >
-                            <span class="text-xl">{item.icon}</span>
-                            <span class="font-medium">{item.label}</span>
+                            <span class="shrink-0 text-slate-400" set:html={item.icon} />
+                            <span>{item.label}</span>
                         </a>
                     ))}
                 </nav>
             </aside>
 
-            <!-- Header (Mobile Toggle & User Profile) -->
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6">
-                <div class="flex items-center gap-4">
-                    <button id="open-mobile-menu" class="md:hidden text-slate-500 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-50 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <!-- Header -->
+            <header class="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
+                <div class="flex items-center gap-3">
+                    <button id="open-mobile-menu" class="md:hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <h1 class="font-semibold text-lg hidden sm:block">Painel</h1>
                 </div>
-                
-                <div class="relative group flex items-center gap-3">
-                    <button class="flex items-center gap-3 py-1.5 pl-3 pr-4 bg-white hover:bg-slate-50 border border-transparent hover:border-slate-200 rounded-full cursor-pointer transition-all">
-                        <div class="text-sm text-right hidden lg:block">
-                            <p class="font-bold text-slate-700 leading-none" id="user-email-display">Sua Conta</p>
+
+                <div class="relative group flex items-center gap-2">
+                    <button class="flex items-center gap-2 py-1.5 px-3 rounded-lg hover:bg-slate-50 transition-all text-sm">
+                        <span class="text-slate-600 font-medium hidden sm:block" id="user-email-display">Conta</span>
+                        <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-xs ring-2 ring-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         </div>
-                        <div class="w-9 h-9 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-sm ring-2 ring-white">
-                            ⚙️
-                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
 
-                    <!-- Dropdown Content (Hover to show) -->
-                    <div class="absolute right-0 top-full mt-1 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                        <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden text-left mt-1">
-                            <div class="p-3 border-b border-slate-100 bg-slate-50">
-                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2">Configurações</p>
-                            </div>
-                            <div class="p-2 space-y-1">
-                                <a href="/dashboard/settings?tab=minha-conta" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-700 rounded-lg hover:bg-violet-50 hover:text-violet-700 transition-colors">
-                                    <span class="text-lg">👤</span> Meu Perfil
+                    <!-- Dropdown -->
+                    <div class="absolute right-0 top-full mt-1 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 origin-top-right z-50">
+                        <div class="bg-white rounded-xl shadow-lg shadow-slate-200/60 border border-slate-100 overflow-hidden">
+                            <div class="p-1.5 space-y-0.5">
+                                <a href="/dashboard/settings?tab=minha-conta" class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    Meu Perfil
                                 </a>
-                                <a href="/dashboard/settings?tab=integracoes" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-700 rounded-lg hover:bg-violet-50 hover:text-violet-700 transition-colors">
-                                    <span class="text-lg">🔌</span> Integrações Vercel
+                                <a href="/dashboard/settings?tab=integracoes" class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                    Integrações
                                 </a>
                             </div>
-                            <div class="p-2 border-t border-slate-100">
-                                <button id="logout-btn-header" class="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-600 rounded-lg hover:bg-red-50 transition-colors text-left">
-                                    <span class="text-lg">🚪</span> Sair do Painel
+                            <div class="border-t border-slate-100 p-1.5">
+                                <button id="logout-btn-header" class="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-red-500 rounded-lg hover:bg-red-50 transition-colors text-left">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                                    Sair do Painel
                                 </button>
                             </div>
                         </div>
@@ -128,14 +161,14 @@ const navItems = [
             </header>
 
             <!-- Main Content Area -->
-            <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full max-w-7xl mx-auto">
+            <main class="flex-1 p-6 sm:p-8 lg:p-10 w-full">
                 <slot />
             </main>
         </div>
-        
+
     </div>
 
-    <!-- Client-side Logic for Supabase Auth in the Dashboard -->
+    <!-- Client-side Logic -->
     <script>
         import { supabase } from '../lib/supabase';
 
@@ -146,7 +179,8 @@ const navItems = [
             } else {
                 const display = document.getElementById('user-email-display');
                 if (display && session.user.email) {
-                    display.textContent = session.user.email;
+                    // Mostrar só parte antes do @
+                    display.textContent = session.user.email.split('@')[0];
                 }
             }
         }
@@ -156,16 +190,16 @@ const navItems = [
             window.location.href = '/login';
         }
 
-        const logoutBtn = document.getElementById('logout-btn-header');
-        if (logoutBtn) logoutBtn.addEventListener('click', logout);
+        document.getElementById('logout-btn-header')?.addEventListener('click', logout);
+        document.getElementById('logout-btn-sidebar')?.addEventListener('click', logout);
 
-        // Mobile Menu Toggle Logic
+        // Mobile Menu
         const openBtn = document.getElementById('open-mobile-menu');
         const closeBtn = document.getElementById('close-mobile-menu');
         const sidebar = document.getElementById('mobile-sidebar');
         const backdrop = document.getElementById('mobile-sidebar-backdrop');
 
-        function toggleMobileMenu(isOpen) {
+        function toggleMobileMenu(isOpen: boolean) {
             if (isOpen) {
                 sidebar?.classList.remove('-translate-x-full');
                 backdrop?.classList.remove('hidden');
@@ -181,62 +215,54 @@ const navItems = [
         closeBtn?.addEventListener('click', () => toggleMobileMenu(false));
         backdrop?.addEventListener('click', () => toggleMobileMenu(false));
 
-        // Run check
         checkAuth();
     </script>
 
-    <!-- CNX Global Modals & Toasts UI -->
-    
-    <!-- 1. Toast Container (Canto Inferior Direito) -->
-    <div id="cnx-toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+    <!-- Toast Container -->
+    <div id="cnx-toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- 2. Modal Overlay de Confirmação -->
-    <div id="cnx-confirm-modal" class="fixed inset-0 z-[110] bg-slate-900/40 backdrop-blur-sm opacity-0 invisible transition-all duration-200 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-sm w-full transform scale-95 transition-transform duration-200" id="cnx-confirm-box">
-            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 mb-5 mx-auto">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    <!-- Modal de Confirmação -->
+    <div id="cnx-confirm-modal" class="fixed inset-0 z-[110] bg-slate-900/30 backdrop-blur-sm opacity-0 invisible transition-all duration-200 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full transform scale-95 transition-transform duration-200" id="cnx-confirm-box">
+            <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-4 mx-auto">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <h3 class="text-xl font-bold text-center text-slate-800 mb-2">Atenção!</h3>
-            <p id="cnx-confirm-msg" class="text-slate-600 text-center mb-6 text-sm"></p>
-            
-            <div class="flex items-center gap-3 w-full">
-                <button id="cnx-confirm-cancel" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">Cancelar</button>
-                <button id="cnx-confirm-accept" class="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-red-500/25">Confirmar</button>
+            <h3 class="text-base font-bold text-center text-slate-800 mb-1.5">Atenção</h3>
+            <p id="cnx-confirm-msg" class="text-slate-500 text-center mb-5 text-sm"></p>
+            <div class="flex items-center gap-2">
+                <button id="cnx-confirm-cancel" class="flex-1 py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-sm transition-colors">Cancelar</button>
+                <button id="cnx-confirm-accept" class="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg text-sm transition-colors">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- Script Global de Comportamento Visual -->
     <script>
-        // Sistema de Notificações (Toasts / Logos Inferior Direito)
-        window.cnxToast = (message, type = 'success') => {
+        window.cnxToast = (message: string, type: string = 'success') => {
             const container = document.getElementById('cnx-toast-container');
             if (!container) return;
 
             const isErr = type === 'error';
-            const icon = isErr ? '⚠️' : '✅';
-            const bgClass = isErr ? 'bg-red-50 border-red-200 text-red-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800';
-            
-            const toast = document.createElement('div');
-            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg transform translate-y-8 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
-            toast.innerHTML = `<span class="text-lg">${icon}</span><span class="font-medium text-sm pr-2">${message}</span>`;
-            
-            container.appendChild(toast);
+            const bgClass = isErr
+                ? 'bg-white border-red-200 text-red-700'
+                : 'bg-white border-emerald-200 text-emerald-700';
+            const dotClass = isErr ? 'bg-red-500' : 'bg-emerald-500';
 
-            // Animate In
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg shadow-slate-200/50 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `<span class="w-2 h-2 rounded-full shrink-0 ${dotClass}"></span><span class="font-medium text-sm">${message}</span>`;
+
+            container.appendChild(toast);
             requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-8', 'opacity-0');
+                toast.classList.remove('translate-y-4', 'opacity-0');
             });
 
-            // Animate Out // Remove after 4 seconds
             setTimeout(() => {
-                toast.classList.add('opacity-0', 'scale-95');
+                toast.classList.add('opacity-0', '-translate-y-1');
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         };
 
-        // Sistema de Modal Nativo do SaaS (Interromper Forms)
-        window.cnxConfirm = (message, onConfirm) => {
+        window.cnxConfirm = (message: string, onConfirm: () => void) => {
             const modal = document.getElementById('cnx-confirm-modal');
             const box = document.getElementById('cnx-confirm-box');
             const msgEl = document.getElementById('cnx-confirm-msg');
@@ -244,14 +270,11 @@ const navItems = [
             const acceptBtn = document.getElementById('cnx-confirm-accept');
 
             if (!modal || !box || !msgEl || !cancelBtn || !acceptBtn) return;
-
             msgEl.textContent = message;
 
-            // Mostra Modal
             modal.classList.remove('opacity-0', 'invisible');
             box.classList.remove('scale-95');
 
-            // Cleanup handlers
             const closeAndClean = () => {
                 modal.classList.add('opacity-0', 'invisible');
                 box.classList.add('scale-95');
@@ -259,35 +282,22 @@ const navItems = [
                 cancelBtn.onclick = null;
             };
 
-            cancelBtn.onclick = () => {
-                closeAndClean();
-            };
-
-            acceptBtn.onclick = () => {
-                closeAndClean();
-                if (onConfirm) onConfirm();
-            };
+            cancelBtn.onclick = () => closeAndClean();
+            acceptBtn.onclick = () => { closeAndClean(); if (onConfirm) onConfirm(); };
         };
 
-        // Leitura de URL para Ativar Toasts baseados no ?success= ou ?error= (Fallback Inteligente Global)
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const err = params.get('error');
             const suc = params.get('success');
-
-            if (err) {
-                window.cnxToast(err, 'error');
-            } else if (suc) {
-                // Caso queiramos mensagens personalizadas baseadas no Code
-                let finalMsg = suc;
-                if (suc === 'domain_removed') finalMsg = 'Domínio removido com sucesso.';
-                if (suc === 'domain_added') finalMsg = 'Domínio adicionado com sucesso.';
-                if (suc.includes('Dominio Editado')) finalMsg = 'Alvo do domínio alterado.';
-                window.cnxToast(finalMsg, 'success');
+            if (err) window.cnxToast(err, 'error');
+            else if (suc) {
+                let msg = suc;
+                if (suc === 'domain_removed') msg = 'Domínio removido com sucesso.';
+                if (suc === 'domain_added') msg = 'Domínio adicionado com sucesso.';
+                window.cnxToast(msg, 'success');
             }
-
             if (err || suc) {
-                // Limpa os parametros sujos da URL pra não repetir no reload do F5
                 const url = new URL(window.location.href);
                 url.searchParams.delete('error');
                 url.searchParams.delete('success');
