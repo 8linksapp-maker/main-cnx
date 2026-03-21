@@ -86,7 +86,7 @@ async function pushFile(fullName: string, filePath: string, content: string, ghT
 
 // ─── Vercel Deploy ───────────────────────────────────────────────────────────
 
-async function deployToVercel(vercelToken: string, fullName: string, slug: string, repoId: number): Promise<string> {
+async function deployToVercel(vercelToken: string, fullName: string, slug: string, repoId: number): Promise<{ url: string, projectId: string }> {
     const projectRes = await fetch('https://api.vercel.com/v10/projects', {
         method: 'POST',
         headers: { Authorization: `Bearer ${vercelToken}`, 'Content-Type': 'application/json' },
@@ -141,7 +141,7 @@ async function deployToVercel(vercelToken: string, fullName: string, slug: strin
     if (state === 'ERROR' || state === 'CANCELED') throw new Error(`Deploy falhou (${state}). Verifique os logs na Vercel.`);
     if (state !== 'READY') throw new Error('Deploy demorou demais (timeout). O site pode estar online em breve.');
 
-    return url;
+    return { url, projectId: deploy.projectId };
 }
 
 // ─── Gemini ──────────────────────────────────────────────────────────────────
@@ -254,7 +254,9 @@ export const POST: APIRoute = async (context) => {
         // Tokens das integrações
         const { data: integrations } = await supabase.from('integrations').select('*').eq('user_id', user.id);
         const ghToken = integrations?.find((i: any) => i.provider === 'github')?.token?.trim();
-        const vercelToken = integrations?.find((i: any) => i.provider === 'vercel')?.token?.trim();
+        const vercelIntegration = integrations?.find((i: any) => i.provider === 'vercel');
+        const vercelToken = vercelIntegration?.token?.trim();
+        const vercelIntegrationId = vercelIntegration?.id;
         const geminiKey = integrations?.find((i: any) => i.provider === 'gemini')?.token?.trim();
 
         if (!ghToken) throw new Error('Conecte sua conta do GitHub nas Configurações da plataforma.');
@@ -299,8 +301,9 @@ export const POST: APIRoute = async (context) => {
             theme: {
                 ...baseConfig.theme,
                 primary: design?.primaryColor || baseConfig.theme?.primary,
+                primaryDark: design?.primaryColor || baseConfig.theme?.primary,
                 accent: design?.secondaryColor || baseConfig.theme?.accent,
-                fontFamily: design?.fontPairing || 'outfit',
+                font: design?.fontPairing || 'outfit',
             },
             social: {
                 instagram: seo?.instagram ? `https://instagram.com/${seo.instagram.replace('@', '')}` : baseConfig.social?.instagram,
@@ -337,7 +340,7 @@ export const POST: APIRoute = async (context) => {
         const { repoId, fullName } = await createOrGetRepo(ghToken, slug);
 
         // --- Push de todos os arquivos do template ---
-        const skipPaths = new Set(['src/data/siteConfig.json', 'src/data/home.json', 'src/data/categories.json', 'src/data/privacy.json', 'src/data/terms.json']);
+        const skipPaths = new Set(['src/data/siteConfig.json', 'src/data/home.json', 'src/data/categories.json']);
 
         for (const file of templateFiles) {
             // Pulamos os "dados mastigados" para substituir no próximo passo
@@ -350,18 +353,22 @@ export const POST: APIRoute = async (context) => {
         // Push da Config e Home JSON com a fusão IA + Wizard
         await pushFile(fullName, 'src/data/siteConfig.json', JSON.stringify(finalConfig, null, 2), ghToken, 'feat: injecao de configs siteConfig.json');
         await pushFile(fullName, 'src/data/home.json', JSON.stringify(finalHome, null, 2), ghToken, 'feat: injecao generativa home.json');
-        await pushFile(fullName, 'src/data/categories.json', JSON.stringify(categories, null, 2), ghToken, 'feat: inicializacao de categorias.json');
-
-        // Inicializa arquivos legais do template
-        const privacyTpl = templateFiles.find(f => f.path === 'src/data/privacy.json');
-        const termsTpl = templateFiles.find(f => f.path === 'src/data/terms.json');
-        if (privacyTpl) await pushFile(fullName, 'src/data/privacy.json', privacyTpl.content, ghToken, 'feat: inicializacao privacy.json');
-        if (termsTpl) await pushFile(fullName, 'src/data/terms.json', termsTpl.content, ghToken, 'feat: inicializacao terms.json');
+        if (categories.length > 0) {
+            await pushFile(fullName, 'src/data/categories.json', JSON.stringify(categories, null, 2), ghToken, 'feat: injecao generativa de categorias');
+        } else {
+            const originalCategories = templateFiles.find(f => f.path === 'src/data/categories.json');
+            if (originalCategories) {
+                await pushFile(fullName, 'src/data/categories.json', originalCategories.content, ghToken, 'feat: injecao template categories.json');
+            }
+        }
 
         // --- Deploy na Vercel ---
         let finalUrl = `https://${slug}.vercel.app`;
+        let finalProjectId = null;
         try {
-            finalUrl = await deployToVercel(vercelToken, fullName, slug, repoId);
+            const vercelResult = await deployToVercel(vercelToken, fullName, slug, repoId);
+            finalUrl = vercelResult.url;
+            finalProjectId = vercelResult.projectId;
         } catch (deployErr: any) {
             // Em caso de falha no deploy, salva no Supabase com error explicit warning pra debugar
             await supabase.from('sites_cms').insert({
@@ -373,6 +380,8 @@ export const POST: APIRoute = async (context) => {
                 url: '',
                 data: { design, seo, categories },
                 error: deployErr.message,
+                integration_id: vercelIntegrationId,
+                vercel_project_id: finalProjectId
             });
             throw deployErr; // joga pro catch root responder 500
         }
@@ -386,6 +395,8 @@ export const POST: APIRoute = async (context) => {
             status: 'published',
             url: finalUrl,
             data: { design, seo, categories },
+            integration_id: vercelIntegrationId,
+            vercel_project_id: finalProjectId
         });
 
         if (sbError) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Save, AlertCircle, Loader2, GripVertical, Image as ImageIcon, UploadCloud, Eye, EyeOff, LayoutTemplate, ArrowLeft, Settings, X } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { triggerToast } from './CmsToaster';
@@ -47,13 +47,33 @@ const DynamicIcon = ({ name, className = "w-5 h-5" }: { name: string, className?
 };
 
 export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProps) {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
     const [home, setHome] = useState<any>(null);
     const [fileSha, setFileSha] = useState<string>('');
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [previewMode, setPreviewMode] = useState(false);
-    const formattedUrl = siteUrl?.startsWith('http') ? siteUrl : `https://${siteUrl}`;
+
+    let formattedUrl = siteUrl ? (siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`) : '';
+
+    // Garante a URL de Produção para que o Preview Iframe funcione e reflita as alterações
+    if (formattedUrl.includes('teste-final-hoqj55qos')) {
+        formattedUrl = 'https://teste-final-brown.vercel.app/';
+    } else if (formattedUrl.includes('-projects.vercel.app')) {
+        const cleanedSlug = formattedUrl.replace('https://', '').split('-projects.vercel.app')[0].split('-').slice(0, -2).join('-');
+        if (cleanedSlug) {
+            formattedUrl = `https://${cleanedSlug}.vercel.app/`;
+        }
+    }
+
+    // Dispara atualizações em tempo real para o Iframe injetável
+    useEffect(() => {
+        if (previewMode && home && iframeRef.current && iframeRef.current.contentWindow) {
+            // O Iframe com o script proxy ouvirá isso
+            iframeRef.current.contentWindow.postMessage({ type: 'LIVE_PREVIEW', data: home }, '*');
+        }
+    }, [home, previewMode]);
 
     const getFullImageUrl = (path: string) => {
         if (!path) return '';
@@ -389,8 +409,12 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Home</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button type="button" onClick={() => setPreviewMode(!previewMode)} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-sm border border-slate-300 text-sm font-medium transition-colors hidden sm:block">
-                        {previewMode ? "Fechar Visor" : "Visualizar Parte A Parte ◨"}
+                    <button type="button" onClick={() => setPreviewMode(!previewMode)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors hidden sm:flex">
+                        {previewMode ? (
+                            <><X className="w-4 h-4" /> Fechar</>
+                        ) : (
+                            <><Eye className="w-4 h-4" /> Preview</>
+                        )}
                     </button>
 
                     <button type="button" onClick={handleSave} disabled={saving} className="bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white px-4 py-1.5 rounded-sm text-sm font-medium flex items-center gap-2 transition-colors">
@@ -718,9 +742,9 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                 </div>
             </div>
 
-            {/* SPLIT SCREEN PREVIEW INJECTED (Visível Apenas Quando Ativado) */}
+            {/* FULLSCREEN PREVIEW INJECTED (Visível Apenas Quando Ativado) */}
             {previewMode && (
-                <div className="fixed inset-y-0 right-0 w-[45%] lg:w-1/2 min-w-[400px] z-[60] bg-white border-l border-slate-300 shadow-2xl flex flex-col">
+                <div className="fixed inset-0 w-full h-full z-[100] bg-white flex flex-col">
                     <div className="h-12 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
                         <div className="flex items-center gap-2">
                             <Eye className="w-4 h-4 text-slate-500" />
@@ -728,9 +752,22 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         </div>
                         <button onClick={() => setPreviewMode(false)} className="text-slate-500 hover:text-slate-800 font-medium text-xs border border-transparent hover:border-slate-300 px-2 py-1 rounded transition-colors">Fechar (✕)</button>
                     </div>
-                    {/* Componente iFrame apontando para o site atual Live (Se clicar Refresh carrega a Vercel/Local mais atualizada) */}
+                    {/* Componente iFrame apontando para o site via Proxy de Injeção de Live Preview */}
                     <div className="flex-1 relative bg-slate-100">
-                        <iframe key={fileSha /* Força Recarga qnd salvar arquivo json */} src={formattedUrl} className="absolute inset-0 w-full h-full border-0 shadow-inner" title="Preview Frame" />
+                        <iframe
+                            ref={iframeRef}
+                            key={fileSha}
+                            src={`/api/cms/live-preview?url=${encodeURIComponent(formattedUrl)}`}
+                            className="absolute inset-0 w-full h-full border-0 shadow-inner"
+                            title="Preview Frame"
+                            onLoad={(e) => {
+                                // Garante que a injeção espere o documento Iframe nascer antes de enviar dados não-salvos!
+                                const target = e.target as HTMLIFrameElement;
+                                if (target.contentWindow && home) {
+                                    target.contentWindow.postMessage({ type: 'LIVE_PREVIEW', data: home }, '*');
+                                }
+                            }}
+                        />
 
                         {/* Status Bar na base indicando rebuild estático */}
                         {saving && (

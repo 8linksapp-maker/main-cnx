@@ -4,8 +4,10 @@
 
 @layer base {
   :root {
-    --color-primary: 14 165 233; /* Default: #0ea5e9 */
-    --color-primary-dark: 3 105 161; /* Default: #0369a1 */
+    /* Cores definidas dinamicamente pelo BaseLayout.astro via define:vars */
+    --color-primary: 14 165 233;
+    --color-primary-dark: 3 105 161;
+    --color-accent: 245 158 11;
   }
 
   html {

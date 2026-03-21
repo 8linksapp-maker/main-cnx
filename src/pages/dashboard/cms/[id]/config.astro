@@ -21,6 +21,97 @@ const { data: site, error: siteError } = await supabase
 if (!site || siteError) {
     return Astro.redirect('/dashboard/cms');
 }
+
+// ─── Buscar Dados Vercel (mesmo padrão do [id].astro de Projetos Vercel) ───
+let vercelToken: string | null = null;
+let integrationId: string | null = null;
+let vercelProject: any = null;
+let deployments: any[] = [];
+let projectDomains: any[] = [];
+let vercelProjectId: string | null = null;
+
+// 1. Buscar token
+if (site.integration_id) {
+    const { data: intg } = await supabase
+        .from('integrations')
+        .select('*')
+        .eq('id', site.integration_id)
+        .eq('user_id', user.id)
+        .single();
+    if (intg) {
+        vercelToken = intg.token;
+        integrationId = intg.id;
+    }
+}
+
+if (!vercelToken) {
+    const { data: intg } = await supabase
+        .from('integrations')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('service', 'vercel')
+        .limit(1)
+        .single();
+    if (intg) {
+        vercelToken = intg.token;
+        integrationId = intg.id;
+    }
+}
+
+if (vercelToken) {
+    const projectSlug = (site.repo_name as string)?.split('/')[1] || id;
+    const headers = { Authorization: `Bearer ${vercelToken}` };
+
+    // 2. Buscar Projeto
+    try {
+        const res = await fetch(`https://api.vercel.com/v9/projects/${projectSlug}`, { headers });
+        if (res.ok) {
+            vercelProject = await res.json();
+            vercelProjectId = vercelProject.id;
+        }
+    } catch (_) {}
+
+    // 3. Buscar Deploys
+    const pid = vercelProjectId || projectSlug;
+    try {
+        const depRes = await fetch(`https://api.vercel.com/v6/deployments?projectId=${pid}&limit=15`, { headers });
+        if (depRes.ok) {
+            const depData = await depRes.json();
+            deployments = depData.deployments || [];
+        }
+    } catch (_) {}
+
+    // 4. Buscar Domínios (com verificação DNS, igual [id].astro)
+    try {
+        const domRes = await fetch(`https://api.vercel.com/v9/projects/${pid}/domains`, { headers });
+        if (domRes.ok) {
+            const domData = await domRes.json();
+            const rawDomains = domData.domains || [];
+
+            projectDomains = await Promise.all(rawDomains.map(async (dom: any) => {
+                // Target
+                const al = vercelProject?.alias?.find((a: any) => a.domain === dom.name);
+                if (al && al.target === 'PRODUCTION') dom.target = 'production';
+                else if (!al && dom.gitBranch === null) dom.target = 'production';
+                else dom.target = 'preview';
+
+                // Verificação DNS
+                try {
+                    const cfgRes = await fetch(`https://api.vercel.com/v6/domains/${dom.name}/config`, { headers });
+                    if (cfgRes.ok) {
+                        const cfgData = await cfgRes.json();
+                        dom.misconfigured = cfgData.misconfigured === true;
+                    } else {
+                        dom.misconfigured = false;
+                    }
+                } catch (_) {
+                    dom.misconfigured = false;
+                }
+                return dom;
+            }));
+        }
+    } catch (_) {}
+}
 ---
 
 <CmsLayout title={`Configurações: ${site.company_name} | CMS`} siteId={id as string} siteName={site.company_name} repoName={site.repo_name}>
@@ -32,5 +123,14 @@ if (!site || siteError) {
     </div>
 
     <!-- O Editor Interativo em React que falará com a API GitBehind -->
-    <ConfigEditor client:load siteId={id as string} repoName={site.repo_name} />
+    <ConfigEditor
+        client:load
+        siteId={id as string}
+        repoName={site.repo_name}
+        vercelProject={vercelProject}
+        vercelProjectId={vercelProjectId || ''}
+        integrationId={integrationId || ''}
+        initialDeploys={deployments}
+        initialDomains={projectDomains}
+    />
 </CmsLayout>

@@ -10,12 +10,29 @@ export const POST: APIRoute = async (context) => {
     }
 
     const formData = await context.request.formData();
-    const projectId = formData.get('project_id')?.toString();
-    const integrationId = formData.get('integration_id')?.toString();
-    const domainName = formData.get('domain_name')?.toString();
+    const projectId = formData.get('project_id')?.toString()?.trim();
+    const integrationId = formData.get('integration_id')?.toString()?.trim();
+    const domainName = formData.get('domain_name')?.toString()?.trim().toLowerCase();
+    const redirectToRaw = formData.get('redirect_to')?.toString()?.trim();
+
+    const getRedirectUrl = (params: Record<string, string>) => {
+        let base = redirectToRaw || `/dashboard/sites/${projectId || ''}`;
+        try {
+            const url = new URL(base, 'http://localhost');
+            if (!redirectToRaw) {
+                if (integrationId) url.searchParams.set('integration', integrationId);
+                url.hash = 'tab-domains';
+                url.searchParams.set('tab', 'domains');
+            }
+            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+            return url.pathname + url.search + url.hash;
+        } catch {
+            return base;
+        }
+    };
 
     if (!projectId || !integrationId || !domainName) {
-        return new Response('Missing parameters', { status: 400 });
+        return context.redirect(getRedirectUrl({ error: 'Missing parameters' }));
     }
 
     // Busca o Token Real na Base
@@ -27,7 +44,7 @@ export const POST: APIRoute = async (context) => {
         .single();
 
     if (!integration) {
-        return new Response('Integration not found', { status: 404 });
+        return context.redirect(getRedirectUrl({ error: 'Integration not found' }));
     }
 
     try {
@@ -44,9 +61,9 @@ export const POST: APIRoute = async (context) => {
             throw new Error(errorData.error?.message || 'Erro ao remover domínio na Vercel');
         }
 
-        return context.redirect(`/dashboard/sites/${projectId}?integration=${integrationId}&success=domain_removed#tab-domains`);
+        return context.redirect(getRedirectUrl({ success: 'domain_removed' }));
 
     } catch (err: any) {
-        return context.redirect(`/dashboard/sites/${projectId}?integration=${integrationId}&error=${encodeURIComponent(err.message)}#tab-domains`);
+        return context.redirect(getRedirectUrl({ error: err.message }));
     }
 };

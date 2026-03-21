@@ -243,7 +243,46 @@ ${quickEditData.rawBody}`;
                 if (!res.ok) throw new Error('Erro ao salvar edição.');
             }
 
-            triggerToast('Edição rápida salva com sucesso!', 'success');
+            triggerToast('Sincronizando... Aguardando a nuvem da Vercel', 'progress', 62);
+
+            const saveTimestamp = Date.now();
+            let attempt = 0;
+            let prog = 62;
+            let successDeploy = false;
+
+            // Aguarda 15s p/ GitHub notificar Vercel
+            await new Promise(r => setTimeout(r, 15000));
+
+            while (attempt < 40 && !successDeploy) {
+                attempt++;
+                try {
+                    const statusRes = await fetch(
+                        `/api/cms/vercel-deploy-status?repo=${encodeURIComponent(repoName)}&after=${saveTimestamp}`
+                    );
+                    const statusData = await statusRes.json();
+                    const state = statusData?.status || 'UNKNOWN';
+
+                    if (state === 'READY') {
+                        successDeploy = true;
+                        triggerToast('Edição rápida concluída e online!', 'success');
+                        break;
+                    } else if (state === 'ERROR' || state === 'CANCELED') {
+                        triggerToast(`Deploy falhou (${state}).`, 'error');
+                        break;
+                    } else {
+                        prog = Math.min(prog + 1, 95);
+                        triggerToast(state === 'BUILDING' ? 'Construindo site...' : 'Aguardando construtor...', 'progress', prog);
+                    }
+                } catch {
+                    // ignorar erro de rede
+                }
+                if (!successDeploy) await new Promise(r => setTimeout(r, 5000));
+            }
+
+            if (!successDeploy && attempt >= 40) {
+                triggerToast('Tempo esgotado, mas o site logo ficará pronto.', 'error');
+            }
+
             setEditingSha(null);
             fetchInitialData();
         } catch (e: any) {

@@ -10,12 +10,29 @@ export const POST: APIRoute = async (context) => {
     }
 
     const formData = await context.request.formData();
-    const projectId = formData.get('project_id')?.toString();
-    const integrationId = formData.get('integration_id')?.toString();
-    const domainName = formData.get('domain_name')?.toString();
+    const projectId = formData.get('project_id')?.toString()?.trim();
+    const integrationId = formData.get('integration_id')?.toString()?.trim();
+    const domainName = formData.get('domain_name')?.toString()?.trim().toLowerCase();
+    const redirectToRaw = formData.get('redirect_to')?.toString()?.trim();
+
+    const getRedirectUrl = (params: Record<string, string>) => {
+        let base = redirectToRaw || `/dashboard/sites/${projectId || ''}`;
+        try {
+            const url = new URL(base, 'http://localhost');
+            if (!redirectToRaw) {
+                if (integrationId) url.searchParams.set('integration', integrationId);
+                url.hash = 'tab-domains';
+                url.searchParams.set('tab', 'domains');
+            }
+            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+            return url.pathname + url.search + url.hash;
+        } catch {
+            return base;
+        }
+    };
 
     if (!projectId || !integrationId || !domainName) {
-        return context.redirect(`/dashboard?error=Dados+ausentes`);
+        return context.redirect(getRedirectUrl({ error: 'Missing parameters' }));
     }
 
     // 1. Obter a chave da Vercel
@@ -27,7 +44,7 @@ export const POST: APIRoute = async (context) => {
         .single();
 
     if (!integration || !integration.token) {
-        return context.redirect(`/dashboard?error=Integracao+Invalida`);
+        return context.redirect(getRedirectUrl({ error: 'Integracao Invalida' }));
     }
 
     // 2. Acionar Força de Verificação na API da Vercel
@@ -42,12 +59,12 @@ export const POST: APIRoute = async (context) => {
 
         if (!verifyResponse.ok) {
             const err = await verifyResponse.json();
-            return context.redirect(`/dashboard/sites/${projectId}?integration=${integrationId}&error=Falha+verificacao:+${err.error?.message || 'Erro+Vercel'}&tab=domains#tab-domains`);
+            return context.redirect(getRedirectUrl({ error: `Falha verificacao: ${err.error?.message || 'Erro Vercel'}` }));
         }
 
         // Se deu certo (Status 200 OK)
-        return context.redirect(`/dashboard/sites/${projectId}?integration=${integrationId}&success=Domínio+checado.+Pode+levar+algumas+horas+para+propagar+globalmente.&tab=domains#tab-domains`);
+        return context.redirect(getRedirectUrl({ success: 'Domínio checado. Pode levar algumas horas para propagar globalmente.' }));
     } catch (e) {
-        return context.redirect(`/dashboard/sites/${projectId}?integration=${integrationId}&error=Servidor+Vercel+Inacessivel&tab=domains#tab-domains`);
+        return context.redirect(getRedirectUrl({ error: 'Servidor Vercel Inacessivel' }));
     }
 };
