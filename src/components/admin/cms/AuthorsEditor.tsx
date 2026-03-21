@@ -192,11 +192,11 @@ export default function AuthorsEditor({ siteId, repoName }: AuthorsEditorProps) 
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     {saving && (
-                        <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-4 py-2 rounded-lg text-sm font-bold mr-2">
+                        <div className="flex items-center gap-2 text-amber-600 bg-slate-50 px-4 py-2 rounded-lg text-sm font-bold mr-2">
                             <Loader2 className="w-4 h-4 animate-spin" /> Sincronizando...
                         </div>
                     )}
-                    <button type="button" onClick={addAuthor} disabled={saving} className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 transition-all">
+                    <button type="button" onClick={addAuthor} disabled={saving} className="w-full sm:w-auto bg-slate-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 transition-all">
                         <UserPlus className="w-5 h-5" /> Adicionar Perfil
                     </button>
                 </div>
@@ -212,7 +212,7 @@ export default function AuthorsEditor({ siteId, repoName }: AuthorsEditorProps) 
                     </div>
                     <h3 className="text-xl font-bold text-slate-700 mb-2">Sua equipe está vazia!</h3>
                     <p className="text-slate-500 max-w-sm mx-auto mb-6">Nenhum autor cadastrado ainda. Adicione membros da equipe para que eles possam assinar os artigos do blog.</p>
-                    <button type="button" onClick={addAuthor} className="bg-amber-500 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-amber-600 transition-colors inline-flex items-center gap-2">
+                    <button type="button" onClick={addAuthor} className="bg-slate-500 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-amber-600 transition-colors inline-flex items-center gap-2">
                         <Plus className="w-5 h-5" /> Adicionar Primeiro Autor
                     </button>
                 </div>
@@ -318,7 +318,7 @@ export default function AuthorsEditor({ siteId, repoName }: AuthorsEditorProps) 
                         {/* Modal Footer */}
                         <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end rounded-b-3xl">
                             <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">Cancelar</button>
-                            <button type="button" onClick={saveModalAuthor} className="px-6 py-2.5 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                            <button type="button" onClick={saveModalAuthor} className="px-6 py-2.5 text-sm font-bold bg-slate-500 hover:bg-amber-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
                                 <Save className="w-4 h-4" /> Confirmar (Aplicar)
                             </button>
                         </div>

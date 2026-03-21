@@ -138,7 +138,7 @@ export default function PrivacidadeEditor({ siteId, repoName, siteUrl }: Privaci
             {/* Header Fixo */}
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Sair do Editor">
+                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Sair do Editor">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Política de Privacidade</span>
@@ -207,7 +207,7 @@ export default function PrivacidadeEditor({ siteId, repoName, siteUrl }: Privaci
                             <button
                                 type="button"
                                 onClick={addSection}
-                                className="w-full py-6 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-blue-50/20 transition-all font-bold flex items-center justify-center gap-2 text-xs uppercase"
+                                className="w-full py-6 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-violet-50/20 transition-all font-bold flex items-center justify-center gap-2 text-xs uppercase"
                             >
                                 <Plus className="w-5 h-5" />
                                 Adicionar Nova Seção

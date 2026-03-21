@@ -177,7 +177,7 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
             {/* Header Fixo WordPress-Style */}
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Sair do Editor">
+                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Sair do Editor">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: {activeTab === 'privacy' ? 'Privacidade' : 'Termos de Uso'}</span>
@@ -238,8 +238,8 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
                                             />
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-blue-50 focus:outline-none transition-colors"><ChevronUp className="w-4 h-4" /></button>
-                                            <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-blue-50 focus:outline-none transition-colors"><ChevronDown className="w-4 h-4" /></button>
+                                            <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-violet-50 focus:outline-none transition-colors"><ChevronUp className="w-4 h-4" /></button>
+                                            <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} className="p-2 text-slate-400 hover:text-[#2271b1] hover:bg-violet-50 focus:outline-none transition-colors"><ChevronDown className="w-4 h-4" /></button>
                                             <button onClick={() => removeSection(activeTab, idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 focus:outline-none transition-colors ml-2"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
@@ -255,7 +255,7 @@ export default function LegalEditor({ siteId, repoName, siteUrl, initialTab = 'p
 
                             <button
                                 onClick={() => addSection(activeTab)}
-                                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-blue-50/20 transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase"
+                                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-sm text-slate-500 hover:text-[#2271b1] hover:border-[#2271b1] hover:bg-violet-50/20 transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase"
                             >
                                 <Plus className="w-6 h-6" />
                                 Adicionar Nova Seção / Bloco de Texto

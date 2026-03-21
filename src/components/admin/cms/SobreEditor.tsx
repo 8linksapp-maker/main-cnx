@@ -166,7 +166,7 @@ export default function SobreEditor({ siteId, repoName, siteUrl }: SobreEditorPr
 
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Sair do Editor">
+                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Sair do Editor">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Sobre Nós</span>
@@ -196,8 +196,8 @@ export default function SobreEditor({ siteId, repoName, siteUrl }: SobreEditorPr
                             </div>
                             <div className="md:col-span-2 bg-slate-50 p-4 border border-slate-200 rounded">
                                 <label className={labelClass}>Foto Histórica da Empresa</label>
-                                <input type="file" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onChange={(e) => handleFileSelect(e, 'heroImg')} />
-                                {pendingUploads['heroImg'] && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase shrink-0">Upload Pendente</span>}
+                                <input type="file" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer" onChange={(e) => handleFileSelect(e, 'heroImg')} />
+                                {pendingUploads['heroImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 py-1 rounded font-bold uppercase shrink-0">Upload Pendente</span>}
                                 {sobre?.hero?.image && (
                                     <div className="mt-4 w-full h-[250px] border border-slate-300 rounded overflow-hidden">
                                         <img src={getFullImageUrl(sobre?.hero?.image)} className="w-full h-full object-cover" />
@@ -249,7 +249,7 @@ export default function SobreEditor({ siteId, repoName, siteUrl }: SobreEditorPr
                         </div>
                         <div>
                             <label className={labelClass}>Imagem Social (Open Graph)</label>
-                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-blue-50 file:text-blue-700" />
+                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-violet-50 file:text-violet-700" />
                             {pendingUploads['seoImg'] && <span className="text-[10px] text-amber-600 block font-bold">Pendente...</span>}
                             {sobre?.seo?.image && <img src={getFullImageUrl(sobre?.seo?.image)} className="w-full aspect-video object-cover mt-3 rounded" />}
                         </div>

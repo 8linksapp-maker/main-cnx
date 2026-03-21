@@ -160,7 +160,7 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
 
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Sair do Editor">
+                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Sair do Editor">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Contato</span>
@@ -194,7 +194,7 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
                     <div className={cardClass}>
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
                             <h3 className="text-sm font-semibold text-slate-800">2. Textos do Bloco de Informações</h3>
-                            <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded">Os números oficiais se editam em Configurações &gt; Geral</span>
+                            <span className="text-[10px] bg-slate-100 text-slate-800 font-bold px-2 py-1 rounded">Os números oficiais se editam em Configurações &gt; Geral</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,7 +242,7 @@ export default function ContatoEditor({ siteId, repoName, siteUrl }: ContatoEdit
                         </div>
                         <div>
                             <label className={labelClass}>Imagem Social (Open Graph)</label>
-                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-blue-50 file:text-blue-700" />
+                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-violet-50 file:text-violet-700" />
                             {pendingUploads['seoImg'] && <span className="text-[10px] text-amber-600 block font-bold">Pendente...</span>}
                             {contato?.seo?.image && <img src={getFullImageUrl(contato?.seo?.image)} className="w-full aspect-video object-cover mt-3 rounded" />}
                         </div>

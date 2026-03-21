@@ -389,7 +389,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     key={iconName}
                                     type="button"
                                     onClick={() => handleIconSelect(iconName)}
-                                    className="p-3 border border-slate-200 rounded-sm hover:border-[#2271b1] hover:bg-blue-50 flex items-center justify-center text-slate-600 hover:text-[#2271b1] transition-colors"
+                                    className="p-3 border border-slate-200 rounded-sm hover:border-[#2271b1] hover:bg-violet-50 flex items-center justify-center text-slate-600 hover:text-[#2271b1] transition-colors"
                                     title={iconName}
                                 >
                                     <DynamicIcon name={iconName} />
@@ -403,7 +403,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
             {/* Header Fixo WordPress-Style */}
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Sair do Editor">
+                    <a href={`/dashboard/cms/${siteId}/pages`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Sair do Editor">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">Editar Página: Home</span>
@@ -473,10 +473,10 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                        className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer"
                                         onChange={(e) => handleFileSelect(e, 'heroImg')}
                                     />
-                                    {pendingUploads['heroImg'] && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase shrink-0">Pendente de Push</span>}
+                                    {pendingUploads['heroImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 py-1 rounded font-bold uppercase shrink-0">Pendente de Push</span>}
 
                                 </div>
                                 {(home?.hero?.bgImage?.startsWith('blob:')) && (
@@ -498,14 +498,14 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {home?.benefits?.items?.map((item: any, idx: number) => (
-                                <div key={idx} className="p-5 border border-slate-200 bg-slate-50 rounded-xl shadow-sm flex flex-col gap-4 relative hover:border-blue-300 transition-colors">
+                                <div key={idx} className="p-5 border border-slate-200 bg-slate-50 rounded-xl shadow-sm flex flex-col gap-4 relative hover:border-violet-300 transition-colors">
                                     <div className="flex gap-4 items-start border-b border-slate-200 pb-4">
                                         <div className="shrink-0">
                                             <label className="text-[10px] font-bold text-slate-500 uppercase flex flex-col items-center">
                                                 <button
                                                     type="button"
                                                     onClick={() => setIconModalFor({ section: 'benefits', idx })}
-                                                    className="w-12 h-12 mt-1 rounded-xl bg-white border border-slate-300 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-blue-50 flex items-center justify-center transition-all shadow-sm"
+                                                    className="w-12 h-12 mt-1 rounded-xl bg-white border border-slate-300 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm"
                                                     title="Trocar Ícone"
                                                 >
                                                     <DynamicIcon name={item.icon} className="w-6 h-6" />
@@ -537,8 +537,8 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     <label className={labelClass}>Foto Lateral Esquerda</label>
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-between">
-                                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'diffImg')} className="text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer w-full" />
-                                            {pendingUploads['diffImg'] && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 rounded-sm font-bold mx-2">Pendente</span>}
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'diffImg')} className="text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 cursor-pointer w-full" />
+                                            {pendingUploads['diffImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 rounded-sm font-bold mx-2">Pendente</span>}
                                         </div>
                                         {(home?.differentiators?.image?.startsWith('blob:')) && (
                                             <div className="mt-2 w-full h-32 border border-slate-300 rounded overflow-hidden relative">
@@ -574,7 +574,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     <h4 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-3">Lista de Diferenciais</h4>
                                     <div className="space-y-3">
                                         {home?.differentiators?.items?.map((item: any, idx: number) => (
-                                            <div key={idx} className="p-4 border border-slate-200 bg-slate-50 flex flex-col gap-2 rounded-xl focus-within:border-blue-400 focus-within:shadow-md transition-all">
+                                            <div key={idx} className="p-4 border border-slate-200 bg-slate-50 flex flex-col gap-2 rounded-xl focus-within:border-violet-400 focus-within:shadow-md transition-all">
                                                 <input type="text" value={item.title} onChange={e => updateItemArray('differentiators', idx, 'title', e.target.value)} className="bg-transparent text-sm font-bold text-slate-800 focus:outline-none border-b border-slate-300 pb-1" placeholder="Título (ex: Inovação)" />
                                                 <textarea rows={2} value={item.desc} onChange={e => updateItemArray('differentiators', idx, 'desc', e.target.value)} className="bg-transparent text-sm text-slate-600 focus:outline-none resize-y" placeholder="Descrição do diferencial..."></textarea>
                                             </div>
@@ -600,7 +600,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                             <button
                                                 type="button"
                                                 onClick={() => setIconModalFor({ section: 'categories', idx })}
-                                                className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-blue-50 flex items-center justify-center transition-all shadow-sm shrink-0"
+                                                className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:border-[#2271b1] hover:text-[#2271b1] hover:bg-violet-50 flex items-center justify-center transition-all shadow-sm shrink-0"
                                                 title="Trocar Ícone"
                                             >
                                                 {item.icon && item.icon.length > 2 ? <DynamicIcon name={item.icon} className="w-6 h-6" /> : <span className="text-xl font-bold">{item.icon || '#'}</span>}
@@ -622,7 +622,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
 
                                     <div className="mt-2 border-t border-slate-200 pt-3">
                                         <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Destino do Botão</label>
-                                        <input type="text" value={item.link} onChange={e => updateItemArray('categories', idx, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-blue-600 focus:border-[#2271b1] focus:outline-none" />
+                                        <input type="text" value={item.link} onChange={e => updateItemArray('categories', idx, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-violet-600 focus:border-[#2271b1] focus:outline-none" />
                                     </div>
                                 </div>
                             ))}
@@ -650,8 +650,8 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                 <div>
                                     <label className={labelClass}>Imagem de Retrato Redonda</label>
                                     <div className="flex gap-4 items-center mb-3">
-                                        <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'aboutImg')} className="text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer w-full" />
-                                        {pendingUploads['aboutImg'] && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold uppercase shrink-0">Na Memória</span>}
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'aboutImg')} className="text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 cursor-pointer w-full" />
+                                        {pendingUploads['aboutImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 py-1 rounded font-bold uppercase shrink-0">Na Memória</span>}
                                     </div>
                                     {(home?.about?.image?.startsWith('blob:')) && (
                                         <div className="w-[180px] h-[180px] border-4 border-white shadow-xl rounded-full overflow-hidden relative mx-auto my-4">
@@ -690,8 +690,8 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     <label className="block text-xs font-bold text-slate-500 mb-3 uppercase w-full border-b border-slate-200 pb-2">Marcos da Empresa (Painel Inferior)</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         {home?.about?.stats?.map((stat: any, idx: number) => (
-                                            <div key={idx} className="flex flex-col gap-1 bg-white p-3 rounded border border-slate-200 shadow-sm focus-within:border-blue-400">
-                                                <input type="text" value={stat.value} onChange={e => updateItemArray('about', idx, 'value', e.target.value, 'stats')} className="bg-transparent border-b border-slate-100 py-1 text-2xl font-black text-slate-800 focus:border-blue-500 focus:outline-none" placeholder="ex: 12k+" />
+                                            <div key={idx} className="flex flex-col gap-1 bg-white p-3 rounded border border-slate-200 shadow-sm focus-within:border-violet-400">
+                                                <input type="text" value={stat.value} onChange={e => updateItemArray('about', idx, 'value', e.target.value, 'stats')} className="bg-transparent border-b border-slate-100 py-1 text-2xl font-black text-slate-800 focus:border-violet-500 focus:outline-none" placeholder="ex: 12k+" />
                                                 <input type="text" value={stat.label} onChange={e => updateItemArray('about', idx, 'label', e.target.value, 'stats')} className="bg-transparent py-1 text-xs font-bold text-slate-500 focus:outline-none uppercase" placeholder="ex: Clientes" />
                                             </div>
                                         ))}
@@ -727,7 +727,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleFileSelect(e, 'seoImg')}
-                                    className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 rounded border border-slate-200 cursor-pointer"
+                                    className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 rounded border border-slate-200 cursor-pointer"
                                 />
                                 {pendingUploads['seoImg'] && <span className="text-[10px] text-amber-600 mt-1 block font-bold">Upload Pendente no Git...</span>}
                                 {(home?.seo?.image?.startsWith('blob:')) && (
@@ -771,7 +771,7 @@ export default function HomeEditor({ siteId, repoName, siteUrl }: HomeEditorProp
 
                         {/* Status Bar na base indicando rebuild estático */}
                         {saving && (
-                            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded shadow-lg text-xs font-semibold animate-pulse">
+                            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-violet-600 text-white px-4 py-1.5 rounded shadow-lg text-xs font-semibold animate-pulse">
                                 Reconstruindo Artefatos Git...
                             </div>
                         )}

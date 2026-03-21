@@ -319,7 +319,7 @@ ${finalHtmlContent}`;
         </div>
     );
 
-    const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm";
+    const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:border-violet-500 focus:bg-white focus:ring-4 focus:ring-violet-500/10 transition-all shadow-sm";
     const selectClass = `${inputClass} appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_1rem_center] bg-[length:1.2em_1.2em] pr-10`;
     const labelClass = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
 
@@ -462,7 +462,7 @@ ${finalHtmlContent}`;
 
             <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
-                    <a href={`/dashboard/cms/${siteId}/posts`} className="text-slate-600 hover:text-blue-600 transition-colors" title="Voltar para os Posts">
+                    <a href={`/dashboard/cms/${siteId}/posts`} className="text-slate-600 hover:text-violet-600 transition-colors" title="Voltar para os Posts">
                         <ArrowLeft className="w-5 h-5" />
                     </a>
                     <span className="font-semibold text-slate-800 text-sm">{isEditing ? 'Editar Post' : 'Novo Post'}</span>
@@ -484,7 +484,7 @@ ${finalHtmlContent}`;
 
                 <div className="bg-white rounded-sm border border-slate-200 shadow-sm flex flex-col pt-8 pb-8 px-8 sm:px-12 md:px-16 lg:px-24 quill-zen min-h-[700px]">
                     {isPreview ? (
-                        <div className="prose prose-slate prose-lg max-w-none w-full break-words overflow-hidden pb-10 px-2">
+                        <div className="prose pred-slate pred-lg max-w-none w-full break-words overflow-hidden pb-10 px-2">
                             <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-8 border-b border-slate-100 pb-8 break-words">{post.title || 'Artigo sem título'}</h1>
                             {post.heroImage && (
                                 <img src={post.heroImage} alt="Capa" className="w-full h-auto rounded-xl mb-10 shadow-sm border border-slate-100" />
@@ -553,7 +553,7 @@ ${finalHtmlContent}`;
                             className={`${inputClass} font-mono hover:bg-white`}
                             title="Se você editar e salvar, criará um NOVO post com esse slug!"
                         />
-                        {isEditing && <span className="text-[10px] text-amber-600 mt-1 block font-medium">Aviso: Se alterar o slug, você criará um novo post ao invés de atualizar o antigo.</span>}
+                        {isEditing && <span className="text-[10px] text-slate-600 mt-1 block font-medium">Aviso: Se alterar o slug, você criará um novo post ao invés de atualizar o antigo.</span>}
                     </div>
 
                     <div>
@@ -614,10 +614,10 @@ ${finalHtmlContent}`;
                     </h3>
 
                     <div>
-                        <label className="group relative border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50 hover:bg-blue-50/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all mb-4 text-center">
+                        <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all mb-4 text-center">
                             <input type="file" accept="image/*" onChange={(e) => handleFileSelect(e, 'heroImage')} className="hidden" />
-                            <ImageIcon className="w-8 h-8 text-slate-400 group-hover:text-blue-500 mb-2 transition-colors" />
-                            <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-700">Clique para Enviar a Capa</span>
+                            <ImageIcon className="w-8 h-8 text-slate-400 group-hover:text-violet-500 mb-2 transition-colors" />
+                            <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700">Clique para Enviar a Capa</span>
                             <span className="text-xs text-slate-500 mt-1">Recomendado 16:9 (JPG/PNG/WEBP)</span>
                         </label>
 
