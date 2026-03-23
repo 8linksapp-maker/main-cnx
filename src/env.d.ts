@@ -7,6 +7,5 @@ declare namespace App {
             name: string;
             adminRole: 'admin' | 'editor';
         };
-        saasUser?: any; // Objeto de contexto do usuário Supabase Auth (SaaS)
     }
 }

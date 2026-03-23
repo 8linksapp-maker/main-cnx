@@ -16,7 +16,7 @@
 import AdminSidebar from '../components/admin/Sidebar.astro';
 import AdminHeader from '../components/admin/Header.astro';
 import { verifySession, SESSION_COOKIE } from '../utils/auth-utils';
-import { getAdminSiteMode } from '../utils/admin-site-mode';
+import { getEffectiveSiteMode, themeSupportsBlogAndLocal } from '../utils/admin-site-mode';
 import { getEntry } from 'astro:content';
 import '../styles/global.css';
 import '../styles/admin.css';
@@ -43,8 +43,9 @@ if (!currentUser) {
 }
 
 const settings  = await getEntry('siteSettings', 'settings').catch(() => null);
-const siteMode  = getAdminSiteMode(Astro.cookies, settings);
+const siteMode  = getEffectiveSiteMode(Astro.cookies, settings);
 const isLocal   = siteMode === 'local';
+const supportsBlogAndLocal = themeSupportsBlogAndLocal(settings);
 
 const primaryColor = '#a855f7';
 const secondaryColor = '#ec4899';
@@ -112,7 +113,7 @@ const secondaryRGB = hexToRgb(secondaryColor);
             <!-- Main Content Area -->
             <div class="flex flex-col flex-1 overflow-hidden admin-main-area">
                 <!-- Header -->
-                <AdminHeader user={currentUser} siteMode={siteMode} />
+                <AdminHeader user={currentUser} siteMode={siteMode} supportsBlogAndLocal={supportsBlogAndLocal} />
 
                 <!-- Banner de atualização do template (visível em todas as páginas do admin) -->
                 <div id="version-update-banner" class="hidden mx-6 lg:mx-8 mt-4 mb-4 rounded-xl overflow-hidden flex-shrink-0" style="border: 1px solid rgba(234,179,8,0.4); background: linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(234,179,8,0.04) 100%);">
@@ -252,44 +253,6 @@ const secondaryRGB = hexToRgb(secondaryColor);
                 });
             }
         })();
-        </script>
-        <!-- Global Modal UI -->
-        <div id="cnx-confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
-            <div id="cnx-confirm-box" class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-all duration-300 border border-slate-100">
-                <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Atenção!</h3>
-                <p id="cnx-confirm-msg" class="text-slate-500 text-sm mb-6 leading-relaxed">Tem certeza que deseja continuar?</p>
-                <div class="flex items-center gap-3 w-full">
-                    <button id="cnx-confirm-cancel" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">Cancelar</button>
-                    <button id="cnx-confirm-accept" class="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-red-500/25">Confirmar</button>
-                </div>
-            </div>
-        </div>
-        <script is:inline>
-            window.cnxConfirm = function(message, onConfirm) {
-                var modal = document.getElementById('cnx-confirm-modal');
-                var box = document.getElementById('cnx-confirm-box');
-                var msgEl = document.getElementById('cnx-confirm-msg');
-                var cancelBtn = document.getElementById('cnx-confirm-cancel');
-                var acceptBtn = document.getElementById('cnx-confirm-accept');
-                if (!modal || !box || !msgEl || !cancelBtn || !acceptBtn) return;
-                msgEl.textContent = message;
-                modal.classList.remove('opacity-0', 'invisible');
-                box.classList.remove('scale-95');
-                var closeAndClean = function() {
-                    modal.classList.add('opacity-0', 'invisible');
-                    box.classList.add('scale-95');
-                    acceptBtn.onclick = null;
-                    cancelBtn.onclick = null;
-                };
-                cancelBtn.onclick = closeAndClean;
-                acceptBtn.onclick = function() {
-                    closeAndClean();
-                    if (onConfirm) onConfirm();
-                };
-            };
         </script>
     </body>
 </html>

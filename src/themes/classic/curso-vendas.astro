@@ -20,7 +20,6 @@
  */
 
 import MainLayout from '../../layouts/MainLayout.astro';
-import Header from './components/Header.astro';
 
 interface Props {
     cursoVendasData: any;
@@ -30,8 +29,7 @@ interface Props {
 const { cursoVendasData, themeId } = Astro.props;
 ---
 
-<MainLayout title={cursoVendasData.courseName ? `${cursoVendasData.courseName} - Curso` : 'Meu Site com IA - Curso'} description="Curso Meu Site com IA: crie site ou blog em 5 minutos com IA, sem código e sem custo de hospedagem. Crie, publique e ranqueie.">
-    <Header activeThemeId={themeId} />
+<MainLayout title="Curso de Criação de Sites com IA - Sem Código, Sem Custos">
     
     <!-- 1. HERO SECTION -->
     <section class="relative min-h-screen flex items-center justify-center pt-24 md:pt-32 overflow-hidden">
@@ -51,32 +49,20 @@ const { cursoVendasData, themeId } = Astro.props;
                     </div>
                 )}
                 
-                <!-- Título Principal com destaques (**texto** = cor primária/gradiente) -->
-                {cursoVendasData.heroTitleLine1 && cursoVendasData.heroTitleLine1.trim() !== '' && (
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading font-black text-white leading-[1.2] mb-8 [&_span]:bg-gradient-to-r [&_span]:from-primary [&_span]:via-secondary [&_span]:to-primary [&_span]:bg-clip-text [&_span]:text-transparent" set:html={cursoVendasData.heroTitleLine1.replace(/\*\*(.*?)\*\*/g, '<span class="font-black">$1</span>')} />
-                )}
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black text-white leading-[1.1] mb-8">
+                    {cursoVendasData.heroTitleLine1 || 'CANSADO DE PAGAR HOSPEDAGEM CARA E TER SITE LENTO?'}<br/>
+                    <span class="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
+                        {cursoVendasData.heroTitleHighlight || 'APRENDA A CRIAR SITES COM IA'}
+                    </span><br/>
+                    <span class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-300 mt-4 block">
+                        {cursoVendasData.heroTitleLine2 || 'Sem código, sem custos, em minutos'}
+                    </span>
+                </h1>
                 
-                {/* Garantir que heroTitleHighlight e heroTitleLine2 NÃO apareçam se vazios */}
-                {cursoVendasData.heroTitleHighlight && cursoVendasData.heroTitleHighlight.trim() !== '' && (
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black mb-8">
-                        <span class="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
-                            {cursoVendasData.heroTitleHighlight}
-                        </span>
-                    </h2>
-                )}
-                
-                {cursoVendasData.heroTitleLine2 && cursoVendasData.heroTitleLine2.trim() !== '' && (
-                    <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-slate-300 mb-8">
-                        {cursoVendasData.heroTitleLine2}
-                    </h3>
-                )}
-                
-                {cursoVendasData.heroSubtitle && cursoVendasData.heroSubtitle.trim() !== '' && (
-                    <div class="max-w-4xl mx-auto mb-12">
-                        <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-400 leading-relaxed whitespace-pre-line">
-                            {cursoVendasData.heroSubtitle}
-                        </p>
-                    </div>
+                {cursoVendasData.heroSubtitle && (
+                    <p class="text-lg md:text-xl lg:text-2xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed">
+                        {cursoVendasData.heroSubtitle}
+                    </p>
                 )}
                 
                 <div class="flex flex-col items-center gap-4">
@@ -108,11 +94,14 @@ const { cursoVendasData, themeId } = Astro.props;
     <section class="py-20 md:py-32 bg-black relative overflow-hidden">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-heading font-black text-white mb-6">
+                <span class="text-secondary font-semibold uppercase tracking-wider text-sm">A Mudança</span>
+                <h2 class="text-3xl md:text-5xl font-heading font-black text-white mt-4 mb-6">
                     {cursoVendasData.oldVsNewTitle || 'O Velho Caminho vs. O Novo Caminho'}
                 </h2>
                 {cursoVendasData.oldVsNewSubtitle && (
-                    <p class="text-slate-400 text-lg max-w-2xl mx-auto" set:html={cursoVendasData.oldVsNewSubtitle.replace(/\*\*(.*?)\*\*/g, '<span class="text-primary font-semibold">$1</span>')} />
+                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                        {cursoVendasData.oldVsNewSubtitle}
+                    </p>
                 )}
             </div>
             
@@ -174,7 +163,18 @@ const { cursoVendasData, themeId } = Astro.props;
         </div>
         
         <div class="container mx-auto px-6 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="inline-flex items-center gap-2 text-secondary font-semibold uppercase tracking-wider text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path>
+                        <path d="M9 18h6"></path>
+                        <path d="M10 22h4"></path>
+                    </svg>
+                    A Ponte da Epifania
+                </span>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
                 <div class="space-y-8">
                     {cursoVendasData.epiphanyTitle && (
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white leading-tight">
@@ -183,33 +183,13 @@ const { cursoVendasData, themeId } = Astro.props;
                     )}
                     
                     {cursoVendasData.epiphanyContent && (
-                        <div class="space-y-6 text-lg text-slate-400 leading-relaxed max-w-2xl">
-                            {(() => {
-                                const blocks = cursoVendasData.epiphanyContent.split(/\n\n+/);
-                                const format = (s: string) => s.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>').replace(/`(.*?)`/g, '<span class="text-primary font-bold">$1</span>');
-                                return blocks.map((block: string) => {
-                                    const trimmed = block.trim();
-                                    if (!trimmed) return null;
-                                    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-                                    const listItems = lines.filter(l => l.startsWith('- '));
-                                    if (listItems.length > 0 && listItems.length === lines.length) {
-                                        return (
-                                            <ul class="list-none space-y-3 pl-0 my-6">
-                                                {listItems.map((item: string) => (
-                                                    <li class="flex items-start gap-3">
-                                                        <span class="text-primary mt-1.5 shrink-0">•</span>
-                                                        <span set:html={format(item.replace(/^- /, ''))} />
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        );
-                                    }
-                                    return <p class="leading-[1.7]" set:html={format(trimmed)} />;
-                                });
-                            })()}
+                        <div class="space-y-6 text-lg text-slate-400 leading-relaxed">
+                            {cursoVendasData.epiphanyContent.split('\n\n').map((paragraph: string) => (
+                                <p set:html={paragraph.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>').replace(/`(.*?)`/g, '<span class="text-primary font-bold">$1</span>')} />
+                            ))}
                             
                             {cursoVendasData.epiphanyQuote && (
-                                <div class="relative pl-6 border-l-2 border-primary/50 py-4 mt-8">
+                                <div class="relative pl-6 border-l-2 border-primary/50 py-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute -left-4 top-0 w-8 h-8 text-primary bg-[#0a0a0a]">
                                         <path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path>
                                         <path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path>
@@ -245,9 +225,9 @@ const { cursoVendasData, themeId } = Astro.props;
                 </div>
                 
                 {cursoVendasData.epiphanyImage && (
-                    <div class="relative flex items-center justify-center">
-                        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-primary/10 bg-gradient-to-br from-primary/5 to-transparent">
-                            <img src={cursoVendasData.epiphanyImage} alt="Bruno Medeiros — Speaker e autoridade em SEO" class="w-full h-auto object-cover" />
+                    <div class="relative space-y-6">
+                        <div class="rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 overflow-hidden relative group hover:border-primary/60 transition-colors">
+                            <img src={cursoVendasData.epiphanyImage} alt="Epifania" class="w-full h-auto rounded-lg" />
                         </div>
                     </div>
                 )}
@@ -261,26 +241,27 @@ const { cursoVendasData, themeId } = Astro.props;
         
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-16">
+                <span class="text-secondary font-semibold uppercase tracking-wider text-sm">Mecanismo Único</span>
                 {cursoVendasData.mechanismTitle && (
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white mb-6">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white mt-4 mb-6">
                         {cursoVendasData.mechanismTitle}
                     </h2>
                 )}
             </div>
             
             {cursoVendasData.mechanismItems && cursoVendasData.mechanismItems.length > 0 && (
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto mb-14">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-6xl mx-auto mb-12">
                     {cursoVendasData.mechanismItems.map((item: any) => (
-                        <div class="group relative flex">
-                            <div class="relative flex flex-col p-6 md:p-8 rounded-2xl bg-white/5 border border-white/10 w-full transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]">
-                                <div class="flex items-center gap-4 mb-5">
-                                    <span class="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent opacity-90 tabular-nums">{item.number}</span>
-                                    <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-primary/20 group-hover:border-primary/40">
-                                        <span class="text-xl">{item.icon}</span>
-                                    </div>
+                        <div class="group relative">
+                            <div class="relative p-8 lg:p-10 rounded-2xl bg-white/5 border border-white/10 h-full transition-all duration-300 ease-out hover:-translate-y-2 hover:border-primary/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)]">
+                                <div class="mb-6">
+                                    <span class="text-6xl lg:text-7xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent opacity-90">{item.number}</span>
                                 </div>
-                                <h3 class="text-lg md:text-xl font-bold text-white mb-3 leading-tight">{item.title}</h3>
-                                <p class="text-slate-400 text-sm md:text-base leading-relaxed flex-1" set:html={item.description.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
+                                <div class="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary/20 group-hover:border-primary/40">
+                                    <span class="text-2xl">{item.icon}</span>
+                                </div>
+                                <h3 class="text-xl lg:text-2xl font-bold text-white mb-4">{item.title}</h3>
+                                <p class="text-slate-400 leading-relaxed" set:html={item.description.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
                             </div>
                         </div>
                     ))}
@@ -288,42 +269,79 @@ const { cursoVendasData, themeId } = Astro.props;
             )}
             
             {cursoVendasData.mechanismFooter && (
-                <div class="text-center max-w-2xl mx-auto">
-                    <p class="text-lg md:text-xl text-slate-400 leading-relaxed" set:html={cursoVendasData.mechanismFooter.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
+                <div class="text-center">
+                    <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto" set:html={cursoVendasData.mechanismFooter.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
                 </div>
             )}
         </div>
     </section>
 
-    <!-- 5. O QUE VOCÊ CONSEGUE -->
+    <!-- 5. DEMONSTRAÇÃO TÉCNICA -->
     <section class="py-20 md:py-32 bg-[#0a0a0a] relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
         <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
         
         <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-12 md:mb-14">
+            <div class="text-center mb-12">
+                <span class="inline-flex items-center gap-2 text-primary font-semibold uppercase tracking-wider text-sm mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                    </svg>
+                    Demonstração Técnica
+                </span>
                 {cursoVendasData.demoTitle && (
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white leading-tight mb-4">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white leading-tight">
                         {cursoVendasData.demoTitle}
                     </h2>
                 )}
-                {cursoVendasData.demoDescription && (
-                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto" set:html={cursoVendasData.demoDescription.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
-                )}
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6 max-w-4xl mx-auto">
-                {cursoVendasData.demoFeatures && cursoVendasData.demoFeatures.length > 0 && cursoVendasData.demoFeatures.map((feature: any) => (
-                    <div class="flex items-start gap-4 p-5 md:p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/30 transition-colors">
-                        <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                            <span class="text-2xl">{feature.icon}</span>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-white mb-1.5 text-lg">{feature.title}</h3>
-                            <p class="text-slate-400 text-sm md:text-base leading-relaxed">{feature.description}</p>
-                        </div>
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                    <div class="relative aspect-video bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                        {cursoVendasData.demoVideoUrl ? (
+                            <iframe 
+                                src={cursoVendasData.demoVideoUrl.replace('watch?v=', 'embed/')} 
+                                class="w-full h-full"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                            ></iframe>
+                        ) : cursoVendasData.demoImage ? (
+                            <img src={cursoVendasData.demoImage} alt="Demonstração" class="w-full h-full object-cover" />
+                        ) : (
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/50">
+                                <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 hover:bg-primary/30 group-hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 md:w-10 md:h-10 text-primary fill-primary ml-1">
+                                        <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                                    </svg>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                ))}
+                </div>
+                
+                <div class="space-y-6">
+                    {cursoVendasData.demoDescription && (
+                        <p class="text-lg md:text-xl text-slate-400 leading-relaxed" set:html={cursoVendasData.demoDescription.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
+                    )}
+                    {cursoVendasData.demoFeatures && cursoVendasData.demoFeatures.length > 0 && (
+                        <div class="space-y-4">
+                            {cursoVendasData.demoFeatures.map((feature: any) => (
+                                <div class="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+                                        <span class="text-xl">{feature.icon}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white mb-1">{feature.title}</h4>
+                                        <p class="text-sm text-slate-400">{feature.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     </section>
@@ -334,6 +352,7 @@ const { cursoVendasData, themeId } = Astro.props;
         
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-16 md:mb-24">
+                <span class="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">O Caminho Completo</span>
                 {cursoVendasData.pathTitle && (
                     <h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-4">{cursoVendasData.pathTitle}</h2>
                 )}
@@ -394,8 +413,7 @@ const { cursoVendasData, themeId } = Astro.props;
         </div>
     </section>
 
-    <!-- 7. DEPOIMENTOS/PROVA SOCIAL (só aparece se showTestimonials !== false e houver itens) -->
-    {cursoVendasData.showTestimonials !== false && (cursoVendasData.testimonials?.length ?? 0) > 0 && (
+    <!-- 7. DEPOIMENTOS/PROVA SOCIAL -->
     <section class="py-20 md:py-28 bg-black relative overflow-hidden">
         <div class="absolute inset-0 opacity-5">
             <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(168,85,247,1) 1px, transparent 0); background-size: 40px 40px;"></div>
@@ -444,7 +462,6 @@ const { cursoVendasData, themeId } = Astro.props;
             </div>
         </div>
     </section>
-    )}
 
     <!-- 8. A OFERTA -->
     <section id="oferta" class="py-20 md:py-32 bg-[#0a0a0a] relative overflow-hidden">
@@ -452,77 +469,87 @@ const { cursoVendasData, themeId } = Astro.props;
         
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-16">
+                <span class="text-secondary font-semibold uppercase tracking-wider text-sm">A Oferta</span>
                 {cursoVendasData.offerTitle && (
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white max-w-4xl mx-auto leading-tight">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-white mt-4 max-w-4xl mx-auto leading-tight">
                         {cursoVendasData.offerTitle}
                     </h2>
                 )}
             </div>
             
-            <div class="max-w-5xl mx-auto mb-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    {(cursoVendasData.offerItems || []).map((item: any, index: number) => (
-                        <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]">
-                            <div class="aspect-video bg-primary/10 flex items-center justify-center">
-                                {item.image && item.image.trim() !== '' ? (
-                                    <img src={item.image} alt={item.title} class="w-full h-full object-cover" />
-                                ) : (
-                                    <span class="text-6xl md:text-7xl font-black text-primary/30">{String(index + 1).padStart(2, '0')}</span>
-                                )}
-                            </div>
-                            <div class="p-5 md:p-6">
-                                <p class="font-semibold text-white mb-2">{item.title}</p>
-                                {item.description && (
-                                    <p class="text-sm text-slate-400 leading-relaxed">{item.description}</p>
-                                )}
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-4 mb-10">
+                    {(cursoVendasData.offerItems || []).map((item: any) => (
+                        <div class="flex items-center justify-between gap-4 p-5 md:p-6 rounded-xl border transition-all duration-300 hover:border-primary/30 bg-white/5 border-white/10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-primary/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary">
+                                        <path d="M20 6 9 17l-5-5"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white">{item.title}</p>
+                                    {item.description && (
+                                        <p class="text-sm text-slate-400 mt-1">{item.description}</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
                 
                 {cursoVendasData.offerBonuses && cursoVendasData.offerBonuses.length > 0 && (
-                    <div class="mt-16 md:mt-20 mb-12">
+                    <div class="mb-10">
                         <h3 class="text-2xl font-bold text-white mb-6 text-center">Bônus Inclusos</h3>
-                        <ul class="space-y-4 max-w-2xl mx-auto">
+                        <div class="grid md:grid-cols-2 gap-4">
                             {cursoVendasData.offerBonuses.map((bonus: any) => (
-                                <li class="flex items-start justify-between gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="flex items-start gap-4 min-w-0">
+                                <div class="p-5 rounded-xl bg-primary/5 border border-primary/20">
+                                    <div class="flex items-start gap-3">
                                         {bonus.icon && (
-                                            <span class="text-2xl shrink-0">{bonus.icon}</span>
+                                            <span class="text-2xl">{bonus.icon}</span>
                                         )}
                                         <div>
                                             <h4 class="font-semibold text-white mb-1">{bonus.title}</h4>
                                             <p class="text-sm text-slate-400">{bonus.description}</p>
                                         </div>
                                     </div>
-                                    {bonus.value && (
-                                        <span class="text-slate-500 text-sm font-semibold shrink-0 line-through">R$ {bonus.value}</span>
-                                    )}
-                                </li>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 )}
                 
-                <div class="p-8 md:p-12 rounded-2xl bg-white/[0.03] border border-white/10 max-w-md mx-auto">
-                    <p class="text-center text-slate-500 text-sm uppercase tracking-wider mb-3">{cursoVendasData.offerPriceTitle || 'Investimento'}</p>
-                    {cursoVendasData.offerPriceAnchor && (
-                        <p class="text-center text-slate-500 line-through text-lg mb-0.5">De R$ {cursoVendasData.offerPriceAnchor}</p>
-                    )}
-                    {(cursoVendasData.offerPriceParcelas && cursoVendasData.offerPriceParcelaValor) && (
-                        <div class="text-center mb-1">
-                            <span class="text-4xl md:text-5xl font-black text-white tracking-tight">{cursoVendasData.offerPriceParcelas}x de R$ {cursoVendasData.offerPriceParcelaValor}</span>
+                <div class="relative">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-secondary rounded-3xl blur-sm opacity-50"></div>
+                    <div class="relative p-8 md:p-12 rounded-3xl bg-white/5 border-2 border-secondary/50">
+                        {cursoVendasData.offerBadge && (
+                            <div class="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-full bg-gradient-to-r from-secondary to-[#f59e0b] text-white font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <span>{cursoVendasData.offerBadge}</span>
+                            </div>
+                        )}
+                        <div class="text-center pt-4">
+                            <p class="text-xl text-slate-400 mb-6">{cursoVendasData.offerPriceTitle || 'Investimento'}</p>
+                            {cursoVendasData.offerPrice && (
+                                <div class="mb-4">
+                                    <div class="text-5xl md:text-6xl font-black text-white mb-2">
+                                        {cursoVendasData.offerPrice}
+                                    </div>
+                                    {cursoVendasData.offerPriceSubtitle && (
+                                        <p class="text-lg text-slate-400">{cursoVendasData.offerPriceSubtitle}</p>
+                                    )}
+                                </div>
+                            )}
+                            <div class="mt-8 mb-6">
+                                <a href={cursoVendasData.offerCtaUrl || '/contato'} class="inline-flex items-center justify-center gap-2 px-8 md:px-14 py-4 sm:py-5 md:py-6 bg-primary text-white font-bold uppercase tracking-wider rounded-xl w-full md:w-auto hover:scale-105 active:scale-95 transition-all shadow-[0_0_50px_rgba(168,85,247,0.5)] hover:shadow-[0_0_70px_rgba(168,85,247,0.7)]">
+                                    <span>{cursoVendasData.offerCtaText || 'QUERO MEU ACESSO AGORA'}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 md:w-6 md:h-6">
+                                        <path d="M5 12h14"></path>
+                                        <path d="m12 5 7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
-                    )}
-                    {cursoVendasData.offerPriceAvista && (
-                        <p class="text-center text-slate-400 text-lg mb-2">ou R$ {cursoVendasData.offerPriceAvista} à vista</p>
-                    )}
-                    {cursoVendasData.offerPriceSubtitle && (
-                        <p class="text-center text-slate-500 text-sm mb-8">{cursoVendasData.offerPriceSubtitle}</p>
-                    )}
-                    <a href={cursoVendasData.offerCtaUrl || '/contato'} class="block w-full text-center py-4 px-6 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors">
-                        {cursoVendasData.offerCtaText || 'QUERO MEU ACESSO AGORA'}
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -531,26 +558,35 @@ const { cursoVendasData, themeId } = Astro.props;
     <!-- 9. GARANTIA -->
     <section class="py-20 md:py-32 bg-black relative overflow-hidden">
         <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto">
-                {cursoVendasData.guaranteeTitle && (
-                    <h2 class="text-3xl md:text-4xl font-heading font-black text-white mb-4 text-center">
-                        {cursoVendasData.guaranteeTitle}
-                    </h2>
-                )}
-                {cursoVendasData.guaranteeText && (
-                    <p class="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto mb-10 text-center" set:html={cursoVendasData.guaranteeText.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
-                )}
-                {cursoVendasData.guaranteeBadges && cursoVendasData.guaranteeBadges.length > 0 && (
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {cursoVendasData.guaranteeBadges.map((badge: any) => (
-                            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-4xl mb-3">{badge.icon}</div>
-                                <p class="font-bold text-white text-lg mb-1">{badge.label}</p>
-                                <p class="text-sm text-slate-400">{badge.description}</p>
-                            </div>
-                        ))}
+            <div class="max-w-3xl mx-auto">
+                <div class="p-8 md:p-12 rounded-3xl bg-white/5 border border-secondary/30 relative text-center">
+                    <div class="flex justify-center mb-8">
+                        <div class="w-28 h-28 rounded-full bg-secondary/20 flex items-center justify-center relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-14 h-14 text-secondary">
+                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                            <div class="absolute inset-0 rounded-full bg-secondary/10 animate-pulse"></div>
+                        </div>
                     </div>
-                )}
+                    {cursoVendasData.guaranteeTitle && (
+                        <h2 class="text-3xl md:text-4xl font-heading font-black text-white mb-6">
+                            {cursoVendasData.guaranteeTitle}
+                        </h2>
+                    )}
+                    {cursoVendasData.guaranteeText && (
+                        <p class="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto" set:html={cursoVendasData.guaranteeText.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>')} />
+                    )}
+                    {cursoVendasData.guaranteeBadge && (
+                        <div class="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-secondary">
+                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                            <span class="text-secondary font-semibold text-sm">{cursoVendasData.guaranteeBadge}</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     </section>
