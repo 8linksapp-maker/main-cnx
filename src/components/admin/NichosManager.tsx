@@ -44,7 +44,7 @@ interface LocationData {
     active: boolean;
 }
 
-const ICON_OPTIONS = ['📦', '🔧', '⚡', '🏠', '🚗', '💊', '🛏️', '🔍', '🪟', '🚿', '🌿', '🔒', '🐛', '🧹', '🎨', '📱', '🌊', '🔑', '🎯', '💡'];
+const ICON_OPTIONS = ['📦','🔧','⚡','🏠','🚗','💊','🛏️','🔍','🪟','🚿','🌿','🔒','🐛','🧹','🎨','📱','🌊','🔑','🎯','💡'];
 
 function slugify(text: string): string {
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -54,7 +54,7 @@ function slugify(text: string): string {
 
 function MatrizDominacao({ nicho, locations }: { nicho: NichoData; locations: LocationData[] }) {
     const [services, setServices] = useState<ServiceData[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading]   = useState(true);
 
     useEffect(() => {
         fetch(`/api/admin/nichos/${nicho.slug}`)
@@ -63,11 +63,11 @@ function MatrizDominacao({ nicho, locations }: { nicho: NichoData; locations: Lo
             .finally(() => setLoading(false));
     }, [nicho.slug]);
 
-    const activeServices = services.filter(s => s.active !== false);
-    const activeBairros = locations.filter(l => l.active);
-    const totalCells = activeServices.length * activeBairros.length;
-    const activeCells = totalCells; // all exist since both are active
-    const strength = totalCells > 0 ? 100 : 0;
+    const activeServices  = services.filter(s => s.active !== false);
+    const activeBairros   = locations.filter(l => l.active);
+    const totalCells      = activeServices.length * activeBairros.length;
+    const activeCells     = totalCells; // all exist since both are active
+    const strength        = totalCells > 0 ? 100 : 0;
 
     if (loading) return <p style={{ color: 'var(--admin-text-subtle)', fontSize: '0.85rem', padding: '1rem' }}>Carregando matriz...</p>;
 
@@ -200,27 +200,27 @@ interface Props {
 }
 
 export default function NichosManager({ initialLocations }: Props) {
-    const [nichos, setNichos] = useState<NichoData[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selected, setSelected] = useState<NichoData | null>(null);
-    const [detailTab, setDetailTab] = useState<'servicos' | 'matriz'>('servicos');
-    const [detailServices, setDetailSvc] = useState<ServiceData[]>([]);
+    const [nichos, setNichos]             = useState<NichoData[]>([]);
+    const [loading, setLoading]           = useState(true);
+    const [selected, setSelected]         = useState<NichoData | null>(null);
+    const [detailTab, setDetailTab]       = useState<'servicos' | 'matriz'>('servicos');
+    const [detailServices, setDetailSvc]  = useState<ServiceData[]>([]);
     const [loadingDetail, setLoadingDetail] = useState(false);
 
     // Modal novo nicho
     const [showModal, setShowModal] = useState(false);
-    const [newName, setNewName] = useState('');
-    const [newIcon, setNewIcon] = useState('📦');
-    const [newDesc, setNewDesc] = useState('');
-    const [newColor, setNewColor] = useState('#6366f1');
-    const [saving, setSaving] = useState(false);
-    const [msg, setMsg] = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
+    const [newName, setNewName]     = useState('');
+    const [newIcon, setNewIcon]     = useState('📦');
+    const [newDesc, setNewDesc]     = useState('');
+    const [newColor, setNewColor]   = useState('#6366f1');
+    const [saving, setSaving]       = useState(false);
+    const [msg, setMsg]             = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
     const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
     const fetchNichos = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/nichos');
+            const res  = await fetch('/api/admin/nichos');
             const data = await res.json();
             if (data.success) setNichos(data.nichos || []);
         } finally {
@@ -235,7 +235,7 @@ export default function NichosManager({ initialLocations }: Props) {
         setDetailTab('servicos');
         setLoadingDetail(true);
         try {
-            const res = await fetch(`/api/admin/nichos/${nicho.slug}`);
+            const res  = await fetch(`/api/admin/nichos/${nicho.slug}`);
             const data = await res.json();
             if (data.success) setDetailSvc(data.services || []);
         } finally {
@@ -249,7 +249,7 @@ export default function NichosManager({ initialLocations }: Props) {
         setSaving(true);
         setMsg(null);
         try {
-            const res = await fetch('/api/admin/nichos', {
+            const res  = await fetch('/api/admin/nichos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName.trim(), icon: newIcon, description: newDesc, color: newColor }),
@@ -268,26 +268,19 @@ export default function NichosManager({ initialLocations }: Props) {
         }
     }
 
-    function deleteNicho(slug: string, name: string) {
-        const doDelete = async () => {
-            setDeletingSlug(slug);
-            try {
-                await fetch(`/api/admin/nichos/${slug}`, { method: 'DELETE' });
-                if (selected?.slug === slug) setSelected(null);
-                await fetchNichos();
-            } finally {
-                setDeletingSlug(null);
-            }
-        };
-
-        if (typeof window !== 'undefined' && (window as any).cnxConfirm) {
-            (window as any).cnxConfirm(`Remover o nicho "${name}"? Os serviços vinculados NÃO serão removidos.`, doDelete);
-        } else {
-            doDelete();
+    async function deleteNicho(slug: string, name: string) {
+        if (!confirm(`Remover o nicho "${name}"?\n\nOs serviços vinculados NÃO serão removidos.`)) return;
+        setDeletingSlug(slug);
+        try {
+            await fetch(`/api/admin/nichos/${slug}`, { method: 'DELETE' });
+            if (selected?.slug === slug) setSelected(null);
+            await fetchNichos();
+        } finally {
+            setDeletingSlug(null);
         }
     }
 
-    const totalPages = nichos.reduce((acc, n) => acc + n.activeServices, 0) * initialLocations.filter(l => l.active).length;
+    const totalPages   = nichos.reduce((acc, n) => acc + n.activeServices, 0) * initialLocations.filter(l => l.active).length;
     const activeBairros = initialLocations.filter(l => l.active).length;
 
     // ── Vista Detalhe ────────────────────────────────────────────────
@@ -380,9 +373,9 @@ export default function NichosManager({ initialLocations }: Props) {
             {/* Stats bar */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
                 {[
-                    { icon: '🎯', value: nichos.length, label: 'Nichos' },
-                    { icon: '📍', value: activeBairros, label: 'Bairros ativos' },
-                    { icon: '📄', value: totalPages, label: 'Páginas geradas' },
+                    { icon: '🎯', value: nichos.length,  label: 'Nichos' },
+                    { icon: '📍', value: activeBairros,  label: 'Bairros ativos' },
+                    { icon: '📄', value: totalPages,     label: 'Páginas geradas' },
                 ].map(c => (
                     <div key={c.label} className="admin-card" style={{ padding: '1rem', textAlign: 'center' }}>
                         <div style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>{c.icon}</div>
@@ -414,12 +407,12 @@ export default function NichosManager({ initialLocations }: Props) {
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '1rem' }}>
                     {nichos.map(n => {
-                        const pages = n.activeServices * activeBairros;
+                        const pages    = n.activeServices * activeBairros;
                         const maxPages = n.serviceCount * activeBairros;
                         const strength = maxPages > 0 ? Math.round((pages / maxPages) * 100) : 0;
                         return (
                             <div key={n.slug} className="admin-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', cursor: 'pointer', transition: 'border-color 0.15s' }}
-                                onClick={() => openDetail(n)}>
+                                 onClick={() => openDetail(n)}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <div style={{ fontSize: '1.75rem', width: 44, height: 44, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${n.color || '#6366f1'}22`, flexShrink: 0 }}>
                                         {n.icon || '📦'}

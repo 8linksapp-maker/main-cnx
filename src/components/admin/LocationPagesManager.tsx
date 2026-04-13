@@ -44,10 +44,10 @@ interface Props {
 }
 
 const VARS_HELP = [
-    { var: '{cidade}', desc: 'Nome da cidade (ex: São Paulo)' },
-    { var: '{estado}', desc: 'Sigla do estado (ex: SP)' },
-    { var: '{servico}', desc: 'Nome do serviço (ex: Encanador)' },
-    { var: '{empresa}', desc: 'Nome da empresa (configurado na Home Local)' },
+    { var: '{cidade}',   desc: 'Nome da cidade (ex: São Paulo)' },
+    { var: '{estado}',   desc: 'Sigla do estado (ex: SP)' },
+    { var: '{servico}',  desc: 'Nome do serviço (ex: Encanador)' },
+    { var: '{empresa}',  desc: 'Nome da empresa (configurado na Home Local)' },
     { var: '{telefone}', desc: 'Telefone da empresa' },
 ];
 
@@ -55,28 +55,28 @@ export default function LocationPagesManager({ services }: Props) {
     const [tab, setTab] = useState<'locations' | 'template' | 'pages'>('locations');
 
     // ── Estado: Localidades ──────────────────────────────────────────
-    const [locations, setLocations] = useState<LocationData[]>([]);
+    const [locations, setLocations]   = useState<LocationData[]>([]);
     const [loadingLoc, setLoadingLoc] = useState(true);
-    const [newName, setNewName] = useState('');
-    const [newState, setNewState] = useState('');
-    const [addingOne, setAddingOne] = useState(false);
-    const [bulkText, setBulkText] = useState('');
-    const [bulkMode, setBulkMode] = useState(false);
+    const [newName, setNewName]       = useState('');
+    const [newState, setNewState]     = useState('');
+    const [addingOne, setAddingOne]   = useState(false);
+    const [bulkText, setBulkText]     = useState('');
+    const [bulkMode, setBulkMode]     = useState(false);
     const [bulkImporting, setBulkImporting] = useState(false);
-    const [locMsg, setLocMsg] = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
+    const [locMsg, setLocMsg]         = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
     const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
     // ── Estado: Template ─────────────────────────────────────────────
-    const [template, setTemplate] = useState<TemplateData>({});
-    const [loadingTpl, setLoadingTpl] = useState(true);
-    const [savingTpl, setSavingTpl] = useState(false);
-    const [tplMsg, setTplMsg] = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
+    const [template, setTemplate]       = useState<TemplateData>({});
+    const [loadingTpl, setLoadingTpl]   = useState(true);
+    const [savingTpl, setSavingTpl]     = useState(false);
+    const [tplMsg, setTplMsg]           = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
 
     // ── Carrega dados ────────────────────────────────────────────────
     const fetchLocations = useCallback(async () => {
         setLoadingLoc(true);
         try {
-            const res = await fetch('/api/admin/locations');
+            const res  = await fetch('/api/admin/locations');
             const data = await res.json();
             if (data.success) setLocations(data.locations || []);
         } finally {
@@ -87,7 +87,7 @@ export default function LocationPagesManager({ services }: Props) {
     const fetchTemplate = useCallback(async () => {
         setLoadingTpl(true);
         try {
-            const res = await fetch('/api/admin/location-template');
+            const res  = await fetch('/api/admin/location-template');
             const data = await res.json();
             if (data.success) setTemplate(data.template || {});
         } finally {
@@ -118,7 +118,7 @@ export default function LocationPagesManager({ services }: Props) {
         setAddingOne(true);
         setLocMsg(null);
         try {
-            const res = await fetch('/api/admin/locations', {
+            const res  = await fetch('/api/admin/locations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName.trim(), state: newState.trim().toUpperCase() }),
@@ -149,24 +149,24 @@ export default function LocationPagesManager({ services }: Props) {
         const parsed = lines.map(line => {
             const parts = line.split(',').map(p => p.trim());
             return {
-                name: parts[0],
+                name:  parts[0],
                 state: parts[1]?.toUpperCase() || 'SP',
-                slug: slugify(parts[0]),
+                slug:  slugify(parts[0]),
             };
         });
 
         setBulkImporting(true);
         setLocMsg(null);
         try {
-            const res = await fetch('/api/admin/locations', {
+            const res  = await fetch('/api/admin/locations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ locations: parsed }),
             });
             const data = await res.json();
             if (data.success) {
-                const created = (data.results || []).filter((r: any) => r.success).length;
-                const skipped = (data.results || []).filter((r: any) => !r.success).length;
+                const created  = (data.results || []).filter((r: any) => r.success).length;
+                const skipped  = (data.results || []).filter((r: any) => !r.success).length;
                 setLocMsg({
                     text: `✅ ${created} criada(s)${skipped > 0 ? ` · ${skipped} ignorada(s) (já existem)` : ''}`,
                     type: 'ok',
@@ -182,21 +182,14 @@ export default function LocationPagesManager({ services }: Props) {
         }
     }
 
-    function handleDelete(slug: string) {
-        const doDelete = async () => {
-            setDeletingSlug(slug);
-            try {
-                await fetch(`/api/admin/locations/${slug}`, { method: 'DELETE' });
-                await fetchLocations();
-            } finally {
-                setDeletingSlug(null);
-            }
-        };
-
-        if (typeof window !== 'undefined' && (window as any).cnxConfirm) {
-            (window as any).cnxConfirm(`Remover a localidade "${slug}"?`, doDelete);
-        } else {
-            doDelete();
+    async function handleDelete(slug: string) {
+        if (!confirm(`Remover a localidade "${slug}"?`)) return;
+        setDeletingSlug(slug);
+        try {
+            await fetch(`/api/admin/locations/${slug}`, { method: 'DELETE' });
+            await fetchLocations();
+        } finally {
+            setDeletingSlug(null);
         }
     }
 
@@ -231,7 +224,7 @@ export default function LocationPagesManager({ services }: Props) {
         setSavingTpl(true);
         setTplMsg(null);
         try {
-            const res = await fetch('/api/admin/location-template', {
+            const res  = await fetch('/api/admin/location-template', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(template),
@@ -249,8 +242,8 @@ export default function LocationPagesManager({ services }: Props) {
 
     // ── Contagem de páginas geradas ───────────────────────────────────
     const activeLocations = locations.filter(l => l.active);
-    const activeServices = services.filter(s => s.active !== false);
-    const totalPages = activeLocations.length * activeServices.length;
+    const activeServices  = services.filter(s => s.active !== false);
+    const totalPages      = activeLocations.length * activeServices.length;
 
     // ── UI ────────────────────────────────────────────────────────────
     const tabStyle = (active: boolean): React.CSSProperties => ({
@@ -283,8 +276,8 @@ export default function LocationPagesManager({ services }: Props) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
                 {[
                     { label: 'Localidades ativas', value: activeLocations.length, icon: '📍' },
-                    { label: 'Serviços ativos', value: activeServices.length, icon: '🔧' },
-                    { label: 'Páginas geradas', value: totalPages, icon: '📄' },
+                    { label: 'Serviços ativos',     value: activeServices.length,  icon: '🔧' },
+                    { label: 'Páginas geradas',     value: totalPages,             icon: '📄' },
                 ].map(card => (
                     <div key={card.label} className="admin-card" style={{ padding: '1rem', textAlign: 'center' }}>
                         <div style={{ fontSize: '1.75rem', marginBottom: '0.25rem' }}>{card.icon}</div>

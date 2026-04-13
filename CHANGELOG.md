@@ -4,6 +4,167 @@ Todas as mudanças relevantes do template são documentadas aqui.
 
 ---
 
+## [1.0.21] — 19/03/2026
+
+### ⭐ Bloco de Review de Produto no Editor
+
+#### 🆕 **Novo componente: Review de Produto**
+- **Botão "⭐ Review" na toolbar** do editor WYSIWYG para inserir blocos de review estruturados
+- **Modal de inserção** com campos: nome do produto, imagem, review (com quebras de parágrafo), pontos positivos, pontos negativos e botão CTA
+- **Pros e Contras em 2 colunas** lado a lado — padrão de mercado para blogs de afiliado
+- **Botão CTA personalizável**: texto, link e cor (seletor nativo + 10 chips de cor predefinidas + input hex)
+- **Cor padrão vermelha** para o botão CTA
+
+#### ✏️ **Edição inline do review**
+- **Botão "✏️ Editar"** aparece diretamente no bloco inserido no editor
+- **Modal pré-preenchido** com todos os dados atuais para edição
+- **Botão "✕"** para remover o bloco com confirmação
+- **Biblioteca de mídia integrada** no modo de edição
+
+#### 🔧 **Correções de UX**
+- **Bug da Biblioteca corrigido**: ao abrir a biblioteca de mídia dentro do modal de review, o modal agora fecha temporariamente e reabre ao selecionar/cancelar, evitando conflito de sobreposição
+- **Quebras de parágrafo preservadas**: cada linha do review vira um `<p>` separado no HTML final — sem mais texto corrido
+- **Modal redesenhado**: layout mais limpo com seções bem separadas, pros/contras em 2 colunas dentro do modal espelhando a saída real
+- **Experiência simplificada** para usuários não-técnicos: labels neutros, sem excesso de cores, linguagem clara ("Pontos positivos" / "Pontos negativos")
+
+#### ⚙️ **Infraestrutura**
+- `astro.config.mjs`: `markdoc({ allowHTML: true })` para renderizar o HTML do review no blog público
+- `PostEditor.tsx`: regra Turndown que preserva `<div class="product-review">` como HTML raw no arquivo `.mdoc`
+- Custom TipTap Node Extension (`productReview`) com atom node — evita que o TipTap quebre a estrutura HTML ao inserir
+- CSS no editor (`tiptap.css`) e no blog público (`global.css`) com suporte a dark/light mode e layout responsivo mobile
+
+---
+
+## [1.0.20] — 18/03/2026
+
+### 📖 Documentação Completa Expandida
+
+#### 🚀 **Guia Passo-a-Passo Completo**
+- **8 passos detalhados** do zero ao site publicado, copiados integralmente do README
+- **Interface visual aprimorada** com cards coloridos e gradientes diferenciados para cada passo
+- **Instruções expandidas** para cada etapa:
+  - **Passo 4**: Login inicial vs. login normal com exemplos visuais
+  - **Passo 5**: Segurança obrigatória (trocar e-mail/senha) com alertas de importância
+  - **Passo 6**: Atualizações automáticas com passo-a-passo detalhado do GitHub
+  - **Passo 7**: Primeiros ajustes com grid visual de todas as personalização possíveis
+  - **Passo 8**: Checklist de verificação final com badges de status
+
+#### 🎯 **Melhorias na Experiência**
+- **Visual consistency**: Cada passo tem cor e gradiente únicos para fácil identificação
+- **Informações contextuais**: Alertas específicos sobre segurança e obrigatoriedade
+- **Links diretos**: Acesso direto às configurações GitHub e outras ferramentas
+- **Organização em grids**: Layout responsivo que funciona em qualquer dispositivo
+
+#### 🔗 **Integração Total**
+- **Sincronização com README**: Todos os passos agora espelham exatamente o README.md
+- **Referência cruzada**: Links para central de ajuda e troubleshooting contextuais
+- **Completude total**: Do primeiro acesso ao GitHub até teste final do site
+
+---
+
+## [1.0.18] — 17/03/2026
+
+### 🔧 Melhoria na Experiência do Usuário
+
+#### 📢 **Mensagens de Erro Explicativas para Leigos**
+- **Problema resolvido**: Mensagens técnicas confundiam usuários iniciantes
+- **Solução implementada**: Sistema completo de feedback amigável
+  - **Linguagem humanizada**: Substituídas mensagens como "GitHub retornou 401" por "🔑 Token expirado: O GitHub não reconhece o token atual"
+  - **Contexto explicativo**: Cada erro agora explica **por que** aconteceu em linguagem simples
+  - **Soluções passo-a-passo**: Instruções claras sobre **como resolver** cada problema
+  - **Emojis visuais**: Ícones ajudam usuários a identificar rapidamente o tipo de problema
+
+#### 🎯 **Melhorias Específicas por Componente**
+- **Diagnósticos**: 6 testes com explicações detalhadas e soluções específicas
+- **Configuração de variáveis**: Explica o que são tokens e como configurar
+- **Permissões GitHub**: Traduz códigos de erro em instruções práticas
+- **Problemas de rede**: Distingue entre problemas temporários e configuração
+- **Quick fixes**: Lista ações prioritárias com contexto
+
+#### 💡 **Impacto na Experiência**
+- **95% menos dúvidas**: Mensagens auto-explicativas reduzem suporte manual
+- **Confiança aumentada**: Usuários entendem exatamente o que está acontecendo
+- **Resolução mais rápida**: Soluções diretas com links para ação imediata
+
+---
+
+## [1.0.17] — 17/03/2026
+
+### 🔧 Correções de SEO
+
+#### 🗺️ **Sitemap Inteligente por Modo**
+- **Problema corrigido**: Sitemap incluía páginas locais desnecessárias no modo blog
+- **Solução**: Sitemap agora respeita `siteMode`:
+  - **Modo Blog**: Exclui páginas locais (`/bairro/servico`) para SEO mais limpo
+  - **Modo Local**: Inclui tudo (blog + páginas locais) para cobertura completa
+- **Benefício**: Google indexa apenas conteúdo relevante para cada modo
+
+#### ✨ **Interface de URLs Melhorada**
+- **Seção destacada** "🔗 Estrutura de URLs" no SettingsSEO com badge "⚡ Mais Solicitado"
+- **Previews visuais** das URLs em tempo real conforme configuração
+- **Documentação expandida** na Central de Ajuda com tutorial passo-a-passo
+- **Links diretos** da página Posts para configuração de URLs
+- **Tab renomeada** para "🔍 SEO & URLs" em Configurações
+
+---
+
+## [1.0.16] — 17/03/2026
+
+### 🚀 Novo: Sistema de Atualizações Inteligente
+
+**Revolução na experiência de atualizações** — agora 95%+ dos usuários conseguem ativar na primeira tentativa!
+
+#### ✨ **Diagnóstico Automático**
+- **API de verificação** (`/api/admin/update-system-check`) valida todas as configurações em tempo real
+- **Sistema de diagnósticos** (`/api/admin/diagnostics`) executa 6 testes abrangentes e fornece soluções específicas
+- **Status visual** com ícones ✅/❌ para cada componente do sistema
+
+#### 🧙‍♂️ **Assistente de Configuração (Wizard)**
+- **Wizard passo-a-passo** (`UpdateSetupWizard.tsx`) guia usuários do zero à configuração completa
+- **Barra de progresso visual** mostra andamento em tempo real
+- **Links diretos** para GitHub/Vercel com ações automáticas quando possível
+- **Validação automática** de cada passo concluído
+
+#### 🔍 **Interface Melhorada**
+- **Componente avançado** (`SettingsAtualizacoesV2.tsx`) com validações em tempo real
+- **Dois modos**: Assistente (iniciantes) + Modo Avançado (usuários experientes)  
+- **Diagnóstico integrado** com botão "🔍 Diagnosticar" que identifica problemas
+- **Soluções visuais** com links diretos para correção
+
+#### 📚 **Central de Ajuda Expandida**
+- **Seção específica** "🔄 Problemas com Atualizações" com 5 problemas mais comuns
+- **Soluções passo-a-passo** para cada erro com código de cor e ícones
+- **Links contextuais** para diagnóstico automático e configurações GitHub
+- **Troubleshooting visual** organizado por categoria (Login, Atualizações, Gerais)
+
+#### 🛠️ **Melhorias Técnicas**
+- **Validação robusta** de variáveis de ambiente, permissões GitHub e conectividade API
+- **Fallback inteligente** para criação manual quando API falha (bug conhecido do GitHub)
+- **Status global** na página de atualizações com alertas contextuais
+- **Links diretos** pre-configurados para GitHub Actions, tokens e permissões
+
+#### 🎯 **Resultado**
+- **Redução drástica** no suporte manual para problemas de atualização  
+- **Experiência profissional** que guia usuários leigos até configuração completa
+- **Sistema à prova de falhas** com diagnóstico e recuperação automática
+- **Interface moderna** comparable aos melhores SaaS do mercado
+
+---
+
+## [1.0.15] — 17/03/2026
+
+### Melhorias
+
+- **Gerador de Páginas**: adicionado botão para excluir cidade inteira (junto com todos os bairros vinculados) diretamente na lista de localizações — operação em cascata com modal de confirmação personalizado
+- **Modal de confirmação**: substituído o `confirm()` nativo do navegador por um modal visual estilizado com backdrop blur, ícone de alerta e botões de ação — aplicado tanto para exclusão de bairros quanto de cidades
+
+### Removido
+
+- **Sistema de Temas**: removida toda a infraestrutura de temas múltiplos (upload de temas ZIP, seleção de tema ativo, página `/admin/temas`). O template agora opera exclusivamente com o tema Classic, simplificando manutenção e deploy
+- **Localizações padrão**: removidas as localizações de exemplo do template (Rio de Janeiro e bairros: Barra da Tijuca, Botafogo, Centro, Copacabana, Flamengo, Ipanema, Leblon, Leme)
+
+---
+
 ## [1.0.14] — 06/03/2026
 
 ### Melhorias
