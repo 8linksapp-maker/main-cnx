@@ -1,0 +1,31 @@
+---
+/**
+ * blog/index.astro
+ *
+ * Listagem do blog - exibe posts publicados.
+ * Usa layout conforme siteMode: local → LocalLayout (header/footer do modo local), blog → MainLayout.
+ */
+
+import { getCollection, getEntry } from 'astro:content';
+import BlogList from '../../themes/classic/BlogList.astro';
+import type { BlogPermalinkStructure, BlogUrlPrefix } from '../../utils/blog-permalink';
+
+const settings = await getEntry('siteSettings', 'settings').catch(() => null);
+const siteMode = (settings?.data?.siteMode || 'blog') as 'blog' | 'local';
+const layoutType = siteMode === 'local' ? 'local' : 'main';
+const blogPermalinkStructure = (settings?.data?.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+const blogUrlPrefix = (settings?.data?.blogUrlPrefix as BlogUrlPrefix) || 'blog';
+
+const allPosts = await getCollection('posts');
+const publishedPosts = allPosts
+    .filter(post => post.data.publishedDate)
+    .sort((a, b) => new Date(b.data.publishedDate!).getTime() - new Date(a.data.publishedDate!).getTime());
+---
+
+<BlogList
+    posts={publishedPosts}
+    themeId="classic"
+    layoutType={layoutType}
+    blogPermalinkStructure={blogPermalinkStructure}
+    blogUrlPrefix={blogUrlPrefix}
+/>

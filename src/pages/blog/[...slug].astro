@@ -1,0 +1,57 @@
+---
+/**
+ * blog/[...slug].astro
+ *
+ * Página individual de post com suporte a estrutura de permalink configurável.
+ * Aceita: /blog/nome-post | /blog/2025/03/nome-post | /blog/2025/03/04/nome-post
+ * Usa layout conforme siteMode: local → LocalLayout, blog → MainLayout.
+ */
+
+import { getCollection, getEntry, render } from 'astro:content';
+import BlogPost from '../../themes/classic/BlogPost.astro';
+import { readPost } from '../../utils/post-utils';
+import { buildPostPath, type BlogPermalinkStructure } from '../../utils/blog-permalink';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const settings = await getEntry('siteSettings', 'settings').catch(() => null);
+  const structure = (settings?.data?.blogPermalinkStructure as BlogPermalinkStructure) || 'postname';
+  const prefix = (settings?.data?.blogUrlPrefix as string) || 'blog';
+
+  // Só gera paths com /blog quando o prefixo for 'blog'
+  if (prefix !== 'blog') return [];
+
+  return posts.map(post => ({
+    params: { slug: buildPostPath({ ...post, data: { ...post.data, slug: post.data.slug || post.id } }, structure) },
+    props: { post },
+  }));
+}
+
+const { slug } = Astro.params;
+const { post } = Astro.props;
+
+if (!post) return Astro.redirect('/404');
+
+const { Content } = await render(post);
+const author = post.data.author ? await getEntry('authors', post.data.author) : null;
+
+// Tempo de leitura: ~200 palavras/min em português
+const postFile = await readPost(post.data.slug);
+const wordCount = postFile?.content ? postFile.content.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length : 0;
+const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+const settings = await getEntry('siteSettings', 'settings').catch(() => null);
+const siteMode = (settings?.data?.siteMode || 'blog') as 'blog' | 'local';
+const layoutType = siteMode === 'local' ? 'local' : 'main';
+---
+
+<BlogPost
+    post={post}
+    author={author}
+    Content={Content}
+    themeId="classic"
+    layoutType={layoutType}
+    readingTimeMinutes={readingTimeMinutes}
+/>
